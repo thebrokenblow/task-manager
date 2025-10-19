@@ -1,0 +1,69 @@
+﻿@model List<Employee>
+
+@{
+    ViewData["Title"] = "Сотрудники";
+}
+
+<h1>Сотрудники</h1>
+
+@if (Model.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Фамилия и инициалы
+                </th>
+                <th>
+                    Наименование подразделения
+                </th>
+                <th>
+                    Действия
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                <tr>
+                    <td>
+                        @employee.FullName
+                    </td>
+                    <td>
+                        @employee.Department
+                    </td>
+                    <td>
+                        <a asp-controller="Employee" asp-action="Edit" asp-route-id="@employee.Id">Редактировать</a> |
+                        <a asp-controller="Employee" asp-action="Delete" asp-route-id="@employee.Id">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h2>По вашему запросу ничего не найдено</h2>
+}
+
+<!-- Форма добавления нового сотрудника -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Добавить нового сотрудника</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" asp-action="Create" asp-controller="Employee" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Фамилия и инициалы *</label>
+                <input type="text" class="form-control" id="FullName" name="FullName" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Подразделение</label>
+                <input type="text" class="form-control" id="Department" name="Department">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-success">Добавить сотрудника</button>
+            </div>
+        </form>
+    </div>
+</div>
