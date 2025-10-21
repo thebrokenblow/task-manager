@@ -1,21 +1,50 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TaskManager.Models;
+using TaskManager.Queries;
 using TaskManager.Queries.Interfaces;
 using TaskManager.Repositories.Interfaces;
 using TaskManager.ViewModel;
 
 namespace TaskManager.Controllers;
 
-public class DocumentController(
-        IDocumentRepository documentRepository, 
+public class DocumentsController(
+        IDocumentRepository documentRepository,
         IDocumentQuery documentQuery,
         IEmployeeRepository employeeRepository) : Controller
 {
+    private const int defaultNumberPage = 1;
+    private const int defaultCountDocumentsOnPage = 10;
+
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(
+        string inputSearch,
+        int page = defaultNumberPage,
+        int pageSize = defaultCountDocumentsOnPage) 
     {
-        var documents = await documentQuery.GetFilteredRangeAsync();
+        var (documents, countDocuments) = await documentQuery.GetFilteredRangeAsync(inputSearch, (page - 1) * pageSize, pageSize);
+
+        var paginationViewModel = new PaginationViewModel
+        {
+            CurrentPage = page,
+            PageSize = pageSize,
+            TotalCount = countDocuments,
+            TotalPages = (int)Math.Ceiling(countDocuments / (double)pageSize)
+        };
+
+        var indexDocumentViewModel = new IndexDocumentViewModel
+        {
+            Documents = documents,
+            InputString = inputSearch,
+            PaginationViewModel = paginationViewModel
+        };
+
+        return View(indexDocumentViewModel);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Create()
+    {
         var employees = await employeeRepository.GetAllAsync();
 
         var employeesForSelect = employees.Select(employee => new EmployeeForSelect
@@ -25,25 +54,18 @@ public class DocumentController(
         });
 
         var selectListEmployees = new SelectList(
-                                        employeesForSelect, 
-                                        nameof(EmployeeForSelect.Id), 
+                                        employeesForSelect,
+                                        nameof(EmployeeForSelect.Id),
                                         nameof(EmployeeForSelect.FullNameAndDepartment));
 
-        var indexDocumentViewModel = new IndexDocumentViewModel
-        {
-            Documents = documents,
-            Employees = selectListEmployees,
-        };
+        ViewData[nameof(EmployeeForSelect)] = selectListEmployees;
 
-        return View(indexDocumentViewModel);
+        return View();
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(Document document)
     {
-        var t1 = document.SourceIsExternal;
-        var t2 = document.IsUnderControl;
-
         await documentRepository.AddAsync(document);
         return RedirectToAction(nameof(Index));
     }
@@ -71,13 +93,9 @@ public class DocumentController(
                                         nameof(EmployeeForSelect.Id),
                                         nameof(EmployeeForSelect.FullNameAndDepartment));
 
-        var editDocumentViewModel = new EditDocumentViewModel
-        {
-            Document = document,
-            Employees = selectListEmployees
-        };
+        ViewData[nameof(EmployeeForSelect)] = selectListEmployees;
 
-        return View(editDocumentViewModel);
+        return View(document);
     }
 
     [HttpPost]
@@ -90,7 +108,7 @@ public class DocumentController(
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var document = await documentRepository.GetByIdAsync(id);
+        var document = await documentQuery.GetDetailsByIdAsync(id);
 
         if (document == null)
         {

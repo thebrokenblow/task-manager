@@ -7,7 +7,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header bg-danger text-white">
                     <h3 class="card-title mb-0">
@@ -15,10 +15,6 @@
                     </h3>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-warning">
-                        <strong>Внимание!</strong> Вы собираетесь удалить документ. Это действие нельзя отменить.
-                    </div>
-
                     <div class="row mb-4">
                         <div class="col-12">
                             <h5>Информация о документе:</h5>
@@ -30,11 +26,11 @@
                                             <th colspan="2" class="text-center">Исходные данные документа</th>
                                         </tr>
                                         <tr>
-                                            <th class="w-25">Исходящий номер:</th>
-                                            <td>@Model.SourceOutgoingDocumentNumber</td>
+                                            <th class="w-20">Исходящий номер документа:</th>
+                                            <td class="w-80">@Model.SourceOutgoingDocumentNumber</td>
                                         </tr>
                                         <tr>
-                                            <th>Исходящая дата:</th>
+                                            <th>Дата исходящего документа:</th>
                                             <td>@Model.SourceOutgoingDocumentDate.ToString("dd.MM.yyyy")</td>
                                         </tr>
                                         <tr>
@@ -59,28 +55,21 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th>Входящий номер:</th>
+                                            <th>Входящий номер документа:</th>
                                             <td>@Model.SourceOutputDocumentNumber</td>
                                         </tr>
                                         <tr>
-                                            <th>Входящая дата:</th>
+                                            <th>Дата входящего документа:</th>
                                             <td>@Model.SourceOutputDocumentDate.ToString("dd.MM.yyyy")</td>
                                         </tr>
                                         <tr>
-                                            <th>Срок выполнения:</th>
+                                            <th>Выполнить до:</th>
                                             <td>@Model.SourceDueDate.ToString("dd.MM.yyyy")</td>
                                         </tr>
                                         <tr>
                                             <th>Ответственный:</th>
                                             <td>
-                                                @if (Model.SourceResponsibleEmployee != null)
-                                                {
-                                                    @($"{Model.SourceResponsibleEmployee.FullName} ({Model.SourceResponsibleEmployee.Department})")
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">Не назначен</span>
-                                                }
+                                                @($"{Model.SourceResponsibleEmployee!.FullName} ({Model.SourceResponsibleEmployee.Department})")
                                             </td>
                                         </tr>
 
@@ -158,11 +147,11 @@
                                             <td>
                                                 @if (Model.IsUnderControl)
                                                 {
-                                                    <span class="badge bg-warning text-dark">Да</span>
+                                                    <span class="badge bg-primary">Да</span>
                                                 }
                                                 else
                                                 {
-                                                    <span class="badge bg-success">Нет</span>
+                                                    <span class="badge bg-secondary">Нет</span>
                                                 }
                                             </td>
                                         </tr>
@@ -176,7 +165,7 @@
                         <input type="hidden" asp-for="Id" />
 
                         <div class="col-12">
-                            <div class="d-flex gap-2">
+                            <div class="d-flex justify-content-end gap-2">
                                 <button type="submit" class="btn btn-danger">
                                     <i class="bi bi-trash"></i> Удалить
                                 </button>

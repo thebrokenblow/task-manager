@@ -4,7 +4,7 @@ using TaskManager.Repositories.Interfaces;
 
 namespace TaskManager.Controllers;
 
-public class EmployeeController(IEmployeeRepository employeeRepository) : Controller
+public class EmployeesController(IEmployeeRepository employeeRepository) : Controller
 {
     public async Task<IActionResult> Index()
     {
