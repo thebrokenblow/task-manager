@@ -1,4 +1,6 @@
-﻿namespace TaskManager.Models;
+﻿using TaskManager.Controllers;
+
+namespace TaskManager.Models;
 
 /// <summary>
 /// Представляет документ в системе документооборота
@@ -125,6 +127,6 @@ public class Document
     public DateTime? DateRemove { get; set; }
 
     public bool IsNotDeletedDocument =>
-        LoginAuthor != "admin" &&
+        LoginAuthor != AccountsController.AdminLogin &&
         DateRemove == null;
 }

@@ -163,7 +163,7 @@ public class DocumentsController(
         }
         else
         {
-            await documentRepository.ChangeAuthorAsync(document, "admin");
+            await documentRepository.ChangeAuthorAsync(document, AccountsController.AdminLogin);
 
         }
 

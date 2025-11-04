@@ -8,6 +8,8 @@ namespace TaskManager.Controllers;
 [AllowAnonymous]
 public class AccountsController(AuthService authService) : Controller
 {
+    public const string AdminLogin = "admin";
+
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {

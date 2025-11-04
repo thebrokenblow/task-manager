@@ -1,4 +1,6 @@
-﻿namespace TaskManager.Models;
+﻿using TaskManager.Controllers;
+
+namespace TaskManager.Models;
 
 public class FilteredRangeDocument
 {
@@ -78,6 +80,6 @@ public class FilteredRangeDocument
     public DateTime? DateRemove { get; set; }
 
     public bool IsNotDeletedDocument => 
-        LoginAuthor != "admin" && 
+        LoginAuthor != AccountsController.AdminLogin && 
         DateRemove == null;
 }
