@@ -8,62 +8,64 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
 {
     public void Configure(EntityTypeBuilder<Document> builder)
     {
-        builder.ToTable("documents");
+        builder
+            .ToTable("documents");
 
-        builder.HasKey(document => document.Id);
+        builder
+            .HasKey(document => document.Id);
 
         builder
             .Property(document => document.Id)
-            .HasColumnName("id");
+            .HasColumnName("id")
+            .UseIdentityByDefaultColumn();
 
         builder
             .Property(document => document.SourceOutgoingDocumentNumber)
-            .IsRequired()
             .HasColumnName("source_outgoing_document_number")
-            .HasMaxLength(100);
+            .IsRequired();
 
         builder
             .Property(document => document.SourceOutgoingDocumentDate)
-            .IsRequired()
             .HasColumnName("source_outgoing_document_date")
-            .HasColumnType("date");
+            .HasColumnType("date")
+            .IsRequired();
 
         builder
             .Property(document => document.SourceCustomer)
-            .IsRequired()
-            .HasColumnName("source_customer");
+            .HasColumnName("source_customer")
+            .IsRequired();
 
         builder
             .Property(document => document.SourceTaskText)
-            .IsRequired()
-            .HasColumnName("source_task_text");
+            .HasColumnName("source_task_text")
+            .IsRequired();
 
         builder
             .Property(document => document.SourceIsExternal)
-            .IsRequired()
-            .HasColumnName("source_is_external");
+            .HasColumnName("source_is_external")
+            .IsRequired();
 
         builder
             .Property(document => document.SourceOutputDocumentNumber)
-            .IsRequired()
-            .HasColumnName("source_output_document_number");
+            .HasColumnName("source_output_document_number")
+            .IsRequired();
 
         builder
             .Property(document => document.SourceOutputDocumentDate)
-            .IsRequired()
             .HasColumnName("source_output_document_date")
-            .HasColumnType("date");
+            .HasColumnType("date")
+            .IsRequired();
 
         builder
             .Property(document => document.SourceDueDate)
-            .IsRequired()
             .HasColumnName("source_due_date")
-            .HasColumnType("date");
+            .HasColumnType("date")
+            .IsRequired();
 
         builder
             .Property(document => document.SourceResponsibleEmployeeId)
-            .IsRequired()
-            .HasColumnName("source_responsible_employee_id");
+            .HasColumnName("source_responsible_employee_id")
+            .IsRequired();
 
         builder
             .HasOne(document => document.SourceResponsibleEmployee)
@@ -94,18 +96,18 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
 
         builder
             .Property(document => document.IsUnderControl)
-            .IsRequired()
-            .HasColumnName("is_under_control");
+            .HasColumnName("is_under_control")
+            .IsRequired();
 
         builder
             .Property(document => document.IsCompleted)
-            .IsRequired()
-            .HasColumnName("is_completed");
+            .HasColumnName("is_completed")
+            .IsRequired();
 
         builder
             .Property(document => document.LoginAuthor)
-            .IsRequired()
-            .HasColumnName("login_author");
+            .HasColumnName("login_author")
+            .IsRequired();
 
         builder
             .Property(document => document.AuthorRemoveDocument)

@@ -12,7 +12,7 @@ using TaskManager.Data;
 namespace TaskManager.Migrations
 {
     [DbContext(typeof(TaskManagerDbContext))]
-    [Migration("20251022131002_Init")]
+    [Migration("20251104101100_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -94,8 +94,7 @@ namespace TaskManager.Migrations
 
                     b.Property<string>("SourceOutgoingDocumentNumber")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("text")
                         .HasColumnName("source_outgoing_document_number");
 
                     b.Property<DateOnly>("SourceOutputDocumentDate")

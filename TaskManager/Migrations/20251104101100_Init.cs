@@ -45,7 +45,7 @@ namespace TaskManager.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    source_outgoing_document_number = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    source_outgoing_document_number = table.Column<string>(type: "text", nullable: false),
                     source_outgoing_document_date = table.Column<DateOnly>(type: "date", nullable: false),
                     source_customer = table.Column<string>(type: "text", nullable: false),
                     source_task_text = table.Column<string>(type: "text", nullable: false),

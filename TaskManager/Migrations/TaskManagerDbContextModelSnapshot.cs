@@ -91,8 +91,7 @@ namespace TaskManager.Migrations
 
                     b.Property<string>("SourceOutgoingDocumentNumber")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("text")
                         .HasColumnName("source_outgoing_document_number");
 
                     b.Property<DateOnly>("SourceOutputDocumentDate")

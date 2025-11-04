@@ -32,10 +32,4 @@ public class EmployeeRepository(TaskManagerDbContext context) : IEmployeeReposit
         context.Update(employee);
         await context.SaveChangesAsync();
     }
-
-    public async Task RemoveAsync(Employee employee)
-    {
-        context.Remove(employee);
-        await context.SaveChangesAsync();
-    }
 }

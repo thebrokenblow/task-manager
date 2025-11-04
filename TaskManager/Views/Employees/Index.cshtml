@@ -33,8 +33,9 @@
                         @employee.Department
                     </td>
                     <td>
-                        <a asp-controller="Employee" asp-action="Edit" asp-route-id="@employee.Id">Редактировать</a> |
-                        <a asp-controller="Employee" asp-action="Delete" asp-route-id="@employee.Id">Удалить</a>
+                        <a asp-controller="Employees" asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-link text-primary p-2 text-decoration-none" title="Редактировать">
+                            <i class="fas fa-edit fa-lg"></i>
+                        </a>
                     </td>
                 </tr>
             }
@@ -52,7 +53,7 @@ else
         <h5 class="mb-0">Добавить нового сотрудника</h5>
     </div>
     <div class="card-body">
-        <form method="post" asp-action="Create" asp-controller="Employee" class="row g-3">
+        <form method="post" asp-action="Create" asp-controller="Employees" class="row g-3">
             <div class="col-md-3">
                 <label class="form-label">Фамилия и инициалы *</label>
                 <input type="text" class="form-control" id="FullName" name="FullName" required>

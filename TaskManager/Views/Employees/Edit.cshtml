@@ -6,7 +6,7 @@
         <h5 class="mb-0">Редактирование сотрудника</h5>
     </div>
     <div class="card-body">
-        <form method="post" asp-controller="Employee" asp-action="Edit" class="row g-3">
+        <form method="post" asp-controller="Employees" asp-action="Edit" class="row g-3">
             <input type="hidden" class="form-control" value="@Model.Id" id="Id" name="Id">
             <div class="col-md-3">
                 <label for="LastName" class="form-label">Фамилия и инициалы *</label>
@@ -21,7 +21,7 @@
                         class="btn btn-success">
                     <i class="bi bi-trash"></i> Редактировать
                 </button>
-                <a asp-controller="Employee"
+                <a asp-controller="Employees"
                    asp-action="Index"
                    class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Назад к списку

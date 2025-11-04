@@ -6,6 +6,7 @@ namespace TaskManager.Controllers;
 
 public class EmployeesController(IEmployeeRepository employeeRepository) : Controller
 {
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         var employees = await employeeRepository.GetAllAsync();
@@ -21,6 +22,7 @@ public class EmployeesController(IEmployeeRepository employeeRepository) : Contr
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
         var employee = await employeeRepository.GetByIdAsync(id);
@@ -37,31 +39,6 @@ public class EmployeesController(IEmployeeRepository employeeRepository) : Contr
     public async Task<IActionResult> Edit(Employee employee)
     {
         await employeeRepository.UpdateAsync(employee);
-
-        return RedirectToAction(nameof(Index));
-    }
-
-    public async Task<IActionResult> Delete(int id)
-    {
-        var employee = await employeeRepository.GetByIdAsync(id);
-
-        if (employee == null)
-        {
-            return NotFound();
-        }
-
-        return View(employee);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var employee = await employeeRepository.GetByIdAsync(id);
-
-        if (employee == null)
-        {
-            return NotFound();
-        }
 
         return RedirectToAction(nameof(Index));
     }
