@@ -31,4 +31,24 @@ public class DocumentRepository(TaskManagerDbContext context) : IDocumentReposit
 
         return document;
     }
+
+    public async Task ChangeAuthorAsync(Document document, string user)
+    {
+        document.AuthorRemoveDocument = document.LoginAuthor;
+        document.LoginAuthor = user;
+
+        document.DateRemove = DateTime.UtcNow;
+
+        context.Update(document);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task RecoverDeletedTaskAsync(Document document)
+    {
+        document.DateRemove = null;
+        document.LoginAuthor = document.AuthorRemoveDocument!;
+
+        context.Update(document);
+        await context.SaveChangesAsync();
+    }
 }

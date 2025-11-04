@@ -66,4 +66,18 @@ public class FilteredRangeDocument
     /// Обязательное поле
     /// </summary>
     public required string LoginAuthor { get; set; }
+
+    /// <summary>
+    /// Признак завершения задачи
+    /// </summary>
+    public bool IsCompleted { get; set; }
+
+    /// <summary>
+    /// Дата удаления документа
+    /// </summary>
+    public DateTime? DateRemove { get; set; }
+
+    public bool IsNotDeletedDocument => 
+        LoginAuthor != "admin" && 
+        DateRemove == null;
 }

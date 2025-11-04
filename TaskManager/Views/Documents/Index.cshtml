@@ -1,11 +1,13 @@
-﻿@using TaskManager.ViewModel
-@model IndexDocumentViewModel
+﻿@using TaskManager.Services
+@using TaskManager.ViewModel
 
+@model IndexDocumentViewModel
+@inject AuthService authService
 @{
     ViewData["Title"] = "Документы";
 
     var statusInactiveButton = "disabled";
-    var pageSizeItems = new List<int> { 25, 50, 75, 100 };
+    var pageSizeItems = new List<int> { 50, 75, 100, 200 };
 
     var loginAuthor = Environment.UserName;
 }
@@ -122,11 +124,50 @@
                     <td class="@IsSpecialDocument(document)">@document.OutputOutgoingNumber</td>
                     <td class="@IsSpecialDocument(document)">@document.OutputOutgoingDate</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@document.Id" class="text-decoration-none">Редактировать</a>
-
-                        @if (document.LoginAuthor == loginAuthor)
+                        @if (document.IsNotDeletedDocument)
                         {
-                            <a asp-action="Delete" asp-route-id="@document.Id" class="text-decoration-none">Удалить</a>
+                            <a asp-action="Edit" asp-route-id="@document.Id" class="btn btn-link text-primary p-2 text-decoration-none" title="Редактировать задачу">
+                                <i class="fas fa-edit fa-lg"></i>
+                            </a>
+                        }
+
+                        @if (document.IsNotDeletedDocument)
+                        {
+                            @if (document.IsCompleted)
+                            {
+                                <form asp-action="ChangeStatusTask" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@document.Id" />
+                                    <button type="submit" class="btn btn-link text-warning p-2 text-decoration-none" title="Открыть задачу">
+                                        <i class="fas fa-lock-open fa-lg"></i>
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-action="ChangeStatusTask" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@document.Id" />
+                                    <button type="submit" class="btn btn-link text-success p-2 text-decoration-none" title="Закрыть задачу">
+                                        <i class="fas fa-lock fa-lg"></i>
+                                    </button>
+                                </form>
+                            }
+                        }
+
+                        @if (authService.IsAuthenticated() && !document.IsNotDeletedDocument)
+                        {
+                            <form asp-action="RecoverDeletedTask" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@document.Id" />
+                                <button type="submit" class="btn btn-link text-success p-2 text-decoration-none" title="Восстановить запись">
+                                    <i class="fas fa-undo-alt fa-lg"></i>
+                                </button>
+                            </form>
+                        }
+
+                        @if (authService.IsAuthenticated() || document.LoginAuthor == loginAuthor)
+                        {
+                            <a asp-action="Delete" asp-route-id="@document.Id" class="btn btn-link text-danger p-2 text-decoration-none" title="Удалить">
+                                <i class="fas fa-trash-alt fa-lg"></i>
+                            </a>
                         }
                     </td>
                 </tr>

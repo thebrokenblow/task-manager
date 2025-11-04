@@ -1,19 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using TaskManager.Filters;
 using TaskManager.Models;
 using TaskManager.Queries.Interfaces;
 using TaskManager.Repositories.Interfaces;
+using TaskManager.Services;
 using TaskManager.ViewModel;
 
 namespace TaskManager.Controllers;
 
 public class DocumentsController(
+        AuthService authService,
         IDocumentRepository documentRepository,
         IDocumentQuery documentQuery,
         IEmployeeRepository employeeRepository) : Controller
 {
     private const int defaultNumberPage = 1;
-    private const int defaultCountDocumentsOnPage = 25;
+    private const int defaultCountDocumentsOnPage = 50;
 
     [HttpGet]
     public async Task<IActionResult> Index(
@@ -21,7 +24,17 @@ public class DocumentsController(
         int page = defaultNumberPage,
         int pageSize = defaultCountDocumentsOnPage) 
     {
-        var (documents, countDocuments) = await documentQuery.GetFilteredRangeAsync(inputSearch, (page - 1) * pageSize, pageSize);
+        int countDocuments;
+        List<FilteredRangeDocument> documents;
+
+        if (string.IsNullOrWhiteSpace(inputSearch))
+        {
+            (documents, countDocuments) = await documentQuery.GetRangeAsync((page - 1) * pageSize, pageSize);
+        }
+        else
+        {
+            (documents, countDocuments) = await documentQuery.GetFilteredRangeAsync(inputSearch, (page - 1) * pageSize, pageSize);
+        }
 
         var paginationViewModel = new PaginationViewModel
         {
@@ -107,6 +120,7 @@ public class DocumentsController(
     }
 
     [HttpGet]
+    [AuthenticationDelete]
     public async Task<IActionResult> Delete(int id)
     {
         var document = await documentQuery.GetDetailsByIdAsync(id);
@@ -119,6 +133,20 @@ public class DocumentsController(
         return View(document);
     }
 
+    public async Task<IActionResult> RecoverDeletedTask(int id)
+    {
+        var document = await documentQuery.GetDetailsByIdAsync(id);
+
+        if (document == null)
+        {
+            return NotFound();
+        }
+
+        await documentRepository.RecoverDeletedTaskAsync(document);
+
+        return RedirectToAction(nameof(Index));
+    }
+
     [HttpPost]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
@@ -129,7 +157,31 @@ public class DocumentsController(
             return NotFound();
         }
 
-        await documentRepository.RemoveAsync(document);
+        if (authService.IsAuthenticated())
+        {
+            await documentRepository.RemoveAsync(document);
+        }
+        else
+        {
+            await documentRepository.ChangeAuthorAsync(document, "admin");
+
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ChangeStatusTask(int id)
+    {
+        var document = await documentRepository.GetByIdAsync(id);
+
+        if (document == null)
+        {
+            return NotFound();
+        }
+
+        document.IsCompleted = !document.IsCompleted;
+        await documentRepository.UpdateAsync(document);
 
         return RedirectToAction(nameof(Index));
     }

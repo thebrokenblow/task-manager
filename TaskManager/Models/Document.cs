@@ -123,4 +123,8 @@ public class Document
     /// Дата удаления документа
     /// </summary>
     public DateTime? DateRemove { get; set; }
+
+    public bool IsNotDeletedDocument =>
+        LoginAuthor != "admin" &&
+        DateRemove == null;
 }
