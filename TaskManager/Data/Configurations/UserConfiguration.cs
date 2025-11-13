@@ -8,13 +8,20 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.ToTable("users");
+        builder
+            .ToTable("users");
 
-        builder.HasKey(user => user.Id);
+        builder
+            .HasKey(user => user.Id);
 
         builder
             .Property(user => user.Id)
             .HasColumnName("id");
+
+        builder
+           .Property(user => user.Login)
+           .IsRequired()
+           .HasColumnName("login");
 
         builder
             .Property(user => user.Password)

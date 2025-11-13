@@ -1,5 +1,9 @@
 ﻿@model TaskManager.Models.Document
+
 @using TaskManager.ViewModel
+@using TaskManager.Services.Interfaces
+
+@inject IAuthService authService
 
 @{
     ViewData["Title"] = "Редактирование Документа";
@@ -9,7 +13,7 @@
         throw new Exception();
     }
 
-    var isReadOnly = Model.LoginAuthor != Environment.UserName;
+    var isReadOnly = Model.IdAuthorCreateDocument != authService.CurrentUserId;
 }
 
 <style>
@@ -33,7 +37,7 @@
     <div class="card-body">
         <form method="post" asp-action="Edit" class="row g-3">
             <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="LoginAuthor" />
+            <input type="hidden" asp-for="IdAuthorCreateDocument" />
 
             <!-- Исходные данные документа -->
             <div class="col-12">
@@ -155,19 +159,20 @@
                     <label class="form-label" style="min-width: 215px;">Ответственный сотрудник</label>
                     @if (isReadOnly || Model.IsCompleted)
                     {
-                        <select asp-for="SourceResponsibleEmployeeId"
+                        <select asp-for="IdSourceResponsibleEmployee"
                                 class="form-control readonly-disabled"
                                 asp-items="selecListEmployees"
                                 readonly>
                             <option value="">Выберите сотрудника</option>
                         </select>
-                        <input type="hidden" asp-for="SourceResponsibleEmployeeId" />
+                        <input type="hidden" asp-for="IdSourceResponsibleEmployee" />
                     }
                     else
                     {
-                        <select asp-for="SourceResponsibleEmployeeId"
+                        <select asp-for="IdSourceResponsibleEmployee"
                                 class="form-control"
-                                asp-items="selecListEmployees">
+                                asp-items="selecListEmployees"
+                                required>
                             <option value="">Выберите сотрудника</option>
                         </select>
                     }

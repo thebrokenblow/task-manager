@@ -1,15 +1,20 @@
-﻿@using TaskManager.Services
+﻿@using TaskManager.Models
+@using TaskManager.Repositories.Interfaces
+@using TaskManager.Services
+@using TaskManager.Services.Interfaces
 @using TaskManager.ViewModel
 
 @model IndexDocumentViewModel
-@inject AuthService authService
+@inject IAuthService authService
+@inject IUserRepository userRepository
+
 @{
     ViewData["Title"] = "Документы";
 
     var statusInactiveButton = "disabled";
     var pageSizeItems = new List<int> { 50, 75, 100, 200 };
 
-    var loginAuthor = Environment.UserName;
+    var idAdmin = await userRepository.GetIdByLoginAsync(AuthService.AdminLogin);
 }
 
 @functions {
@@ -57,12 +62,15 @@
     }
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Документы</h1>
-    <a asp-action="Create" class="btn btn-success">
-        <i class="bi bi-plus-circle"></i> Создать документ
-    </a>
-</div>
+@if (authService.IsAuthenticated)
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Документы</h1>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Создать документ
+        </a>
+    </div>
+}
 
 <!-- Форма поиска -->
 <div class="card mb-4">
@@ -124,14 +132,21 @@
                     <td class="@IsSpecialDocument(document)">@document.OutputOutgoingNumber</td>
                     <td class="@IsSpecialDocument(document)">@document.OutputOutgoingDate</td>
                     <td>
-                        @if (document.IsNotDeletedDocument)
+                        @*
+                            Документ считается удалённым, если автор создания задачи считается admin и автор удаления удаления известен
+                        *@
+                        @{
+                            var isDeletedDocument = document.IdAuthorCreateDocument == idAdmin && document.IdAuthorRemoveDocument != null;
+                        }
+
+                        @if (!isDeletedDocument)
                         {
                             <a asp-action="Edit" asp-route-id="@document.Id" class="btn btn-link text-primary p-2 text-decoration-none" title="Редактировать задачу">
                                 <i class="fas fa-edit fa-lg"></i>
                             </a>
                         }
 
-                        @if (document.IsNotDeletedDocument)
+                        @if (!isDeletedDocument)
                         {
                             @if (document.IsCompleted)
                             {
@@ -153,7 +168,7 @@
                             }
                         }
 
-                        @if (authService.IsAuthenticated() && !document.IsNotDeletedDocument)
+                        @if (authService.IsAuthenticated && isDeletedDocument)
                         {
                             <form asp-action="RecoverDeletedTask" method="post" class="d-inline">
                                 <input type="hidden" name="id" value="@document.Id" />
@@ -163,7 +178,7 @@
                             </form>
                         }
 
-                        @if (authService.IsAuthenticated() || document.LoginAuthor == loginAuthor)
+                        @if (authService.IsAdmin || document.IdAuthorCreateDocument == authService.CurrentUserId)
                         {
                             <a asp-action="Delete" asp-route-id="@document.Id" class="btn btn-link text-danger p-2 text-decoration-none" title="Удалить">
                                 <i class="fas fa-trash-alt fa-lg"></i>

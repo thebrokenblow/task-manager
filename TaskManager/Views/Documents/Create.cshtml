@@ -79,9 +79,10 @@
             <div class="col-12">
                 <div class="d-flex align-items-center gap-1">
                     <label class="form-label" style="min-width: 215px;">Ответственный сотрудник</label>
-                    <select asp-for="SourceResponsibleEmployeeId"
+                    <select asp-for="IdSourceResponsibleEmployee"
                             class="form-control"
-                            asp-items="selecListEmployees">
+                            asp-items="selecListEmployees"
+                            required>
                         <option value="">Выберите сотрудника</option>
                     </select>
                 </div>

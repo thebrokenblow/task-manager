@@ -1,6 +1,4 @@
-﻿using TaskManager.Controllers;
-
-namespace TaskManager.Models;
+﻿namespace TaskManager.Models;
 
 /// <summary>
 /// Представляет документ в системе документооборота
@@ -66,7 +64,7 @@ public class Document
     /// Идентификатор ответственного сотрудника
     /// Обязательное поле
     /// </summary>
-    public required int SourceResponsibleEmployeeId { get; set; }
+    public required int IdSourceResponsibleEmployee { get; set; }
 
     /// <summary>
     /// Ответственный сотрудник
@@ -111,22 +109,29 @@ public class Document
     public bool IsCompleted { get; set; }
 
     /// <summary>
-    /// Логин автора задания
+    /// Идентификатор пользователя, который создал запись
     /// Обязательное поле
     /// </summary>
-    public required string LoginAuthor { get; set; }
+    public required int IdAuthorCreateDocument { get; set; }
 
     /// <summary>
-    /// Автор, удаливший документ
+    /// Навигационно свойство пользователя, который создал запись 
     /// </summary>
-    public string? AuthorRemoveDocument { get; set; }
+    public User? AuthorCreateDocument { get; set; }
+
+    /// <summary>
+    /// Идентификатор пользователя, который удалил запись
+    /// Обязательное поле
+    /// </summary>
+    public required int? IdAuthorRemoveDocument { get; set; }
+
+    /// <summary>
+    /// Навигационно свойство пользователя, который удалил запись
+    /// </summary>
+    public User? AuthorRemoveDocument { get; set; }
 
     /// <summary>
     /// Дата удаления документа
     /// </summary>
     public DateTime? DateRemove { get; set; }
-
-    public bool IsNotDeletedDocument =>
-        LoginAuthor != AccountsController.AdminLogin &&
-        DateRemove == null;
 }

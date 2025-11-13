@@ -13,5 +13,7 @@ public interface IUserRepository
     /// </summary>
     /// <param name="password">Пароль пользователя.</param>
     /// <returns>Задача, результатом которой является сущность пользователя или null если не найден.</returns>
-    Task<User?> GetByPasswordAsync(string password);
+    Task<User?> GetByLoginAsync(string login);
+
+    Task<int?> GetIdByLoginAsync(string login); 
 }

@@ -39,7 +39,7 @@ public class FilteredRangeDocument
     /// Идентификатор ответственного сотрудника из исходных данных
     /// Обязательное поле
     /// </summary>
-    public required int SourceResponsibleEmployeeId { get; set; }
+    public required int IdSourceResponsibleEmployee { get; set; }
 
     /// <summary>
     /// Ответственный сотрудник из исходных данных
@@ -64,10 +64,10 @@ public class FilteredRangeDocument
     public bool IsUnderControl { get; set; }
 
     /// <summary>
-    /// Логин автора задания
+    /// Идентификатор пользователя, который создал запись
     /// Обязательное поле
     /// </summary>
-    public required string LoginAuthor { get; set; }
+    public required int IdAuthorCreateDocument { get; set; }
 
     /// <summary>
     /// Признак завершения задачи
@@ -79,7 +79,9 @@ public class FilteredRangeDocument
     /// </summary>
     public DateTime? DateRemove { get; set; }
 
-    public bool IsNotDeletedDocument => 
-        LoginAuthor != AccountsController.AdminLogin && 
-        DateRemove == null;
+    /// <summary>
+    /// Идентификатор пользователя, который удалил запись
+    /// Обязательное поле
+    /// </summary>
+    public int? IdAuthorRemoveDocument { get; set; }
 }

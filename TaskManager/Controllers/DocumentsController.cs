@@ -5,12 +5,14 @@ using TaskManager.Models;
 using TaskManager.Queries.Interfaces;
 using TaskManager.Repositories.Interfaces;
 using TaskManager.Services;
+using TaskManager.Services.Interfaces;
 using TaskManager.ViewModel;
 
 namespace TaskManager.Controllers;
 
 public class DocumentsController(
-        AuthService authService,
+        IAuthService authService,
+        IUserRepository userRepository,
         IDocumentRepository documentRepository,
         IDocumentQuery documentQuery,
         IEmployeeRepository employeeRepository) : Controller
@@ -27,13 +29,17 @@ public class DocumentsController(
         int countDocuments;
         List<FilteredRangeDocument> documents;
 
-        if (string.IsNullOrWhiteSpace(inputSearch))
+        if (authService.IsAdmin)
         {
-            (documents, countDocuments) = await documentQuery.GetRangeAsync((page - 1) * pageSize, pageSize);
+            (documents, countDocuments) = await documentQuery.GetDeletedRangeAsync((page - 1) * pageSize, pageSize);
+        }
+        else if (!string.IsNullOrWhiteSpace(inputSearch))
+        {
+            (documents, countDocuments) = await documentQuery.GetFilteredRangeAsync(inputSearch, (page - 1) * pageSize, pageSize);
         }
         else
         {
-            (documents, countDocuments) = await documentQuery.GetFilteredRangeAsync(inputSearch, (page - 1) * pageSize, pageSize);
+            (documents, countDocuments) = await documentQuery.GetRangeAsync((page - 1) * pageSize, pageSize);
         }
 
         var paginationViewModel = new PaginationViewModel
@@ -55,6 +61,7 @@ public class DocumentsController(
     }
 
     [HttpGet]
+    [AuthenticatedUser]
     public async Task<IActionResult> Create()
     {
         var employees = await employeeRepository.GetAllAsync();
@@ -78,9 +85,14 @@ public class DocumentsController(
     [HttpPost]
     public async Task<IActionResult> Create(Document document)
     {
-        document.LoginAuthor = Environment.UserName;
+        if (authService.CurrentUserId is null)
+        {
+            return RedirectToAction("Index", "Accounts");
+        }
 
+        document.IdAuthorCreateDocument = authService.CurrentUserId.Value;
         await documentRepository.AddAsync(document);
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -120,7 +132,7 @@ public class DocumentsController(
     }
 
     [HttpGet]
-    [AuthenticationDelete]
+    [DocumentOwnerAuthorization]
     public async Task<IActionResult> Delete(int id)
     {
         var document = await documentQuery.GetDetailsByIdAsync(id);
@@ -148,6 +160,7 @@ public class DocumentsController(
     }
 
     [HttpPost]
+    [DocumentOwnerAuthorization]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var document = await documentRepository.GetByIdAsync(id);
@@ -157,14 +170,17 @@ public class DocumentsController(
             return NotFound();
         }
 
-        if (authService.IsAuthenticated())
+        if (authService.IsAdmin)
         {
             await documentRepository.RemoveAsync(document);
         }
-        else
-        {
-            await documentRepository.ChangeAuthorAsync(document, AccountsController.AdminLogin);
 
+        if (authService.IsAuthenticated)
+        {
+            var adminId = await userRepository.GetIdByLoginAsync(AuthService.AdminLogin) ??
+                    throw new Exception();
+
+            await documentRepository.ChangeAuthorAsync(document, adminId);
         }
 
         return RedirectToAction(nameof(Index));

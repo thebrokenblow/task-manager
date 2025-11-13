@@ -63,14 +63,14 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
             .IsRequired();
 
         builder
-            .Property(document => document.SourceResponsibleEmployeeId)
-            .HasColumnName("source_responsible_employee_id")
+            .Property(document => document.IdSourceResponsibleEmployee)
+            .HasColumnName("id_source_responsible_employee")
             .IsRequired();
 
         builder
             .HasOne(document => document.SourceResponsibleEmployee)
             .WithMany()
-            .HasForeignKey(document => document.SourceResponsibleEmployeeId)
+            .HasForeignKey(document => document.IdSourceResponsibleEmployee)
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
 
@@ -105,16 +105,32 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
             .IsRequired();
 
         builder
-            .Property(document => document.LoginAuthor)
-            .HasColumnName("login_author")
+            .Property(document => document.IdAuthorCreateDocument)
+            .HasColumnName("id_author_create_document")
             .IsRequired();
 
         builder
-            .Property(document => document.AuthorRemoveDocument)
-            .HasColumnName("author_remove_document");
+            .HasOne(document => document.AuthorCreateDocument)
+            .WithMany()
+            .HasForeignKey(document => document.IdAuthorCreateDocument)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
+
+        builder
+            .Property(document => document.IdAuthorRemoveDocument)
+            .HasColumnName("id_author_remove_document")
+            .IsRequired(false);
+
+        builder
+            .HasOne(document => document.AuthorRemoveDocument)
+            .WithMany()
+            .HasForeignKey(document => document.IdAuthorRemoveDocument)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
 
         builder
             .Property(document => document.DateRemove)
-            .HasColumnName("date_remove");
+            .HasColumnName("date_remove")
+            .IsRequired(false);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TaskManager.Filters;
 using TaskManager.Models;
 using TaskManager.Repositories.Interfaces;
 
@@ -15,6 +16,7 @@ public class EmployeesController(IEmployeeRepository employeeRepository) : Contr
     }
 
     [HttpPost]
+    [AuthenticationAdmin]
     public async Task<IActionResult> Create(Employee employee)
     {
         await employeeRepository.AddAsync(employee);

@@ -11,6 +11,11 @@ public class User
     public int Id { get; set; }
 
     /// <summary>
+    /// Логин пользователя
+    /// </summary>
+    public required string Login { get; set; }
+
+    /// <summary>
     /// Пароль пользователя
     /// </summary>
     public required string Password { get; set; }

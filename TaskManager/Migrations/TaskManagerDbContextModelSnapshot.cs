@@ -31,13 +31,21 @@ namespace TaskManager.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AuthorRemoveDocument")
-                        .HasColumnType("text")
-                        .HasColumnName("author_remove_document");
-
                     b.Property<DateTime?>("DateRemove")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("date_remove");
+
+                    b.Property<int>("IdAuthorCreateDocument")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_author_create_document");
+
+                    b.Property<int?>("IdAuthorRemoveDocument")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_author_remove_document");
+
+                    b.Property<int>("IdSourceResponsibleEmployee")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_source_responsible_employee");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("boolean")
@@ -46,11 +54,6 @@ namespace TaskManager.Migrations
                     b.Property<bool>("IsUnderControl")
                         .HasColumnType("boolean")
                         .HasColumnName("is_under_control");
-
-                    b.Property<string>("LoginAuthor")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("login_author");
 
                     b.Property<DateOnly?>("OutputOutgoingDate")
                         .HasColumnType("date")
@@ -103,10 +106,6 @@ namespace TaskManager.Migrations
                         .HasColumnType("text")
                         .HasColumnName("source_output_document_number");
 
-                    b.Property<int>("SourceResponsibleEmployeeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("source_responsible_employee_id");
-
                     b.Property<string>("SourceTaskText")
                         .IsRequired()
                         .HasColumnType("text")
@@ -114,7 +113,11 @@ namespace TaskManager.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SourceResponsibleEmployeeId");
+                    b.HasIndex("IdAuthorCreateDocument");
+
+                    b.HasIndex("IdAuthorRemoveDocument");
+
+                    b.HasIndex("IdSourceResponsibleEmployee");
 
                     b.ToTable("documents", (string)null);
                 });
@@ -152,6 +155,11 @@ namespace TaskManager.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("login");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("text")
@@ -164,11 +172,26 @@ namespace TaskManager.Migrations
 
             modelBuilder.Entity("TaskManager.Models.Document", b =>
                 {
-                    b.HasOne("TaskManager.Models.Employee", "SourceResponsibleEmployee")
+                    b.HasOne("TaskManager.Models.User", "AuthorCreateDocument")
                         .WithMany()
-                        .HasForeignKey("SourceResponsibleEmployeeId")
+                        .HasForeignKey("IdAuthorCreateDocument")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("TaskManager.Models.User", "AuthorRemoveDocument")
+                        .WithMany()
+                        .HasForeignKey("IdAuthorRemoveDocument")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TaskManager.Models.Employee", "SourceResponsibleEmployee")
+                        .WithMany()
+                        .HasForeignKey("IdSourceResponsibleEmployee")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AuthorCreateDocument");
+
+                    b.Navigation("AuthorRemoveDocument");
 
                     b.Navigation("SourceResponsibleEmployee");
                 });

@@ -1,4 +1,9 @@
-﻿@model List<Employee>
+﻿@using TaskManager.Models
+@using TaskManager.Services
+@using TaskManager.Services.Interfaces
+
+@model List<Employee>
+@inject IAuthService authService
 
 @{
     ViewData["Title"] = "Сотрудники";
@@ -33,7 +38,11 @@
                         @employee.Department
                     </td>
                     <td>
-                        <a asp-controller="Employees" asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-link text-primary p-2 text-decoration-none" title="Редактировать">
+                        <a asp-controller="Employees" 
+                           asp-action="Edit" 
+                           asp-route-id="@employee.Id" 
+                           class="btn btn-link text-primary p-2 text-decoration-none" 
+                           title="Редактировать">
                             <i class="fas fa-edit fa-lg"></i>
                         </a>
                     </td>
@@ -47,24 +56,31 @@ else
     <h2>По вашему запросу ничего не найдено</h2>
 }
 
-<!-- Форма добавления нового сотрудника -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h5 class="mb-0">Добавить нового сотрудника</h5>
+
+@if (authService.IsAdmin)
+{
+    <!-- Форма добавления нового сотрудника -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Добавить нового сотрудника</h5>
+        </div>
+        <div class="card-body">
+            <form method="post"
+            asp-action="Create"
+            asp-controller="Employees"
+            class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Фамилия и инициалы *</label>
+                    <input type="text" class="form-control" id="FullName" name="FullName" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Подразделение *</label>
+                    <input type="text" class="form-control" id="Department" name="Department" required>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-success">Добавить сотрудника</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="card-body">
-        <form method="post" asp-action="Create" asp-controller="Employees" class="row g-3">
-            <div class="col-md-3">
-                <label class="form-label">Фамилия и инициалы *</label>
-                <input type="text" class="form-control" id="FullName" name="FullName" required>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Подразделение</label>
-                <input type="text" class="form-control" id="Department" name="Department">
-            </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-success">Добавить сотрудника</button>
-            </div>
-        </form>
-    </div>
-</div>
+}
