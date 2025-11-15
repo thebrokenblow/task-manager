@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using TaskManager.Filters;
-using TaskManager.Models;
-using TaskManager.Queries.Interfaces;
-using TaskManager.Repositories.Interfaces;
-using TaskManager.Services;
-using TaskManager.Services.Interfaces;
-using TaskManager.ViewModel;
+using TaskManager.Domain.Entities;
+using TaskManager.Domain.Interfaces.Queries;
+using TaskManager.Domain.Interfaces.Repositories;
+using TaskManager.Domain.Interfaces.Services;
+using TaskManager.Domain.QueryModels;
+using TaskManager.View.Filters;
+using TaskManager.View.Services;
+using TaskManager.View.ViewModel;
 
-namespace TaskManager.Controllers;
+namespace TaskManager.View.Controllers;
 
 public class DocumentsController(
         IAuthService authService,
@@ -26,7 +27,7 @@ public class DocumentsController(
         int pageSize = defaultCountDocumentsOnPage) 
     {
         int countDocuments;
-        List<FilteredRangeDocument> documents;
+        List<FilteredRangeDocumentModel> documents;
 
         if (authService.IsAdmin)
         {
@@ -65,7 +66,7 @@ public class DocumentsController(
     {
         var employees = await employeeRepository.GetAllAsync();
 
-        var employeesForSelect = employees.Select(employee => new EmployeeForSelect
+        var employeesForSelect = employees.Select(employee => new SelectedEmployeeModel
         {
             Id = employee.Id,
             FullNameAndDepartment = $"{employee.FullName} ({employee.Department})"
@@ -73,10 +74,10 @@ public class DocumentsController(
 
         var selectListEmployees = new SelectList(
                                         employeesForSelect,
-                                        nameof(EmployeeForSelect.Id),
-                                        nameof(EmployeeForSelect.FullNameAndDepartment));
+                                        nameof(SelectedEmployeeModel.Id),
+                                        nameof(SelectedEmployeeModel.FullNameAndDepartment));
 
-        ViewData[nameof(EmployeeForSelect)] = selectListEmployees;
+        ViewData[nameof(SelectedEmployeeModel)] = selectListEmployees;
 
         return View();
     }
@@ -106,7 +107,7 @@ public class DocumentsController(
 
         var employees = await employeeRepository.GetAllAsync();
 
-        var employeesForSelect = employees.Select(employee => new EmployeeForSelect
+        var employeesForSelect = employees.Select(employee => new SelectedEmployeeModel
         {
             Id = employee.Id,
             FullNameAndDepartment = $"{employee.FullName} ({employee.Department})"
@@ -114,10 +115,10 @@ public class DocumentsController(
 
         var selectListEmployees = new SelectList(
                                         employeesForSelect,
-                                        nameof(EmployeeForSelect.Id),
-                                        nameof(EmployeeForSelect.FullNameAndDepartment));
+                                        nameof(SelectedEmployeeModel.Id),
+                                        nameof(SelectedEmployeeModel.FullNameAndDepartment));
 
-        ViewData[nameof(EmployeeForSelect)] = selectListEmployees;
+        ViewData[nameof(SelectedEmployeeModel)] = selectListEmployees;
 
         return View(document);
     }

@@ -1,4 +1,4 @@
-﻿namespace TaskManager.Utils;
+﻿namespace TaskManager.View.Utils;
 
 public static class NameController
 {

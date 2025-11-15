@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using TaskManager.Controllers;
 using TaskManager.Repositories.Interfaces;
-using TaskManager.Services.Interfaces;
-using TaskManager.Utils;
+using TaskManager.View.Controllers;
+using TaskManager.View.Services.Interfaces;
+using TaskManager.View.Utils;
 
-namespace TaskManager.Filters;
+namespace TaskManager.View.Filters;
 
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
 public class DocumentOwnerAuthorizationAttribute : Attribute, IAsyncAuthorizationFilter

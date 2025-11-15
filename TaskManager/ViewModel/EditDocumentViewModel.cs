@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using TaskManager.Models;
+using Microsoft.CodeAnalysis;
 
-namespace TaskManager.ViewModel;
+namespace TaskManager.View.ViewModel;
 
 public class EditDocumentViewModel
 {
