@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using TaskManager.Data;
-using TaskManager.Queries;
+using TaskManager.Persistence.Queries;
+using TaskManager.Persistence.Repositories;
 using TaskManager.Queries.Interfaces;
-using TaskManager.Repositories;
 using TaskManager.Repositories.Interfaces;
-using TaskManager.Services;
-using TaskManager.Services.Interfaces;
+using TaskManager.View.Data;
+using TaskManager.View.Services;
+using TaskManager.View.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

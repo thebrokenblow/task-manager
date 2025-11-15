@@ -1,18 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
-using TaskManager.Models;
-using TaskManager.Repositories.Interfaces;
-using TaskManager.Services.Interfaces;
-using TaskManager.ViewModel;
+using TaskManager.Domain.Entities.Dictionaries;
+using TaskManager.Domain.Interfaces.Repositories;
+using TaskManager.Domain.Interfaces.Services;
+using TaskManager.Domain.Models;
 
-namespace TaskManager.Services;
+namespace TaskManager.View.Services;
 
 public class AuthService(
     IEmployeeRepository employeeRepository,
     IHttpContextAccessor httpContextAccessor) : IAuthService
 {
-    public const int IdAdmin = 1;
+    public int AdminId => 1;
 
     public bool IsAuthenticated =>
         _httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
@@ -44,7 +44,7 @@ public class AuthService(
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor ??
             throw new ArgumentNullException(nameof(httpContextAccessor), "httpContextAccessor is null");
 
-    public async Task<bool> LoginAsync(LoginViewModel loginViewModel)
+    public async Task<bool> LoginAsync(LoginModel loginViewModel)
     {
         var user = await _employeeRepository.GetByLoginAsync(loginViewModel.Login);
 

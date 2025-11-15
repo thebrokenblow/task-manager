@@ -1,4 +1,4 @@
-﻿namespace TaskManager.ViewModel;
+﻿namespace TaskManager.View.ViewModel;
 
 public class PasswordViewModel
 {
