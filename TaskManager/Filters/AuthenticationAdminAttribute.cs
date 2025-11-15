@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using TaskManager.View.Services.Interfaces;
+using TaskManager.Services.Interfaces;
 
-namespace TaskManager.View.Filters;
+namespace TaskManager.Filters;
 
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
 public class AuthenticationAdminAttribute : Attribute, IAuthorizationFilter

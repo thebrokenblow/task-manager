@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TaskManager.Filters;
+using TaskManager.Models;
+using TaskManager.Repositories.Interfaces;
+using TaskManager.ViewModel;
 
-namespace TaskManager.View.Controllers;
+namespace TaskManager.Controllers;
 
 public class EmployeesController(IEmployeeRepository employeeRepository) : Controller
 {

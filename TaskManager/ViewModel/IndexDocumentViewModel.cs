@@ -1,10 +1,10 @@
-﻿using TaskManager.Domain.QueryModels;
+﻿using TaskManager.Models;
 
-namespace TaskManager.View.ViewModel;
+namespace TaskManager.ViewModel;
 
 public class IndexDocumentViewModel
 {
+    public required List<FilteredRangeDocument> Documents { get; init; }
     public required string InputString { get; init; }
     public required PaginationViewModel PaginationViewModel { get; init; }
-    public required List<FilteredRangeDocumentModel> Documents { get; init; }
 }

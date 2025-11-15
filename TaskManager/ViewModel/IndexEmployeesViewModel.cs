@@ -1,6 +1,6 @@
-﻿using TaskManager.Domain.Entities;
+﻿using TaskManager.Models;
 
-namespace TaskManager.View.ViewModel;
+namespace TaskManager.ViewModel;
 
 public class IndexEmployeesViewModel
 {

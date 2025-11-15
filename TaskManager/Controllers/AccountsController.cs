@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TaskManager.Domain.Interfaces.Repositories;
-using TaskManager.Domain.Interfaces.Services;
-using TaskManager.Domain.Models;
-using TaskManager.View.Utils;
-using TaskManager.View.ViewModel;
+using TaskManager.Repositories.Interfaces;
+using TaskManager.Services.Interfaces;
+using TaskManager.Utils;
+using TaskManager.ViewModel;
 
-namespace TaskManager.View.Controllers;
+namespace TaskManager.Controllers;
 
 [AllowAnonymous]
 public class AccountsController(
@@ -26,9 +25,9 @@ public class AccountsController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login(LoginModel loginModel, string? returnUrl = null)
+    public async Task<IActionResult> Login(LoginViewModel loginViewModel, string? returnUrl = null)
     {
-        var success = await authService.LoginAsync(loginModel);
+        var success = await authService.LoginAsync(loginViewModel);
 
         if (success)
         {
@@ -41,7 +40,7 @@ public class AccountsController(
         }
 
         ModelState.AddModelError("", "Неверный логин или пароль");
-        return View(loginModel);
+        return View(loginViewModel);
     }
 
     [HttpPost]

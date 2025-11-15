@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using TaskManager.View.Controllers;
-using TaskManager.View.Services.Interfaces;
-using TaskManager.View.Utils;
+using TaskManager.Controllers;
+using TaskManager.Services.Interfaces;
+using TaskManager.Utils;
 
-namespace TaskManager.View.Filters;
+namespace TaskManager.Filters;
 
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
 public class AuthenticatedUserAttribute : Attribute, IAuthorizationFilter
