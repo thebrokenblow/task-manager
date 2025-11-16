@@ -5,19 +5,14 @@ namespace TaskManager.Domain.Interfaces.Queries;
 
 public interface IDocumentQuery
 {
-    Task<(List<FilteredRangeDocumentModel> documents, int countDocuments)> GetRangeAsync(
+    Task<(List<DocumentOverviewModel> documents, int countDocuments)> GetActiveDocumentsAsync(
         int countSkip,
         int countTake);
 
-    Task<(List<FilteredRangeDocumentModel> documents, int countDocuments)> GetDeletedRangeAsync(
-        string inputSearch,
+    Task<(List<DocumentOverviewModel> documents, int countDocuments)> SearchDocumentsAsync(
+        string searchTerm,
         int countSkip,
         int countTake);
 
-    Task<(List<FilteredRangeDocumentModel> documents, int countDocuments)> GetFilteredRangeAsync(
-        string inputSearch, 
-        int countSkip, 
-        int countTake);
-
-    Task<Document?> GetDetailsByIdAsync(int id);
+    Task<Document?> GetDocumentByIdAsync(int id);
 }

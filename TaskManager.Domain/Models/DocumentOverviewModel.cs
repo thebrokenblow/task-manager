@@ -2,7 +2,7 @@
 
 namespace TaskManager.Domain.Models;
 
-public class FilteredRangeDocumentModel
+public class DocumentOverviewModel
 {
     /// <summary>
     /// Уникальный идентификатор документа
