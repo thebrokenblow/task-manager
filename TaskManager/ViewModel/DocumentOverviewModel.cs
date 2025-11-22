@@ -1,8 +1,14 @@
-﻿using TaskManager.Domain.Entities;
+﻿using TaskManager.Controllers;
 
+<<<<<<<< HEAD:TaskManager/ViewModel/DocumentOverviewModel.cs
 namespace TaskManager.Domain.Models;
 
 public class DocumentOverviewModel
+========
+namespace TaskManager.Models;
+
+public class FilteredRangeDocument
+>>>>>>>> 82971907aa47c5a90b270b82a3d0e787f6f81a10:TaskManager/Models/FilteredRangeDocument.cs
 {
     /// <summary>
     /// Уникальный идентификатор документа
