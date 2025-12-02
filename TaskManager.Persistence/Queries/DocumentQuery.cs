@@ -37,6 +37,8 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
                                                     : null,
 
                                                 RemovedByEmployeeId = document.RemovedByEmployeeId,
+                                                RemoveDateTime = document.RemoveDateTime,
+
                                                 IsCompleted = document.IsCompleted,
                                                 IsUnderControl = document.IsUnderControl,
                                             })
@@ -85,6 +87,7 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
                                                     null,
 
                                                 RemovedByEmployeeId = document.RemovedByEmployeeId,
+                                                RemoveDateTime = document.RemoveDateTime,
                                                 IsCompleted = document.IsCompleted,
                                                 IsUnderControl = document.IsUnderControl,
                                             })
@@ -125,6 +128,8 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
                                                     document.LastEditedByEmployee.FullName : 
                                                     null,
 
+                                        RemovedByEmployeeId = document.RemovedByEmployeeId,
+                                        RemoveDateTime = document.RemoveDateTime,
                                         LastEditedDateTime = document.LastEditedDateTime,
                                         CreatedByEmployeeId = document.CreatedByEmployeeId,
                                     })

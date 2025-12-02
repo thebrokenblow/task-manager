@@ -130,4 +130,6 @@ public class DocumentForEditModel
     /// Обязательное свойство.
     /// </summary>
     public required int CreatedByEmployeeId { get; set; }
+    public int? RemovedByEmployeeId { get; set; }
+    public DateTime? RemoveDateTime { get; set; }
 }

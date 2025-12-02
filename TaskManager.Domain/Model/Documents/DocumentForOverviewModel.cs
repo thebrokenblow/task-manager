@@ -62,5 +62,5 @@ public class DocumentForOverviewModel
     public required bool IsCompleted { get; set; }
 
     public required int? RemovedByEmployeeId { get; set; }
-
+    public required DateTime? RemoveDateTime { get; set; }
 }

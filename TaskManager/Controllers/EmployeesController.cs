@@ -3,7 +3,6 @@ using System.Text.Json;
 using TaskManager.Application.Exceptions;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Domain.Entities;
-using TaskManager.Domain.Exceptions;
 using TaskManager.View.Filters;
 using TaskManager.View.Utils;
 using TaskManager.View.ViewModel.Employees;

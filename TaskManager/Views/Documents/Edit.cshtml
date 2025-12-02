@@ -8,6 +8,10 @@
     ViewData["Title"] = "Редактирование Документа";
 
     var isNotReadonly = !Model.Document.IsCompleted && (authService.IsAdmin || authService.IdCurrentUser == Model.Document.CreatedByEmployeeId);
+
+    var isDeletedDocuemnt = Model.Document.CreatedByEmployeeId == authService.IdAdmin && 
+                            Model.Document.RemovedByEmployeeId != null && 
+                            Model.Document.RemoveDateTime != null;
 }
 
 @functions {
@@ -89,21 +93,21 @@
                                         Исх.:
                                     </label>
 
-                                    @if (isNotReadonly)
-                                    {
-                                        <input type="text"
-                                               class="form-control"
-                                               name="OutgoingDocumentNumberInputDocument"
-                                               value="@Model.Document.OutgoingDocumentNumberInputDocument"
-                                               placeholder="Введите исходящий номер">
-                                    }
-                                    else
+                                    @if (!isNotReadonly || isDeletedDocuemnt)
                                     {
                                         <input type="text"
                                                class="form-control readonly-disabled"
                                                name="OutgoingDocumentNumberInputDocument"
                                                value="@Model.Document.OutgoingDocumentNumberInputDocument"
                                                readonly>
+                                    }
+                                    else
+                                    {
+                                        <input type="text"
+                                               class="form-control"
+                                               name="OutgoingDocumentNumberInputDocument"
+                                               value="@Model.Document.OutgoingDocumentNumberInputDocument"
+                                               placeholder="Введите исходящий номер">
                                     }
                                 </div>
 
@@ -112,20 +116,20 @@
                                         Дата:
                                     </label>
 
-                                    @if (isNotReadonly)
-                                    {
-                                        <input type="date"
-                                               class="form-control"
-                                               name="SourceDocumentDateInputDocument"
-                                               value="@FormatDateForHtml(Model.Document.SourceDocumentDateInputDocument)">
-                                    }
-                                    else
+                                    @if (!isNotReadonly || isDeletedDocuemnt)
                                     {
                                         <input type="date"
                                                class="form-control readonly-disabled"
                                                name="SourceDocumentDateInputDocument"
                                                value="@FormatDateForHtml(Model.Document.SourceDocumentDateInputDocument)"
                                                readonly>
+                                    }
+                                    else
+                                    {
+                                        <input type="date"
+                                               class="form-control"
+                                               name="SourceDocumentDateInputDocument"
+                                               value="@FormatDateForHtml(Model.Document.SourceDocumentDateInputDocument)">
                                     }
                                 </div>
 
@@ -134,15 +138,7 @@
                                         Заказчик:
                                     </label>
 
-                                    @if (isNotReadonly)
-                                    {
-                                        <input type="text"
-                                               class="form-control"
-                                               name="CustomerInputDocument"
-                                               value="@Model.Document.CustomerInputDocument"
-                                               placeholder="Введите название заказчика">
-                                    }
-                                    else
+                                    @if (!isNotReadonly || isDeletedDocuemnt)
                                     {
                                         <input type="text"
                                                class="form-control readonly-disabled"
@@ -150,24 +146,33 @@
                                                value="@Model.Document.CustomerInputDocument"
                                                readonly>
                                     }
+                                    else
+                                    {
+                                        <input type="text"
+                                               class="form-control"
+                                               name="CustomerInputDocument"
+                                               value="@Model.Document.CustomerInputDocument"
+                                               placeholder="Введите название заказчика">
+                                    }
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-12">
-                            @if (isNotReadonly)
-                            {
-                                <textarea class="form-control"
-                                      name="DocumentSummaryInputDocument"
-                                      placeholder="Краткое содержание документа"
-                                      rows="3">@Model.Document.DocumentSummaryInputDocument</textarea>
-                            }
-                            else
+
+                            @if (!isNotReadonly || isDeletedDocuemnt)
                             {
                                 <textarea class="form-control readonly-disabled"
                                       name="DocumentSummaryInputDocument"
                                       rows="3"
                                       readonly>@Model.Document.DocumentSummaryInputDocument</textarea>
+                            }
+                            else
+                            {
+                                <textarea class="form-control"
+                                      name="DocumentSummaryInputDocument"
+                                      placeholder="Краткое содержание документа"
+                                      rows="3">@Model.Document.DocumentSummaryInputDocument</textarea>
                             }
                         </div>
 
@@ -175,24 +180,27 @@
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check mb-0">
 
-                                    @if (isNotReadonly)
+                                    @if (!isNotReadonly || isDeletedDocuemnt)
+                                    {
+                                        <input class="form-check-input readonly-disabled"
+                                               type="checkbox"
+                                               @(Model.Document.IsExternalDocumentInputDocument ? "checked" : string.Empty)
+                                               readonly
+                                               disabled>
+
+                                        <input type="hidden"
+                                               name="IsExternalDocumentInputDocument"
+                                               value="@(Model.Document.IsExternalDocumentInputDocument ? "true" : "false")">
+                                    }
+                                    else
                                     {
                                         <input class="form-check-input"
                                                type="checkbox"
                                                name="IsExternalDocumentInputDocument"
                                                value="true"
-                                               @(Model.Document.IsExternalDocumentInputDocument ? "checked" : "")>
+                                               @(Model.Document.IsExternalDocumentInputDocument ? "checked" : string.Empty)>
+
                                         <input type="hidden" name="IsExternalDocumentInputDocument" value="false">
-                                    }
-                                    else
-                                    {
-                                        <input class="form-check-input readonly-disabled"
-                                               type="checkbox"
-                                               @(Model.Document.IsExternalDocumentInputDocument ? "checked" : "")
-                                               readonly disabled>
-                                        <input type="hidden"
-                                               name="IsExternalDocumentInputDocument"
-                                               value="@(Model.Document.IsExternalDocumentInputDocument ? "true" : "false")">
                                     }
                                     <label class="form-check-label text-nowrap">
                                         Внешний документ
@@ -204,22 +212,21 @@
                                         Вх(46 ЦНИИ):
                                     </label>
 
-                                    @if (isNotReadonly)
-                                    {
-                                        <input type="text"
-                                               class="form-control"
-                                               name="IncomingDocumentNumberInputDocument"
-                                               value="@Model.Document.IncomingDocumentNumberInputDocument"
-                                               placeholder="Введите входящий номер"
-                                               required>
-                                    }
-                                    else
+                                    @if (!isNotReadonly || isDeletedDocuemnt)
                                     {
                                         <input type="text"
                                                class="form-control readonly-disabled"
                                                name="IncomingDocumentNumberInputDocument"
                                                value="@Model.Document.IncomingDocumentNumberInputDocument"
                                                readonly>
+                                    }
+                                    else
+                                    {
+                                        <input type="text"
+                                               class="form-control"
+                                               name="IncomingDocumentNumberInputDocument"
+                                               value="@Model.Document.IncomingDocumentNumberInputDocument"
+                                               placeholder="Введите входящий номер">
                                     }
                                 </div>
 
@@ -228,21 +235,21 @@
                                         Дата:
                                     </label>
 
-                                    @if (isNotReadonly)
-                                    {
-                                        <input type="date"
-                                               class="form-control"
-                                               name="IncomingDocumentDateInputDocument"
-                                               value="@FormatDateForHtml(Model.Document.IncomingDocumentDateInputDocument)"
-                                               required>
-                                    }
-                                    else
+                                    @if (!isNotReadonly || isDeletedDocuemnt)
                                     {
                                         <input type="date"
                                                class="form-control readonly-disabled"
                                                name="IncomingDocumentDateInputDocument"
                                                value="@FormatDateForHtml(Model.Document.IncomingDocumentDateInputDocument)"
                                                readonly>
+                                    }
+                                    else
+                                    {
+                                        <input type="date"
+                                               class="form-control"
+                                               name="IncomingDocumentDateInputDocument"
+                                               value="@FormatDateForHtml(Model.Document.IncomingDocumentDateInputDocument)"
+                                               required>
                                     }
                                 </div>
                             </div>
@@ -255,21 +262,21 @@
                                         Ответственные отделы:
                                     </label>
 
-                                    @if (isNotReadonly)
-                                    {
-                                        <input type="text"
-                                               class="form-control"
-                                               name="ResponsibleDepartmentsInputDocument"
-                                               value="@Model.Document.ResponsibleDepartmentsInputDocument"
-                                               placeholder="Введите отделы через запятую">
-                                    }
-                                    else
+                                    @if (!isNotReadonly || isDeletedDocuemnt)
                                     {
                                         <input type="text"
                                                class="form-control readonly-disabled"
                                                name="ResponsibleDepartmentsInputDocument"
                                                value="@Model.Document.ResponsibleDepartmentsInputDocument"
                                                readonly>
+                                    }
+                                    else
+                                    {
+                                        <input type="text"
+                                               class="form-control"
+                                               name="ResponsibleDepartmentsInputDocument"
+                                               value="@Model.Document.ResponsibleDepartmentsInputDocument"
+                                               placeholder="Введите отделы через запятую">
                                     }
                                 </div>
 
@@ -278,21 +285,21 @@
                                         Выполнить до:
                                     </label>
 
-                                    @if (isNotReadonly)
-                                    {
-                                        <input type="date"
-                                               class="form-control"
-                                               name="TaskDueDateInputDocument"
-                                               value="@FormatDateForHtml(Model.Document.TaskDueDateInputDocument)"
-                                               required>
-                                    }
-                                    else
+                                    @if (!isNotReadonly || isDeletedDocuemnt)
                                     {
                                         <input type="date"
                                                class="form-control readonly-disabled"
                                                name="TaskDueDateInputDocument"
                                                value="@FormatDateForHtml(Model.Document.TaskDueDateInputDocument)"
                                                readonly>
+                                    }
+                                    else
+                                    {
+                                        <input type="date"
+                                               class="form-control"
+                                               name="TaskDueDateInputDocument"
+                                               value="@FormatDateForHtml(Model.Document.TaskDueDateInputDocument)"
+                                               required>
                                     }
                                 </div>
                             </div>
@@ -304,18 +311,34 @@
                                     Ответственный сотрудник:
                                 </label>
 
-                                <select name="IdResponsibleEmployeeInputDocument"
-                                        class="form-control"
-                                        @(!isNotReadonly ? "disabled" : "")>
-                                    <option value="">Выберите сотрудника</option>
-                                    @foreach (var employee in Model.ResponsibleEmployees)
-                                    {
-                                        var isSelected = employee.Value == Model.Document.IdResponsibleEmployeeInputDocument?.ToString();
-                                        <option value="@employee.Value" selected="@isSelected">
-                                            @employee.Text
-                                        </option>
-                                    }
-                                </select>
+                                @if (!isNotReadonly || isDeletedDocuemnt)
+                                {
+                                    <select name="IdResponsibleEmployeeInputDocument"
+                                            class="form-control readonly-disabled">
+                                        <option value="">Выберите сотрудника</option>
+                                        @foreach (var employee in Model.ResponsibleEmployees)
+                                        {
+                                            var isSelected = employee.Value == Model.Document.IdResponsibleEmployeeInputDocument?.ToString();
+                                            <option value="@employee.Value" selected="@isSelected">
+                                                @employee.Text
+                                            </option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select name="IdResponsibleEmployeeInputDocument"
+                                            class="form-control">
+                                        <option value="">Выберите сотрудника</option>
+                                        @foreach (var employee in Model.ResponsibleEmployees)
+                                        {
+                                            var isSelected = employee.Value == Model.Document.IdResponsibleEmployeeInputDocument?.ToString();
+                                            <option value="@employee.Value" selected="@isSelected">
+                                                @employee.Text
+                                            </option>
+                                        }
+                                    </select>
+                                }
                             </div>
                         </div>
 
@@ -341,14 +364,30 @@
                         <div class="col-12">
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check mb-0">
-                                    <input class="form-check-input"
-                                           type="checkbox"
-                                           name="IsExternalDocumentOutputDocument"
-                                           value="true"
-                                           @(Model.Document.IsExternalDocumentOutputDocument ? "checked" : "")
-                                           @(!isNotReadonly ? "disabled" : string.Empty)>
-                                    <input type="hidden" name="IsExternalDocumentOutputDocument" value="false" />
+                                    @if (Model.Document.IsCompleted || isDeletedDocuemnt)
+                                    {
+                                        <input class="form-check-input readonly-disabled"
+                                               type="checkbox"
+                                               name="IsExternalDocumentOutputDocument"
+                                               value="true"
+                                               @(Model.Document.IsExternalDocumentOutputDocument ? "checked" : string.Empty)
+                                               readonly
+                                               disabled>
 
+                                        <input type="hidden"
+                                               name="IsExternalDocumentOutputDocument"
+                                               value="@(Model.Document.IsExternalDocumentOutputDocument ? "true" : "false")">
+                                    }
+                                    else
+                                    {
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               name="IsExternalDocumentOutputDocument"
+                                               value="true"
+                                               @(Model.Document.IsExternalDocumentOutputDocument ? "checked" : string.Empty)>
+
+                                        <input type="hidden" name="IsExternalDocumentOutputDocument" value="false">
+                                    }
                                     <label class="form-check-label text-nowrap">
                                         Внешний документ
                                     </label>
@@ -359,12 +398,22 @@
                                         Исх (46 ЦНИИ):
                                     </label>
 
-                                    <input type="text"
-                                           class="form-control outgoing-number-output"
-                                           name="OutgoingDocumentNumberOutputDocument"
-                                           value="@Model.Document.OutgoingDocumentNumberOutputDocument"
-                                           placeholder="Номер исходящего"
-                                           @(!isNotReadonly ? "readonly" : "")>
+                                    @if (Model.Document.IsCompleted || isDeletedDocuemnt)
+                                    {
+                                        <input type="text"
+                                               class="form-control readonly-disabled"
+                                               name="OutgoingDocumentNumberOutputDocument"
+                                               value="@Model.Document.OutgoingDocumentNumberOutputDocument"
+                                               readonly>
+                                    }
+                                    else
+                                    {
+                                        <input type="text"
+                                               class="form-control"
+                                               name="OutgoingDocumentNumberOutputDocument"
+                                               value="@Model.Document.OutgoingDocumentNumberOutputDocument"
+                                               placeholder="Введите исходящий номер">
+                                    }
                                 </div>
 
                                 <div class="d-flex align-items-center gap-2 flex-fill">
@@ -372,60 +421,91 @@
                                         Дата исходящего:
                                     </label>
 
-                                    <input type="date"
-                                           class="form-control"
-                                           name="OutgoingDocumentDateOutputDocument"
-                                           value="@FormatDateForHtml(Model.Document.OutgoingDocumentDateOutputDocument)"
-                                           @(!isNotReadonly ? "readonly" : "")>
+                                    @if (Model.Document.IsCompleted || isDeletedDocuemnt)
+                                    {
+                                        <input type="date"
+                                               class="form-control readonly-disabled"
+                                               name="OutgoingDocumentDateOutputDocument"
+                                               value="@FormatDateForHtml(Model.Document.OutgoingDocumentDateOutputDocument)"
+                                               readonly>
+                                    }
+                                    else
+                                    {
+                                        <input type="date"
+                                               class="form-control"
+                                               name="OutgoingDocumentDateOutputDocument"
+                                               value="@FormatDateForHtml(Model.Document.OutgoingDocumentDateOutputDocument)">
+                                    }
                                 </div>
 
                                 <div class="d-flex align-items-center gap-2 flex-fill">
                                     <label class="form-label text-nowrap mb-0">
                                         Получатель:
                                     </label>
-
-                                    <input type="text"
-                                           class="form-control"
-                                           name="RecipientOutputDocument"
-                                           value="@Model.Document.RecipientOutputDocument"
-                                           placeholder="Введите получателя"
-                                           @(!isNotReadonly ? "readonly" : "")>
+                                    @if (Model.Document.IsCompleted || isDeletedDocuemnt)
+                                    {
+                                        <input type="text"
+                                               class="form-control readonly-disabled"
+                                               name="RecipientOutputDocument"
+                                               value="@Model.Document.RecipientOutputDocument"
+                                               placeholder="Введите получателя"
+                                               readonly>
+                                    }
+                                    else
+                                    {
+                                        <input type="text"
+                                               class="form-control"
+                                               name="RecipientOutputDocument"
+                                               value="@Model.Document.RecipientOutputDocument"
+                                               placeholder="Введите получателя">
+                                    }
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-12">
-                            <textarea placeholder="Краткое содержание документа"
-                                      class="form-control"
+                            @if (Model.Document.IsCompleted || isDeletedDocuemnt)
+                            {
+                                <textarea placeholder="Краткое содержание документа"
+                                      class="form-control readonly-disabled"
                                       name="DocumentSummaryOutputDocument"
                                       rows="3"
-                                      @(!isNotReadonly ? "readonly" : "")>@Model.Document.DocumentSummaryOutputDocument</textarea>
+                                      readonly>@Model.Document.DocumentSummaryOutputDocument</textarea>
+                            }
+                            else
+                            {
+                                <textarea placeholder="Краткое содержание документа"
+                                      class="form-control"
+                                      name="DocumentSummaryOutputDocument"
+                                      rows="3">@Model.Document.DocumentSummaryOutputDocument</textarea>
+                            }
                         </div>
 
                         <!-- Статусы и действия на одном уровне -->
                         <div class="col-12 mt-4">
                             <div class="d-flex justify-content-between align-items-center">
-                                <!-- Левая часть: статусы и информация -->
                                 <div class="d-flex align-items-center gap-4">
-                                    <!-- Статус "На контроле" -->
                                     <div class="form-check mb-0">
-                                        @if (isNotReadonly)
+                                        @if (Model.Document.IsCompleted || isDeletedDocuemnt)
+                                        {
+                                            <input class="form-check-input readonly-disabled"
+                                                   type="checkbox"
+                                                   @(Model.Document.IsUnderControl ? "checked" : string.Empty)
+                                                   readonly
+                                                   disabled>
+
+                                            <input type="hidden" name="IsUnderControl"
+                                                   value="@(Model.Document.IsUnderControl ? "true" : "false")" />
+                                        }
+                                        else
                                         {
                                             <input class="form-check-input"
                                                    type="checkbox"
                                                    name="IsUnderControl"
                                                    value="true"
-                                                   @(Model.Document.IsUnderControl ? "checked" : "")>
+                                                   @(Model.Document.IsUnderControl ? "checked" : string.Empty)>
+
                                             <input type="hidden" name="IsUnderControl" value="false" />
-                                        }
-                                        else
-                                        {
-                                            <input class="form-check-input readonly-disabled"
-                                                   type="checkbox"
-                                                   @(Model.Document.IsUnderControl ? "checked" : "")
-                                                   readonly disabled>
-                                            <input type="hidden" name="IsUnderControl"
-                                                   value="@(Model.Document.IsUnderControl ? "true" : "false")" />
                                         }
                                         <label class="form-check-label text-nowrap text-uppercase fw-bold">
                                             На контроле
@@ -467,6 +547,12 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const isCompleted = @Json.Serialize(Model.Document.IsCompleted);
+
+            if (isCompleted) {
+                return;
+            }
+
             const externalInputCheckbox = document.querySelector('input[name="IsExternalDocumentInputDocument"]');
             const incomingNumberInput = document.querySelector('input[name="IncomingDocumentNumberInputDocument"]');
 

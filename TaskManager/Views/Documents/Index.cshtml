@@ -26,7 +26,19 @@
 
     private const string DateFormatDdMmYyyy = "dd.MM.yyyy";
 
-    public string GetRowClass(DocumentForOverviewModel document)
+    private bool IsDeletedDocument(DocumentForOverviewModel document)
+    {
+        if (document.CreatedByEmployeeId == authService.IdAdmin &&
+            document.RemovedByEmployeeId is not null &&
+            document.RemoveDateTime is not null)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private string GetRowClass(DocumentForOverviewModel document)
     {
         var currentDate = DateOnly.FromDateTime(DateTime.Now);
         int daysUntilDue = document.TaskDueDateInputDocument.DayNumber - currentDate.DayNumber;
@@ -49,7 +61,7 @@
         return string.Empty;
     }
 
-    public string IsSpecialDocument(DocumentForOverviewModel document)
+    private string IsSpecialDocument(DocumentForOverviewModel document)
     {
         if (document.IsUnderControl)
         {
@@ -140,16 +152,20 @@
                             <table class="table table-hover table-striped mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th class="ps-3">Исх(внешн)</th>
-                                        <th>Вх(46 ЦНИИ)</th>
-                                        <th>Тема задания</th>
-                                        <th>Срок</th>
-                                        <th>Исполнитель</th>
-                                        <th>Исх. №</th>
-                                        <th>Исх. дата</th>
+                                        <th class="text-center">Исх(внешн)</th>
+                                        <th class="text-center">Вх(46 ЦНИИ)</th>
+                                        <th class="text-center">Тема задания</th>
+                                        <th class="text-center">Срок</th>
+                                        <th class="text-center">Исполнитель</th>
+                                        <th class="text-center">Исх. №</th>
+                                        <th class="text-center">Исх. дата</th>
                                         @if (authService.IsAuthenticated)
                                         {
-                                            <th class="text-center" style="width: 120px;">Действия</th>
+                                            <th class="text-center">Действия</th>
+                                        }
+                                        else
+                                        {
+                                            <th></th> <!-- Пустой заголовок для выравнивания -->
                                         }
                                     </tr>
                                 </thead>
@@ -157,53 +173,68 @@
                                     @foreach (var document in Model.PagedDocuments.Items)
                                     {
                                         <tr class="@GetRowClass(document)">
-                                            <td class="@IsSpecialDocument(document)">@document.OutgoingDocumentNumberInputDocument</td>
-                                            <td class="@IsSpecialDocument(document)">@document.IncomingDocumentNumberInputDocument</td>
-                                            <td class="@IsSpecialDocument(document)">@document.DocumentSummaryInputDocument</td>
-                                            <td class="@IsSpecialDocument(document)">@document.TaskDueDateInputDocument.ToString(DateFormatDdMmYyyy)</td>
-                                            <td class="@IsSpecialDocument(document)">
+                                            <td class="@IsSpecialDocument(document) text-center">@document.OutgoingDocumentNumberInputDocument</td>
+                                            <td class="@IsSpecialDocument(document) text-center">@document.IncomingDocumentNumberInputDocument</td>
+                                            <td class="@IsSpecialDocument(document) text-center">@document.DocumentSummaryInputDocument</td>
+                                            <td class="@IsSpecialDocument(document) text-center">@document.TaskDueDateInputDocument.ToString(DateFormatDdMmYyyy)</td>
+                                            <td class="@IsSpecialDocument(document) text-center">
                                                 <span class="badge bg-secondary bg-opacity-25 text-dark">@document.FullNameResponsibleEmployee</span>
                                             </td>
-                                            <td class="@IsSpecialDocument(document)">@document.OutgoingDocumentNumberOutputDocument</td>
-                                            <td class="@IsSpecialDocument(document)">
+                                            <td class="@IsSpecialDocument(document) text-center">@document.OutgoingDocumentNumberOutputDocument</td>
+                                            <td class="@IsSpecialDocument(document) text-center">
                                                 @if (document.OutgoingDocumentDateOutputDocument.HasValue)
                                                 {
                                                     @document.OutgoingDocumentDateOutputDocument.Value.ToString(DateFormatDdMmYyyy)
                                                 }
                                             </td>
-                                            <td class="d-flex">
-                                                <div class="d-flex gap-1">
-                                                    <a asp-action="Edit" asp-route-id="@document.Id"
-                                                       class="btn btn-outline-primary" title="Редактировать">
-                                                        <i class="fas fa-pen-to-square"></i>
-                                                    </a>
+                                            <td>
+                                                @if (authService.IsAuthenticated)
+                                                {
+                                                    <div class="d-flex gap-1 justify-content-center">
+                                                        <a asp-action="Edit" asp-route-id="@document.Id"
+                                                           class="btn btn-outline-primary btn-sm" title="Редактировать">
+                                                            <i class="fas fa-pen-to-square"></i>
+                                                        </a>
 
-                                                    <form asp-action="ChangeStatus" method="post" class="d-inline">
-                                                        <input type="hidden" name="id" value="@document.Id" />
-                                                        <button type="submit" class="btn btn-outline-warning" title="Открыть задачу">
-                                                            <i class="fas fa-lock-open"></i>
-                                                        </button>
-                                                    </form>
+                                                        @if (!IsDeletedDocument(document) && document.IsCompleted)
+                                                        {
+                                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                                                <input type="hidden" name="id" value="@document.Id" />
+                                                                <button type="submit" class="btn btn-outline-warning btn-sm" title="Открыть задачу">
+                                                                    <i class="fas fa-lock-open"></i>
+                                                                </button>
+                                                            </form>
+                                                        }
 
-                                                    <form asp-action="ChangeStatus" method="post" class="d-inline">
-                                                        <input type="hidden" name="id" value="@document.Id" />
-                                                        <button type="submit" class="btn btn-outline-success" title="Закрыть задачу">
-                                                            <i class="fas fa-lock"></i>
-                                                        </button>
-                                                    </form>
+                                                        @if (!IsDeletedDocument(document) && !document.IsCompleted)
+                                                        {
+                                                            <form asp-action="ChangeStatus" method="post" class="d-inline">
+                                                                <input type="hidden" name="id" value="@document.Id" />
+                                                                <button type="submit" class="btn btn-outline-success btn-sm" title="Закрыть задачу">
+                                                                    <i class="fas fa-lock"></i>
+                                                                </button>
+                                                            </form>
+                                                        }
 
-                                                    <form asp-action="RecoverDeleted" method="post" class="d-inline">
-                                                        <input type="hidden" name="id" value="@document.Id" />
-                                                        <button type="submit" class="btn btn-outline-success" title="Восстановить запись">
-                                                            <i class="fas fa-undo-alt"></i>
-                                                        </button>
-                                                    </form>
+                                                        @if (IsDeletedDocument(document) && authService.IdAdmin == authService.IdCurrentUser)
+                                                        {
+                                                            <form asp-action="RecoverDeleted" method="post" class="d-inline">
+                                                                <input type="hidden" name="id" value="@document.Id" />
+                                                                <button type="submit" class="btn btn-outline-success btn-sm" title="Восстановить запись">
+                                                                    <i class="fas fa-undo-alt"></i>
+                                                                </button>
+                                                            </form>
+                                                        }
 
-                                                    <a asp-action="Delete" asp-route-id="@document.Id"
-                                                       class="btn btn-outline-danger" title="Удалить">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </a>
-                                                </div>
+                                                        @if (!IsDeletedDocument(document))
+                                                        {
+                                                            <a asp-action="Delete" asp-route-id="@document.Id"
+                                                               class="btn btn-outline-danger btn-sm" title="Удалить">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </a>
+                                                        }
+                                                    </div>
+                                                }
                                             </td>
                                         </tr>
                                     }
