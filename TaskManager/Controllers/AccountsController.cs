@@ -21,13 +21,27 @@ public class AccountsController(
             return RedirectToDocuments();
         }
 
-        ViewData["ReturnUrl"] = returnUrl;
-        return View();
+        var employeeLoginViewModel = new EmployeeLoginViewModel
+        {
+            Login = string.Empty,
+            Password = string.Empty,
+            ReturnUrl = returnUrl
+        };
+
+        return View(employeeLoginViewModel);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login(EmployeeLoginModel employeeLoginModel, string? returnUrl = null)
+    public async Task<IActionResult> Login(EmployeeLoginViewModel employeeLoginViewModel, string? returnUrl = null)
     {
+        employeeLoginViewModel.ReturnUrl = returnUrl;
+
+        var employeeLoginModel = new EmployeeLoginModel
+        {
+            Login = employeeLoginViewModel.Login,
+            Password = employeeLoginViewModel.Password,
+        };
+
         var success = await authService.LoginAsync(employeeLoginModel);
 
         if (success)
@@ -41,14 +55,13 @@ public class AccountsController(
         }
 
         ModelState.AddModelError("", "Неверный логин или пароль");
-        return View(employeeLoginModel);
+        return View(employeeLoginViewModel);
     }
 
     [HttpPost]
     public async Task<IActionResult> Logout()
     {
         await authService.LogoutAsync();
-
         return RedirectToDocuments();
     }
 
@@ -59,7 +72,7 @@ public class AccountsController(
 
         if (employee == null)
         {
-            return NotFound();
+            return RedirectToNotFoundError();
         }
 
         var passwordViewModel = new EmployeePasswordViewModel
@@ -78,7 +91,7 @@ public class AccountsController(
 
         if (employee is null)
         {
-            return NotFound();
+            return RedirectToNotFoundError();
         }
 
         employee.Password = passwordViewModel.Password;
@@ -93,10 +106,21 @@ public class AccountsController(
         return View();
     }
 
+    private RedirectToActionResult RedirectToNotFoundError()
+    {
+        var nameAction = nameof(ErrorsController.EmployeeNotFoundError);
+
+        var fullNameController = nameof(ErrorsController);
+        var nameController = NameController.GetControllerName(fullNameController);
+
+        return RedirectToAction(nameAction, nameController);
+    }
+
     private RedirectToActionResult RedirectToDocuments()
     {
         var nameAction = nameof(DocumentsController.Index);
         var fullNameController = nameof(DocumentsController);
+
         var nameController = NameController.GetControllerName(fullNameController);
 
         return RedirectToAction(nameAction, nameController);

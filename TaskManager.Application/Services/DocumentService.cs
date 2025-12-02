@@ -1,7 +1,10 @@
-﻿using TaskManager.Application.Common;
+﻿using FluentValidation;
+using TaskManager.Application.Common;
 using TaskManager.Application.Exceptions;
 using TaskManager.Application.Services.Interfaces;
+using TaskManager.Application.Validations;
 using TaskManager.Domain.Entities;
+using TaskManager.Domain.Exceptions;
 using TaskManager.Domain.Model.Documents;
 using TaskManager.Domain.Queries;
 using TaskManager.Domain.Repositories;
@@ -14,10 +17,10 @@ public class DocumentService(
     IDocumentRepository documentRepository,
     IAuthService authService) : IDocumentService
 {
-    public async Task<PagedResult<DocumentOverviewModel>> GetPagedAsync(string inputSearch, int page, int pageSize)
+    public async Task<PagedResult<DocumentForOverviewModel>> GetPagedAsync(string inputSearch, int page, int pageSize)
     {
         int countDocuments;
-        List<DocumentOverviewModel> documents;
+        List<DocumentForOverviewModel> documents;
 
         int countSkip = (page - 1) * pageSize;
 
@@ -30,19 +33,19 @@ public class DocumentService(
             (documents, countDocuments) = await documentQuery.GetDocumentsAsync(countSkip, pageSize);
         }
 
-        var pagedResult = new PagedResult<DocumentOverviewModel>(documents, countDocuments, page, pageSize);
+        var pagedResult = new PagedResult<DocumentForOverviewModel>(documents, countDocuments, page, pageSize);
 
         return pagedResult;
     }
 
-    public async Task<DocumentForEdit?> GetDocumentForEditAsync(int id)
+    public async Task<DocumentForEditModel?> GetDocumentForEditAsync(int id)
     {
         var document = await documentQuery.GetDocumentForEditAsync(id);
 
         return document;
     }
 
-    public async Task<DocumentForDelete?> GetDocumentForDeleteAsync(int id)
+    public async Task<DocumentForDeleteModel?> GetDocumentForDeleteAsync(int id)
     {
         var document = await documentQuery.GetDocumentForDeleteAsync(id);
 
@@ -58,17 +61,30 @@ public class DocumentService(
 
     public async Task ChangeStatusAsync(int id)
     {
-        var document = await documentRepository.GetByIdAsync(id) ?? 
-            throw new NotFoundException(nameof(Document), id);
+        var documentForChangeStatusModel = await documentQuery.GetDocumentForChangeStatusAsync(id) ?? 
+                                                    throw new NotFoundException(nameof(DocumentForChangeStatusModel), id);
 
-        document.IsCompleted = !document.IsCompleted;
+        var documentForChangeStatusModelValidator = new DocumentForChangeStatusModelValidator();
+        var validationResult = documentForChangeStatusModelValidator.Validate(documentForChangeStatusModel);
 
-        await documentRepository.UpdateAsync(document);
+        if (!validationResult.IsValid)
+        {
+            throw new IncompleteOutputDocumentException();
+        }
+
+        await documentRepository.UpdateStatusAsync(id, !documentForChangeStatusModel.IsCompleted);
     }
 
     public async Task CreateAsync(Document document)
     {
+        if (!authService.IsAuthenticated || !authService.IdCurrentUser.HasValue)
+        {
+            throw new UnauthorizedAccessException("Пользователь не аутентифицирован");
+        }
+
         TrimDocumentProperties(document);
+
+        document.CreatedByEmployeeId = authService.IdCurrentUser.Value;
         await documentRepository.AddAsync(document);
     }
 
@@ -84,21 +100,17 @@ public class DocumentService(
 
     public async Task RecoverDeletedAsync(int id)
     {
-        var document = await documentRepository.GetByIdAsync(id) ??
-                                throw new NotFoundException(nameof(Document), id);
+        var removedByEmployeeId = await documentQuery.GetIdEmployeeRemovedAsync(id) ?? 
+            throw new InvalidOperationException($"Id сотрудника который удалил запись равна null, у документа с id: {id}");
 
-        document.IdResponsibleEmployeeInputDocument = document.LastEditedByEmployeeId;
-        document.LastEditedByEmployeeId = null;
-        document.RemoveDateTime = null;
-
-        await documentRepository.UpdateAsync(document);
+        await documentRepository.RecoverDeletedAsync(id, removedByEmployeeId);
     }
 
     public async Task DeleteAsync(int id)
     {
         if (!authService.IsAuthenticated || !authService.IdCurrentUser.HasValue)
         {
-            throw new Exception();
+            throw new UnauthorizedAccessException("Пользователь не аутентифицирован");
         }
 
         if (authService.IsAdmin)

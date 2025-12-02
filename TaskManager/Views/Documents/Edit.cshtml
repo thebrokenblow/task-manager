@@ -7,13 +7,13 @@
 @{
     ViewData["Title"] = "Редактирование Документа";
 
-    var isNotReadonly = !Model.Document.IsCompleted && (authService.IsAdmin || authService.IdCurrentUser == Model.Document.Id);
+    var isNotReadonly = !Model.Document.IsCompleted && (authService.IsAdmin || authService.IdCurrentUser == Model.Document.CreatedByEmployeeId);
 }
 
 @functions {
     private const string DateFormatDdMmYyyy = "dd.MM.yyyy";
+    private const string DateFormatDdMmYyyyHhMm = "dd.MM.yyyy HH:mm";
 
-    // Метод для форматирования даты для HTML5 date input (yyyy-MM-dd)
     string FormatDateForHtml(DateOnly? date)
     {
         return date?.ToString("yyyy-MM-dd") ?? "";
@@ -34,9 +34,9 @@
         border-color: #dee2e6;
     }
 
-        .readonly-disabled::placeholder {
-            color: #6c757d;
-        }
+    .readonly-disabled::placeholder {
+        color: #6c757d;
+    }
 
     .required-field::after {
         content: " *";
@@ -324,6 +324,18 @@
                             <h6 class="border-bottom pb-2 text-primary">
                                 Выходные данные документа
                             </h6>
+
+                            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                            {
+                                <div class="border-start border-3 border-danger ps-3 py-2 mb-3 bg-danger bg-opacity-10">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fas fa-exclamation-triangle text-danger mt-1 me-2"></i>
+                                        <div>
+                                            <span class="text-danger fw-medium">@Model.ErrorMessage</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
 
                         <div class="col-12">
@@ -334,7 +346,7 @@
                                            name="IsExternalDocumentOutputDocument"
                                            value="true"
                                            @(Model.Document.IsExternalDocumentOutputDocument ? "checked" : "")
-                                           @(!isNotReadonly ? "disabled" : "")>
+                                           @(!isNotReadonly ? "disabled" : string.Empty)>
                                     <input type="hidden" name="IsExternalDocumentOutputDocument" value="false" />
 
                                     <label class="form-check-label text-nowrap">
@@ -383,7 +395,6 @@
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label">Краткое содержание:</label>
                             <textarea placeholder="Краткое содержание документа"
                                       class="form-control"
                                       name="DocumentSummaryOutputDocument"
@@ -391,11 +402,13 @@
                                       @(!isNotReadonly ? "readonly" : "")>@Model.Document.DocumentSummaryOutputDocument</textarea>
                         </div>
 
-                        <!-- Статусы -->
-                        <div class="col-12">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <div class="form-check">
+                        <!-- Статусы и действия на одном уровне -->
+                        <div class="col-12 mt-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <!-- Левая часть: статусы и информация -->
+                                <div class="d-flex align-items-center gap-4">
+                                    <!-- Статус "На контроле" -->
+                                    <div class="form-check mb-0">
                                         @if (isNotReadonly)
                                         {
                                             <input class="form-check-input"
@@ -408,34 +421,38 @@
                                         else
                                         {
                                             <input class="form-check-input readonly-disabled"
-                                                   name="IsUnderControl"
-                                                   value="@Model.Document.IsUnderControl"
+                                                   type="checkbox"
                                                    @(Model.Document.IsUnderControl ? "checked" : "")
-                                                   readonly>
+                                                   readonly disabled>
                                             <input type="hidden" name="IsUnderControl"
                                                    value="@(Model.Document.IsUnderControl ? "true" : "false")" />
                                         }
-
                                         <label class="form-check-label text-nowrap text-uppercase fw-bold">
                                             На контроле
                                         </label>
                                     </div>
+
+                                    <!-- Информация о последнем редактировании -->
+                                    <div class="border-start ps-4 border-danger">
+                                        <div class="d-flex flex-column">
+                                            <small class="text-muted mb-1">Последнее редактирование:</small>
+                                            <span class="small fw-semibold text-danger">
+                                                @if (Model.Document.FullNameLastEditedEmployee != null && Model.Document.LastEditedDateTime.HasValue)
+                                                {
+                                                    @($"{Model.Document.FullNameLastEditedEmployee}, {Model.Document.LastEditedDateTime.Value.ToString(DateFormatDdMmYyyyHhMm)}")
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Контроль и действия -->
-                        <div class="col-12 mt-4">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div></div>
-
+                                <!-- Кнопки действий -->
                                 <div>
                                     <button type="submit" class="btn btn-primary px-4">
-                                        Сохранить
+                                        <i class="fas fa-edit me-2"></i>Сохранить
                                     </button>
-
-                                    <a asp-action="Index" class="btn btn-secondary px-4">
-                                        Назад к списку
+                                    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                                        <i class="fas fa-arrow-left me-2"></i>Назад к списку
                                     </a>
                                 </div>
                             </div>

@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using TaskManager.Application.Exceptions;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Exceptions;
-using TaskManager.Domain.Model.Documents;
+using TaskManager.View.Utils;
 using TaskManager.View.ViewModel.Documents;
 using TaskManager.View.ViewModel.Employees;
 
@@ -69,19 +70,25 @@ public class DocumentsController(
     [HttpPost]
     public async Task<IActionResult> Create(Document document)
     {
-        await documentService.CreateAsync(document);
-
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            await documentService.CreateAsync(document);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return RedirectToUnauthorizedError();
+        }
     }
 
     [HttpGet]
-    public async Task<IActionResult> Edit(int id)
+    public async Task<IActionResult> Edit(int id, string? errorMessage = null)
     {
         var document = await documentService.GetDocumentForEditAsync(id);
 
         if (document is null)
         {
-            return NotFound();
+            return RedirectToNotFoundError();
         }
 
         var responsibleEmployees = await employeeService.GetResponsibleEmployeesAsync();
@@ -95,7 +102,8 @@ public class DocumentsController(
         var editDocumentViewModel = new EditDocumentViewModel
         {
             Document = document,
-            ResponsibleEmployees = responsibleEmployeesSelectList
+            ResponsibleEmployees = responsibleEmployeesSelectList,
+            ErrorMessage = errorMessage
         };
 
         return View(editDocumentViewModel);
@@ -115,7 +123,7 @@ public class DocumentsController(
 
         if (document == null)
         {
-            return NotFound();
+            return RedirectToNotFoundError();
         }
 
         return View(document);
@@ -131,29 +139,55 @@ public class DocumentsController(
         }
         catch (NotFoundException)
         {
-            return RedirectToAction(nameof(Index));
-            //Показать страницу документ не найден в системе
-        }
-        catch
-        {
-            //Показать страницу ошибки
-            return RedirectToAction(nameof(Index));
+            return RedirectToNotFoundError();
         }
     }
 
     [HttpPost]
     public async Task<IActionResult> RecoverDeleted(int id)
     {
-        await documentService.RecoverDeletedAsync(id);
-
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            await documentService.RecoverDeletedAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (NotFoundException)
+        {
+            return RedirectToNotFoundError();
+        }
     }
 
     [HttpPost]
     public async Task<IActionResult> ChangeStatus(int id)
     {
-        await documentService.ChangeStatusAsync(id);
+        try
+        {
+            await documentService.ChangeStatusAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (NotFoundException)
+        {
+            return RedirectToNotFoundError();
+        }
+        catch (IncompleteOutputDocumentException exception)
+        {
+            return RedirectToAction("Edit", "Documents", new { id, errorMessage = exception.Message });
+        }
+    }
 
-        return RedirectToAction(nameof(Index));
+    private RedirectToActionResult RedirectToUnauthorizedError()
+    {
+        var nameAction = nameof(AccountsController.Login);
+        var nameController = NameController.GetControllerName(nameof(AccountsController));
+
+        return RedirectToAction(nameAction, nameController);
+    }
+
+    private RedirectToActionResult RedirectToNotFoundError()
+    {
+        var nameAction = nameof(ErrorsController.DocumentNotFoundError);
+        var nameController = NameController.GetControllerName(nameof(ErrorsController));
+
+        return RedirectToAction(nameAction, nameController);
     }
 }

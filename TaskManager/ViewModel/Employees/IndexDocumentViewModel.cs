@@ -6,5 +6,5 @@ namespace TaskManager.View.ViewModel.Employees;
 public class IndexDocumentViewModel
 {
     public required string InputString { get; init; }
-    public required PagedResult<DocumentOverviewModel> PagedDocuments { get; init; }
+    public required PagedResult<DocumentForOverviewModel> PagedDocuments { get; init; }
 }

@@ -46,7 +46,37 @@ public class DocumentRepository(TaskManagerDbContext context) : IDocumentReposit
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(document => document.RemovedByEmployeeId, idEmployeeRemove)
                 .SetProperty(document => document.RemoveDateTime, removeDateTime) 
-                .SetProperty(document => document.IdResponsibleEmployeeInputDocument, idAdmin)
+                .SetProperty(document => document.CreatedByEmployeeId, idAdmin)
+            );
+
+        if (affectedRows == 0)
+        {
+            throw new NotFoundException(nameof(Document), id);
+        }
+    }
+
+    public async Task RecoverDeletedAsync(int id, int idEmployeeRemove)
+    {
+        var affectedRows = await context.Documents
+            .Where(document => document.Id == id)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(document => document.CreatedByEmployeeId, idEmployeeRemove)
+                .SetProperty(document => document.RemovedByEmployeeId, (int?)null)
+                .SetProperty(document => document.RemoveDateTime, (DateTime?)null)
+            );
+
+        if (affectedRows == 0)
+        {
+            throw new NotFoundException(nameof(Document), id);
+        }
+    }
+
+    public async Task UpdateStatusAsync(int id, bool isCompleted)
+    {
+        var affectedRows = await context.Documents
+            .Where(document => document.Id == id)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(document => document.IsCompleted, isCompleted)
             );
 
         if (affectedRows == 0)

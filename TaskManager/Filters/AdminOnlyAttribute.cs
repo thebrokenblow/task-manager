@@ -11,11 +11,21 @@ public class AdminOnlyAttribute : Attribute, IAuthorizationFilter
 {
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        var authService = context.HttpContext.RequestServices.GetService<IAuthService>();
+        var authService = context.HttpContext.RequestServices.GetService<IAuthService>() ??
+            throw new InvalidOperationException("Не зарегистрирован сервис IAuthService");
 
-        if (authService == null)
+        if (!authService.IsAuthenticated)
         {
-            context.Result = new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            var returnUrl = context.HttpContext.Request.Path;
+
+            var nameController = NameController.GetControllerName(nameof(AccountsController));
+            var actionController = nameof(AccountsController.Login);
+
+            context.Result = new RedirectToActionResult(
+                actionController,
+                nameController,
+                new { returnUrl });
+
             return;
         }
 

@@ -166,8 +166,12 @@
                                     <label class="form-check-label text-uppercase fw-bold text-nowrap">На контроле</label>
                                 </div>
                                 <div>
-                                    <button type="submit" class="btn btn-success px-4">Создать</button>
-                                    <a asp-action="Index" class="btn btn-secondary px-4">Назад к списку</a>
+                                    <button type="submit" class="btn btn-success px-4">
+                                        <i class="fas fa-plus me-2"></i>Создать
+                                    </button>
+                                    <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                                        <i class="fas fa-arrow-left me-2"></i>Назад к списку
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -181,31 +185,41 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const externalInputCheckbox = document.querySelector('input[name="Document.IsExternalDocumentInputDocument"]');
-            const incomingNumberInput = document.querySelector('input[name="Document.IncomingDocumentNumberInputDocument"]');
+            const externalInputCheckbox = document.querySelector('input[name="IsExternalDocumentInputDocument"]');
+            const incomingNumberInput = document.querySelector('input[name="IncomingDocumentNumberInputDocument"]');
 
-            const externalOutputCheckbox = document.querySelector('input[name="Document.IsExternalDocumentOutputDocument"]');
-            const outgoingNumberOutput = document.querySelector('input[name="Document.OutgoingDocumentNumberOutputDocument"]');
+            const externalOutputCheckbox = document.querySelector('input[name="IsExternalDocumentOutputDocument"]');
+            const outgoingNumberOutput = document.querySelector('input[name="OutgoingDocumentNumberOutputDocument"]');
 
             function updateIncomingDocumentField() {
-                if (externalInputCheckbox.checked) {
+                if (externalInputCheckbox && externalInputCheckbox.checked) {
                     incomingNumberInput.removeAttribute('readonly');
                     incomingNumberInput.classList.remove('readonly-disabled');
-                    incomingNumberInput.placeholder = 'Введите входщий документа';
-                    incomingNumberInput.value = '';
+                    incomingNumberInput.placeholder = 'Введите входящий номер';
+                    incomingNumberInput.required = true;
+
+                    if (incomingNumberInput.value === 'нет') {
+                        incomingNumberInput.value = '';
+                    }
+
                 } else {
                     incomingNumberInput.value = 'нет';
                     incomingNumberInput.setAttribute('readonly', 'readonly');
                     incomingNumberInput.classList.add('readonly-disabled');
+                    incomingNumberInput.required = false;
                 }
             }
 
             function updateOutgoingDocumentField() {
-                if (externalOutputCheckbox.checked) {
+                if (externalOutputCheckbox && externalOutputCheckbox.checked) {
                     outgoingNumberOutput.removeAttribute('readonly');
                     outgoingNumberOutput.classList.remove('readonly-disabled');
-                    outgoingNumberOutput.placeholder = 'Введите исходящий документа';
-                    outgoingNumberOutput.value = '';
+                    outgoingNumberOutput.placeholder = 'Введите исходящий номер';
+
+                    if (outgoingNumberOutput.value === 'нет') {
+                        outgoingNumberOutput.value = '';
+                    }
+
                 } else {
                     outgoingNumberOutput.value = 'нет';
                     outgoingNumberOutput.setAttribute('readonly', 'readonly');

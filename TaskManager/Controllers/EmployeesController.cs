@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using TaskManager.Application.Exceptions;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Exceptions;
 using TaskManager.View.Filters;
+using TaskManager.View.Utils;
 using TaskManager.View.ViewModel.Employees;
 
 namespace TaskManager.View.Controllers;
@@ -85,7 +87,7 @@ public class EmployeesController(IEmployeeService employeeService) : Controller
 
             if (employee is null)
             {
-                return NotFound();
+                return RedirectToNotFoundError();
             }
 
             return View(employee);
@@ -115,5 +117,15 @@ public class EmployeesController(IEmployeeService employeeService) : Controller
         {
             return RedirectToAction(nameof(Index));
         }
+    }
+
+    private RedirectToActionResult RedirectToNotFoundError()
+    {
+        var nameAction = nameof(ErrorsController.EmployeeNotFoundError);
+
+        var fullNameController = nameof(ErrorsController);
+        var nameController = NameController.GetControllerName(fullNameController);
+
+        return RedirectToAction(nameAction, nameController);
     }
 }

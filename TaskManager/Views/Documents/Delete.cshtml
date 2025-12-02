@@ -1,124 +1,45 @@
-﻿@using TaskManager.Domain.Entities
-@using TaskManager.Domain.Model.Documents
+﻿@using TaskManager.Domain.Model.Documents
 @using TaskManager.Domain.Services
+@using TaskManager.View.ViewModel;
 @using TaskManager.View.ViewModel.Documents
 
+@model DocumentForDeleteModel
 @inject IAuthService authService
-@model DocumentForDelete
 
 @{
-    ViewData["Title"] = "Удаление документа";
+    ViewData["Title"] = "Удаление Документа";
 }
 
 @functions {
-    private const string EmptyValueClass = "empty-value";
     private const string DateFormatDdMmYyyy = "dd.MM.yyyy";
-
-    private const string NotSpecifiedText = "не указан";
-    private const string NotSpecifiedTextPlural = "не указаны";
-    private const string NotSpecifiedTextFeminine = "не указана";
-    private const string NotSpecifiedTextNeutral = "не указано";
-    private const string NotAssignedText = "не назначен";
-
-    private const string YesText = "Да";
-    private const string NoText = "Нет";
-
-    string GetEmptyValueClassIfNull(string? value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return EmptyValueClass;
-        }
-
-        return string.Empty;
-    }
-
-    string GetEmptyValueClassIfNull(DateOnly? value)
-    {
-        if (value == null)
-        {
-            return EmptyValueClass;
-        }
-
-        return string.Empty;
-    }
-
-    string GetEmptyValueClassIfNull(Employee? value)
-    {
-        if (value == null)
-        {
-            return EmptyValueClass;
-        }
-
-        return string.Empty;
-    }
-
-    string GetBooleanDisplayValue(bool value)
-    {
-        if (value)
-        {
-            return YesText;
-        }
-
-        return NoText;
-    }
 }
 
 <style>
-    .document-details-card {
-        border-left: 4px solid #dc3545;
-        overflow: hidden; /* Чтобы граница не выглядела обрезанной */
-    }
-
-    .field-label {
-        font-weight: 600;
-        color: #495057;
-        min-width: 160px; /* Немного увеличим для выравнивания */
-        white-space: nowrap;
-    }
-
-    .field-value {
-        color: #212529;
+    .readonly-disabled {
         background-color: #f8f9fa;
-        padding: 0.5rem 0.75rem; /* Увеличим padding */
-        border-radius: 0.375rem;
-        border: 1px solid #dee2e6;
-        flex: 1;
-        min-height: 42px; /* Фиксированная высота для выравнивания */
-        display: flex;
-        align-items: center;
-        word-break: break-word;
+        opacity: 1;
+        pointer-events: none;
+        cursor: not-allowed;
+        border-color: #dee2e6;
     }
 
-    .empty-value {
-        color: #6c757d;
-        font-style: italic;
-    }
+        .readonly-disabled::placeholder {
+            color: #6c757d;
+        }
 
-    /* Для многострочного текста */
-    .multiline-field-value {
-        align-items: flex-start;
-        padding-top: 0.5rem;
-        min-height: auto;
-    }
-
-    /* Улучшим отступы между секциями */
-    .section-title {
+    .required-field::after {
+        content: " *";
         color: #dc3545;
-        font-weight: 600;
-        border-bottom: 2px solid #f0f0f0;
-        padding-bottom: 0.5rem;
-        margin-bottom: 1.5rem;
     }
 </style>
 
 <div class="container-fluid py-3">
-    <div class="row mb-4">
+    <div class="row mb-3">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h5 class="mb-1 text-danger">Удаление документа</h5>
-                    <p class="text-muted mb-0 small">Подтверждение удаления документа из системы документооборота</p>
+                    <p class="text-muted mb-0 small">Удаление документа из системы документооборота</p>
                 </div>
             </div>
         </div>
@@ -126,224 +47,154 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="card shadow-sm document-details-card">
-                <div class="card-header bg-danger text-white py-3">
-                    <h6 class="mb-0 d-flex align-items-center">
-                        <i class="fas fa-trash-alt me-2"></i>Подтверждение удаления
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white py-2">
+                    <h6 class="mb-0">
+                        <i class="fas fa-trash-alt me-2"></i>Удалить документ
                     </h6>
                 </div>
-                <div class="card-body p-4">
-                    <!-- Предупреждение -->
-                    <div class="alert alert-warning mb-4">
+                <div class="card-body">
+                    <!-- Предупреждение об удалении -->
+                    <div class="alert alert-danger mb-4">
                         <div class="d-flex">
-                            <i class="fas fa-exclamation-circle me-3 mt-1"></i>
+                            <i class="fas fa-exclamation-triangle me-3 mt-1"></i>
                             <div>
                                 <h6 class="alert-heading mb-2">Внимание!</h6>
                                 <p class="mb-0">
-                                    Вы собираетесь удалить документ из системы. Это действие нельзя будет отменить.
-                                    Документ будет помечен как удаленный и скрыт из основного списка.
+                                    Вы собираетесь удалить документ из системы.
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Детали документа -->
-                    <div class="mb-5">
+                    <form method="post" asp-action="DeleteConfirmed" class="row g-3">
+                        <input type="hidden" asp-for="Id" />
+
                         <!-- Исходные данные документа -->
-                        <h6 class="section-title">Исходные данные документа</h6>
+                        <div class="col-12">
+                            <h6 class="border-bottom pb-2 text-danger">Входные данные документа</h6>
+                        </div>
 
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-4">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Исх.:</label>
-                                    <span class="field-value @GetEmptyValueClassIfNull(Model.OutgoingDocumentNumberInputDocument)">
-                                        @(Model.OutgoingDocumentNumberInputDocument ?? NotSpecifiedText)
-                                    </span>
+                        <div class="col-12">
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="d-flex align-items-center gap-2 flex-fill">
+                                    <label class="form-label text-nowrap mb-0">Исх.:</label>
+                                    <input type="text" class="form-control readonly-disabled" value="@Model.OutgoingDocumentNumberInputDocument" readonly>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Дата:</label>
-                                    <span class="field-value @GetEmptyValueClassIfNull(Model.SourceDocumentDateInputDocument)">
-                                        @(Model.SourceDocumentDateInputDocument?.ToString(DateFormatDdMmYyyy) ?? NotSpecifiedTextFeminine)
-                                    </span>
+                                <div class="d-flex align-items-center gap-2 flex-fill">
+                                    <label class="form-label text-nowrap mb-0">Дата:</label>
+                                    <input type="text" class="form-control readonly-disabled" value="@(Model.SourceDocumentDateInputDocument?.ToString(DateFormatDdMmYyyy) ?? "")" readonly>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Заказчик:</label>
-                                    <span class="field-value @GetEmptyValueClassIfNull(Model.CustomerInputDocument)">
-                                        @(Model.CustomerInputDocument ?? NotSpecifiedText)
-                                    </span>
+                                <div class="d-flex align-items-center gap-2 flex-fill">
+                                    <label class="form-label text-nowrap mb-0">Заказчик:</label>
+                                    <input type="text" class="form-control readonly-disabled" value="@Model.CustomerInputDocument" readonly>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <div class="d-flex flex-column">
-                                <label class="form-label field-label mb-2">Краткое содержание:</label>
-                                <span class="field-value multiline-field-value @GetEmptyValueClassIfNull(Model.DocumentSummaryInputDocument)">
-                                    @(Model.DocumentSummaryInputDocument ?? NotSpecifiedTextNeutral)
-                                </span>
-                            </div>
+                        <div class="col-12">
+                            <textarea class="form-control readonly-disabled" rows="3" readonly>@Model.DocumentSummaryInputDocument</textarea>
                         </div>
 
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-4">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Внешний документ:</label>
-                                    <span class="field-value">
-                                        @GetBooleanDisplayValue(Model.IsExternalDocumentInputDocument)
-                                    </span>
+                        <div class="col-12">
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input readonly-disabled" type="checkbox" @(Model.IsExternalDocumentInputDocument ? "checked" : "") readonly disabled>
+                                    <label class="form-check-label text-nowrap">Внешний документ</label>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Вх(46 ЦНИИ):</label>
-                                    <span class="field-value">
-                                        @Model.IncomingDocumentNumberInputDocument
-                                    </span>
+                                <div class="d-flex align-items-center gap-2 flex-fill">
+                                    <label class="form-label text-nowrap mb-0 required-field">Вх(46 ЦНИИ):</label>
+                                    <input type="text" class="form-control readonly-disabled" value="@Model.IncomingDocumentNumberInputDocument" readonly>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Дата:</label>
-                                    <span class="field-value">
-                                        @Model.IncomingDocumentDateInputDocument.ToString(DateFormatDdMmYyyy)
-                                    </span>
+                                <div class="d-flex align-items-center gap-2 flex-fill">
+                                    <label class="form-label text-nowrap mb-0 required-field">Дата:</label>
+                                    <input type="text" class="form-control readonly-disabled" value="@Model.IncomingDocumentDateInputDocument.ToString(DateFormatDdMmYyyy)" readonly>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Ответственные отделы:</label>
-                                    <span class="field-value @GetEmptyValueClassIfNull(Model.ResponsibleDepartmentsInputDocument)">
-                                        @(Model.ResponsibleDepartmentsInputDocument ?? NotSpecifiedTextPlural)
-                                    </span>
+                        <div class="col-12">
+                            <div class="d-flex align-items-end gap-4">
+                                <div class="d-flex align-items-center gap-2 flex-fill">
+                                    <label class="form-label text-nowrap mb-0">Ответственные отделы:</label>
+                                    <input type="text" class="form-control readonly-disabled" value="@Model.ResponsibleDepartmentsInputDocument" readonly>
                                 </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Выполнить до:</label>
-                                    <span class="field-value">
-                                        @Model.TaskDueDateInputDocument.ToString(DateFormatDdMmYyyy)
-                                    </span>
+                                <div class="d-flex align-items-center gap-2 flex-fill">
+                                    <label class="form-label required-field text-nowrap mb-0">Выполнить до:</label>
+                                    <input type="text" class="form-control readonly-disabled" value="@Model.TaskDueDateInputDocument.ToString(DateFormatDdMmYyyy)" readonly>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mt-3">
-                            <div class="d-flex flex-column">
-                                <label class="form-label field-label mb-2">Ответственный сотрудник:</label>
-                                <span class="field-value @GetEmptyValueClassIfNull(Model.ResponsibleEmployeeFullName)">
-                                    @(Model.ResponsibleEmployeeFullName ?? NotAssignedText)
-                                </span>
+                        <div class="col-12">
+                            <div class="d-flex align-items-end gap-4">
+                                <label class="form-label text-nowrap">Ответственный сотрудник:</label>
+                                <input type="text" class="form-control readonly-disabled" value="@Model.ResponsibleEmployeeFullName" readonly>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Выходные данные документа -->
-                    <div class="mb-5">
-                        <h6 class="section-title">Выходные данные документа</h6>
+                        <!-- Выходные данные документа -->
+                        <div class="col-12 mt-4">
+                            <h6 class="border-bottom pb-2 text-danger">Выходные данные документа</h6>
+                        </div>
 
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-4">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Внешний документ:</label>
-                                    <span class="field-value">
-                                        @GetBooleanDisplayValue(Model.IsExternalDocumentOutputDocument)
-                                    </span>
+                        <div class="col-12">
+                            <div class="d-flex align-items-center gap-4">
+                                <div class="form-check mb-0">
+                                    <input class="form-check-input readonly-disabled" type="checkbox" @(Model.IsExternalDocumentOutputDocument ? "checked" : "") readonly disabled>
+                                    <label class="form-check-label text-nowrap">Внешний документ</label>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Исх (46 ЦНИИ):</label>
-                                    <span class="field-value @GetEmptyValueClassIfNull(Model.OutgoingDocumentNumberOutputDocument)">
-                                        @(Model.OutgoingDocumentNumberOutputDocument ?? NotSpecifiedText)
-                                    </span>
+                                <div class="d-flex align-items-center gap-2 flex-fill">
+                                    <label class="form-label text-nowrap mb-0">Исх (46 ЦНИИ):</label>
+                                    <input type="text" class="form-control readonly-disabled" value="@Model.OutgoingDocumentNumberOutputDocument" readonly>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Дата исходящего:</label>
-                                    <span class="field-value @GetEmptyValueClassIfNull(Model.OutgoingDocumentDateOutputDocument)">
-                                        @(Model.OutgoingDocumentDateOutputDocument?.ToString(DateFormatDdMmYyyy) ?? NotSpecifiedTextFeminine)
-                                    </span>
+                                <div class="d-flex align-items-center gap-2 flex-fill">
+                                    <label class="form-label text-nowrap mb-0">Дата исходящего:</label>
+                                    <input type="text" class="form-control readonly-disabled" value="@(Model.OutgoingDocumentDateOutputDocument?.ToString(DateFormatDdMmYyyy) ?? "")" readonly>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2 flex-fill">
+                                    <label class="form-label text-nowrap mb-0">Получатель:</label>
+                                    <input type="text" class="form-control readonly-disabled" value="@Model.RecipientOutputDocument" readonly>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Получатель:</label>
-                                    <span class="field-value @GetEmptyValueClassIfNull(Model.RecipientOutputDocument)">
-                                        @(Model.RecipientOutputDocument ?? NotSpecifiedText)
-                                    </span>
-                                </div>
-                            </div>
+                        <div class="col-12">
+                            <textarea class="form-control readonly-disabled" rows="3" readonly>@Model.DocumentSummaryOutputDocument</textarea>
+                        </div>
 
-                            <div class="col-md-6">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Краткое содержание:</label>
-                                    <span class="field-value multiline-field-value @GetEmptyValueClassIfNull(Model.DocumentSummaryOutputDocument)">
-                                        @(Model.DocumentSummaryOutputDocument ?? NotSpecifiedTextNeutral)
-                                    </span>
+                        <!-- Статусы -->
+                        <div class="col-12">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input readonly-disabled" type="checkbox" @(Model.IsUnderControl ? "checked" : "") readonly disabled>
+                                        <label class="form-check-label text-nowrap fw-bold">На контроле</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div></div>
+                                        <div>
+                                            <button type="submit" class="btn btn-danger px-4">
+                                                <i class="fas fa-trash-alt me-2"></i>Удалить
+                                            </button>
+                                            <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                                                <i class="fas fa-arrow-left me-2"></i>Назад к списку
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Статусы -->
-                    <div class="mb-4">
-                        <h6 class="section-title">Статусы документа</h6>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">На контроле:</label>
-                                    <span class="field-value">
-                                        @GetBooleanDisplayValue(Model.IsUnderControl)
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="d-flex flex-column">
-                                    <label class="form-label field-label mb-2">Завершена:</label>
-                                    <span class="field-value">
-                                        @GetBooleanDisplayValue(Model.IsCompleted)
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Форма удаления -->
-                    <div class="border-top pt-4 mt-4">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <a asp-action="Index" class="btn btn-outline-secondary px-4">
-                                    <i class="fas fa-arrow-left me-2"></i>Назад к списку
-                                </a>
-                            </div>
-                            <div>
-                                <form method="post" asp-action="DeleteConfirmed" class="d-inline">
-                                    <input type="hidden" name="id" value="@Model.Id" />
-                                    <button type="submit" class="btn btn-danger px-4">
-                                        <i class="fas fa-trash-alt me-2"></i>Удалить
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

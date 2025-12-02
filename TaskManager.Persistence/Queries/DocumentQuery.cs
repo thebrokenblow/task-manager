@@ -7,7 +7,7 @@ namespace TaskManager.Persistence.Queries;
 
 public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
 {
-    public async Task<(List<DocumentOverviewModel> documents, int countDocuments)> GetDocumentsAsync(int countSkip, int countTake)
+    public async Task<(List<DocumentForOverviewModel> documents, int countDocuments)> GetDocumentsAsync(int countSkip, int countTake)
     {
         var queryDocuments = context.Documents.Include(document => document.ResponsibleEmployeeInputDocument)
                                               .Where(document => document.IsCompleted == false && document.RemoveDateTime == null)
@@ -19,7 +19,7 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
                                             .ThenBy(document => document.IsUnderControl)
                                             .Skip(countSkip)
                                             .Take(countTake)
-                                            .Select(document => new DocumentOverviewModel
+                                            .Select(document => new DocumentForOverviewModel
                                             {
                                                 Id = document.Id,
                                                 OutgoingDocumentNumberInputDocument = document.OutgoingDocumentNumberInputDocument,
@@ -46,7 +46,7 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
         return (documents, countDocuments);
     }
 
-    public async Task<(List<DocumentOverviewModel> documents, int countDocuments)> SearchDocumentsAsync(
+    public async Task<(List<DocumentForOverviewModel> documents, int countDocuments)> SearchDocumentsAsync(
         string inputSearch,
         int countSkip,
         int countTake)
@@ -67,7 +67,7 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
 
         var documents = await queryDocuments.OrderBy(document => document.TaskDueDateInputDocument)
                                             .ThenBy(document => document.IsUnderControl)
-                                            .Select(document => new DocumentOverviewModel
+                                            .Select(document => new DocumentForOverviewModel
                                             {
                                                 Id = document.Id,
                                                 OutgoingDocumentNumberInputDocument = document.OutgoingDocumentNumberInputDocument,
@@ -96,10 +96,10 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
         return (documents, countDocuments);
     }
 
-    public async Task<DocumentForEdit?> GetDocumentForEditAsync(int id)
+    public async Task<DocumentForEditModel?> GetDocumentForEditAsync(int id)
     {
         var document = await context.Documents
-                                    .Select(document => new DocumentForEdit
+                                    .Select(document => new DocumentForEditModel
                                     {
                                         Id = document.Id,
                                         OutgoingDocumentNumberInputDocument = document.OutgoingDocumentNumberInputDocument,
@@ -134,10 +134,10 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
         return document;
     }
 
-    public async Task<DocumentForDelete?> GetDocumentForDeleteAsync(int id)
+    public async Task<DocumentForDeleteModel?> GetDocumentForDeleteAsync(int id)
     {
         var document = await context.Documents
-                                    .Select(document => new DocumentForDelete
+                                    .Select(document => new DocumentForDeleteModel
                                     {
                                         Id = document.Id,
                                         OutgoingDocumentNumberInputDocument = document.OutgoingDocumentNumberInputDocument,
@@ -168,5 +168,30 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
                                     .FirstOrDefaultAsync(document => document.Id == id);
 
         return document;
+    }
+
+    public async Task<int?> GetIdEmployeeRemovedAsync(int id)
+    {
+        var removedByEmployeeId = await context.Documents.Where(document => document.Id == id)
+                                                         .Select(document => document.RemovedByEmployeeId)
+                                                         .FirstOrDefaultAsync();
+
+        return removedByEmployeeId;
+    }
+
+    public async Task<DocumentForChangeStatusModel?> GetDocumentForChangeStatusAsync(int id)
+    {
+        var documentForChangeStatusModel = await context.Documents.Where(document => document.Id == id)
+                                                                  .Select(document => new DocumentForChangeStatusModel
+                                                                  { 
+                                                                       DocumentSummaryOutputDocument = document.DocumentSummaryOutputDocument,
+                                                                       OutgoingDocumentDateOutputDocument = document.OutgoingDocumentDateOutputDocument,
+                                                                       OutgoingDocumentNumberOutputDocument = document.OutgoingDocumentNumberOutputDocument,
+                                                                       RecipientOutputDocument = document.RecipientOutputDocument,
+                                                                       IsCompleted = document.IsCompleted
+                                                                  })
+                                                                  .FirstOrDefaultAsync();
+
+        return documentForChangeStatusModel;
     }
 }

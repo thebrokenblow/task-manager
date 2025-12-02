@@ -10,4 +10,6 @@ public interface IDocumentRepository
     Task UpdateAsync(Document document);
     Task RemoveHardAsync(int id);
     Task RemoveSoftAsync(int id, int idEmployeeRemove, int idAdmin, DateTime removeDateTime);
+    Task RecoverDeletedAsync(int id, int idEmployeeRemove);
+    Task UpdateStatusAsync(int id, bool isCompleted);
 }

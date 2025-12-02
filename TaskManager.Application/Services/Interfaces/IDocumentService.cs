@@ -6,12 +6,12 @@ namespace TaskManager.Application.Services.Interfaces;
 
 public interface IDocumentService
 {
-    Task<PagedResult<DocumentOverviewModel>> GetPagedAsync(string inputSearch, int page, int pageSize);
+    Task<PagedResult<DocumentForOverviewModel>> GetPagedAsync(string inputSearch, int page, int pageSize);
     Task<Document?> GetByIdAsync(int id);
 
-    Task<DocumentForEdit?> GetDocumentForEditAsync(int id);
+    Task<DocumentForEditModel?> GetDocumentForEditAsync(int id);
 
-    Task<DocumentForDelete?> GetDocumentForDeleteAsync(int id);
+    Task<DocumentForDeleteModel?> GetDocumentForDeleteAsync(int id);
     Task CreateAsync(Document document);
     Task EditAsync(Document document);
     Task DeleteAsync(int id);

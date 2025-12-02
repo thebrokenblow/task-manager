@@ -1,6 +1,6 @@
 ﻿namespace TaskManager.Domain.Model.Documents;
 
-public class DocumentForEdit
+public class DocumentForEditModel
 {
     /// <summary>
     /// Уникальный идентификатор документа в системе.

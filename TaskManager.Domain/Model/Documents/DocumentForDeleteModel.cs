@@ -1,6 +1,6 @@
 ﻿namespace TaskManager.Domain.Model.Documents;
 
-public class DocumentForDelete
+public class DocumentForDeleteModel
 {
     public int Id { get; set; }
 

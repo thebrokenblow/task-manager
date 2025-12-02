@@ -3,6 +3,7 @@ using TaskManager.Application;
 using TaskManager.Domain.Services;
 using TaskManager.Persistence;
 using TaskManager.View.Configurations;
+using TaskManager.View.Middlewares;
 using TaskManager.View.Services;
 
 namespace TaskManager.View;
@@ -34,6 +35,8 @@ public class Startup(IConfiguration configuration)
             app.UseExceptionHandler("/Home/Error");
             app.UseHsts();
         }
+
+        app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();

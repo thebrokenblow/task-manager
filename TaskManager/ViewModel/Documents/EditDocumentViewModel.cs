@@ -5,6 +5,7 @@ namespace TaskManager.View.ViewModel.Documents;
 
 public class EditDocumentViewModel
 {
-    public required DocumentForEdit Document { get; init; }
+    public required DocumentForEditModel Document { get; init; }
     public required SelectList ResponsibleEmployees { get; init; }
+    public string? ErrorMessage { get; init; }
 }
