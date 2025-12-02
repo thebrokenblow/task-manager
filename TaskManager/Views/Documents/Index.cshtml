@@ -226,7 +226,8 @@
                                                             </form>
                                                         }
 
-                                                        @if (!IsDeletedDocument(document))
+                                                        @if (document.CreatedByEmployeeId == authService.IdCurrentUser || 
+                                                            authService.IdAdmin == authService.IdCurrentUser)
                                                         {
                                                             <a asp-action="Delete" asp-route-id="@document.Id"
                                                                class="btn btn-outline-danger btn-sm" title="Удалить">
