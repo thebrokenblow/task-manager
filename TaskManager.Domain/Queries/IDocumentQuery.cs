@@ -15,9 +15,11 @@ public interface IDocumentQuery
 
     Task<DocumentForDeleteModel?> GetDocumentForDeleteAsync(int id);
 
+    Task<DocumentForChangeStatusModel?> GetDocumentForChangeStatusAsync(int id);
+
+    Task<DocumentForCsvExportModel?> GetDocumentForCsvExportAsync(int id);
+
     Task<int?> GetIdEmployeeCreatedAsync(int id);
 
     Task<int?> GetIdEmployeeRemovedAsync(int id);
-
-    Task<DocumentForChangeStatusModel?> GetDocumentForChangeStatusAsync(int id);
 }

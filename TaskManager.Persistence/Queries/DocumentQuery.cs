@@ -215,4 +215,41 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
 
         return documentForChangeStatusModel;
     }
+
+    public async Task<DocumentForCsvExportModel?> GetDocumentForCsvExportAsync(int id)
+    {
+        var documentForExportModel = await context.Documents.Where(document => document.Id == id)
+                                                            .Select(document => new DocumentForCsvExportModel
+                                                            {
+                                                                OutgoingDocumentNumberInputDocument = document.OutgoingDocumentNumberInputDocument,
+                                                                SourceDocumentDateInputDocument = document.SourceDocumentDateInputDocument,
+                                                                CustomerInputDocument = document.CustomerInputDocument,
+                                                                DocumentSummaryInputDocument = document.DocumentSummaryInputDocument,
+                                                                IsExternalDocumentInputDocument = document.IsExternalDocumentInputDocument,
+                                                                IncomingDocumentNumberInputDocument = document.IncomingDocumentNumberInputDocument,
+                                                                IncomingDocumentDateInputDocument = document.IncomingDocumentDateInputDocument,
+                                                                ResponsibleDepartmentsInputDocument = document.ResponsibleDepartmentsInputDocument,
+                                                                TaskDueDateInputDocument = document.TaskDueDateInputDocument,
+
+                                                                FullNameResponsibleEmployeeInputDocument = document.ResponsibleEmployeeInputDocument != null
+                                                                    ? document.ResponsibleEmployeeInputDocument.FullName
+                                                                    : null,
+
+                                                                IsExternalDocumentOutputDocument = document.IsExternalDocumentOutputDocument,
+                                                                OutgoingDocumentNumberOutputDocument = document.OutgoingDocumentNumberOutputDocument,
+                                                                OutgoingDocumentDateOutputDocument = document.OutgoingDocumentDateOutputDocument,
+                                                                RecipientOutputDocument = document.RecipientOutputDocument,
+                                                                DocumentSummaryOutputDocument = document.DocumentSummaryOutputDocument,
+
+                                                                IsUnderControl = document.IsUnderControl,
+                                                                IsCompleted = document.IsCompleted,
+
+                                                                FullNameCreatedEmployee = document.CreatedByEmployee != null
+                                                                    ? document.CreatedByEmployee.FullName
+                                                                    : string.Empty,
+                                                            })
+                                                            .FirstOrDefaultAsync();
+
+        return documentForExportModel;
+    }
 }

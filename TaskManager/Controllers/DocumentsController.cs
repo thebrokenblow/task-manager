@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Net.Mime;
+using System.Text;
 using TaskManager.Application.Exceptions;
+using TaskManager.Application.Services;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Exceptions;
@@ -174,6 +177,20 @@ public class DocumentsController(
         catch (IncompleteOutputDocumentException exception)
         {
             return RedirectToAction("Edit", "Documents", new { id, errorMessage = exception.Message });
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ExportToCsv(int id)
+    {
+        try
+        {
+            var bytesDocument = await documentService.CreateDocumentCsvAsync(id);
+            return File(bytesDocument, MediaTypeNames.Text.Csv, "document.csv");
+        }
+        catch (NotFoundException)
+        {
+            return RedirectToNotFoundError();
         }
     }
 

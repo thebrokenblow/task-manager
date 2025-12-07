@@ -2,6 +2,7 @@
 @using TaskManager.Domain.Model
 @using TaskManager.Domain.Model.Documents
 @using TaskManager.Domain.Services
+@using TaskManager.Domain.Utils
 @using TaskManager.View.Utils
 @using TaskManager.View.ViewModel
 @using TaskManager.View.ViewModel.Employees
@@ -177,6 +178,14 @@
                                                                 <i class="fas fa-trash-alt"></i>
                                                             </a>
                                                         }
+
+                                                            <a asp-controller="Documents" 
+                                                               asp-action="ExportToCsv" 
+                                                               asp-route-id="@document.Id"
+                                                               class="btn btn-outline-info btn-sm" 
+                                                               title="Экспорт в CSV">
+                                                                <i class="fas fa-file-csv"></i>
+                                                            </a>
                                                     </div>
                                                 }
                                             </td>

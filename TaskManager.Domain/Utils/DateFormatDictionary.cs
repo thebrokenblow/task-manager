@@ -1,4 +1,4 @@
-﻿namespace TaskManager.View.Utils;
+﻿namespace TaskManager.Domain.Utils;
 
 /// <summary>
 /// Централизованное хранилище форматов дат и времени, используемых в приложении.

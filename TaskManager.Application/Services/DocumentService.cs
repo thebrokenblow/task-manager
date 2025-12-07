@@ -16,7 +16,8 @@ namespace TaskManager.Application.Services;
 public class DocumentService(
     IDocumentQuery documentQuery, 
     IDocumentRepository documentRepository,
-    IAuthService authService) : IDocumentService
+    IAuthService authService,
+    IExportService exportService) : IDocumentService
 {
     public async Task<PagedResult<DocumentForOverviewModel>> GetPagedAsync(string inputSearch, int page, int pageSize)
     {
@@ -165,5 +166,15 @@ public class DocumentService(
         {
             document.DocumentSummaryOutputDocument = document.DocumentSummaryOutputDocument.Trim();
         }
+    }
+
+    public async Task<byte[]> CreateDocumentCsvAsync(int id)
+    {                                               
+        var documentForCsvExportModel = await documentQuery.GetDocumentForCsvExportAsync(id) ?? 
+                                                throw new NotFoundException(nameof(DocumentForCsvExportModel), id);
+
+        var bytesDocument = exportService.ConvertDocumentToCsv(documentForCsvExportModel);
+
+        return bytesDocument;
     }
 }
