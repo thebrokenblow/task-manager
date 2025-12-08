@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using TaskManager.Application.Common;
+﻿using TaskManager.Application.Common;
 using TaskManager.Application.Exceptions;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Application.Validations;
@@ -13,13 +12,21 @@ using TaskManager.Domain.Services;
 
 namespace TaskManager.Application.Services;
 
+/// <summary>
+/// Реализация сервиса для управления документами.
+/// </summary>
+/// <remarks>
+/// Обеспечивает бизнес-логику работы с документами, включая управление доступом,
+/// валидацию данных и взаимодействие с репозиториями.
+/// </remarks>
 public class DocumentService(
-    IDocumentQuery documentQuery, 
+    IDocumentQuery documentQuery,
     IDocumentRepository documentRepository,
     IAuthService authService,
     IExportService exportService) : IDocumentService
 {
-    public async Task<PagedResult<DocumentForOverviewModel>> GetPagedAsync(string inputSearch, int page, int pageSize)
+    /// <inheritdoc/>
+    public async Task<PagedResult<DocumentForOverviewModel>> GetPagedAsync(string? searchTerm, int page, int pageSize)
     {
         int countDocuments;
         List<DocumentForOverviewModel> documents;
@@ -28,43 +35,58 @@ public class DocumentService(
 
         if (authService.IsAdmin)
         {
-            (documents, countDocuments) = await documentQuery.GetDocumentsAsync(inputSearch, countSkip, pageSize, DocumentStatus.Archived);
+            // Администраторы видят все документы, включая архивные
+            (documents, countDocuments) = await documentQuery.GetDocumentsAsync(
+                searchTerm,
+                countSkip,
+                pageSize,
+                DocumentStatus.Archived);
         }
         else
         {
-            (documents, countDocuments) = await documentQuery.GetDocumentsAsync(inputSearch, countSkip, pageSize, DocumentStatus.Active);
+            // Обычные пользователи видят только активные документы
+            (documents, countDocuments) = await documentQuery.GetDocumentsAsync(
+                searchTerm,
+                countSkip,
+                pageSize,
+                DocumentStatus.Active);
         }
 
-        var pagedResult = new PagedResult<DocumentForOverviewModel>(documents, countDocuments, page, pageSize);
+        var pagedResult = new PagedResult<DocumentForOverviewModel>(
+            documents,
+            countDocuments,
+            page,
+            pageSize);
 
         return pagedResult;
     }
 
+    /// <inheritdoc/>
     public async Task<DocumentForEditModel?> GetDocumentForEditAsync(int id)
     {
         var document = await documentQuery.GetDocumentForEditAsync(id);
-
         return document;
     }
 
+    /// <inheritdoc/>
     public async Task<DocumentForDeleteModel?> GetDocumentForDeleteAsync(int id)
     {
         var document = await documentQuery.GetDocumentForDeleteAsync(id);
-
         return document;
     }
 
+    /// <inheritdoc/>
     public async Task<Document?> GetByIdAsync(int id)
     {
         var document = await documentRepository.GetByIdAsync(id);
-
         return document;
     }
 
+    /// <inheritdoc/>
     public async Task ChangeStatusAsync(int id)
     {
-        var documentForChangeStatusModel = await documentQuery.GetDocumentForChangeStatusAsync(id) ?? 
-                                                    throw new NotFoundException(nameof(DocumentForChangeStatusModel), id);
+        var documentForChangeStatusModel = await documentQuery.GetDocumentForChangeStatusAsync(id) ??
+            throw new NotFoundException(nameof(DocumentForChangeStatusModel), id);
 
         var documentForChangeStatusModelValidator = new DocumentForChangeStatusModelValidator();
         var validationResult = documentForChangeStatusModelValidator.Validate(documentForChangeStatusModel);
@@ -77,6 +99,7 @@ public class DocumentService(
         await documentRepository.UpdateStatusAsync(id, !documentForChangeStatusModel.IsCompleted);
     }
 
+    /// <inheritdoc/>
     public async Task CreateAsync(Document document)
     {
         if (!authService.IsAuthenticated || !authService.IdCurrentUser.HasValue)
@@ -84,15 +107,16 @@ public class DocumentService(
             throw new UnauthorizedAccessException("Пользователь не аутентифицирован");
         }
 
-        TrimDocumentProperties(document);
+        TrimDocumentStrings(document);
 
         document.CreatedByEmployeeId = authService.IdCurrentUser.Value;
         await documentRepository.AddAsync(document);
     }
 
+    /// <inheritdoc/>
     public async Task EditAsync(Document document)
     {
-        TrimDocumentProperties(document);
+        TrimDocumentStrings(document);
 
         document.LastEditedDateTime = DateTime.Now;
         document.LastEditedByEmployeeId = authService.IdCurrentUser;
@@ -100,14 +124,17 @@ public class DocumentService(
         await documentRepository.UpdateAsync(document);
     }
 
+    /// <inheritdoc/>
     public async Task RecoverDeletedAsync(int id)
     {
-        var removedByEmployeeId = await documentQuery.GetIdEmployeeRemovedAsync(id) ?? 
-            throw new InvalidOperationException($"Id сотрудника который удалил запись равна null, у документа с id: {id}");
+        var removedByEmployeeId = await documentQuery.GetIdEmployeeRemovedAsync(id) ??
+            throw new InvalidOperationException(
+                $"Не удалось определить сотрудника, удалившего документ с ID: {id}");
 
         await documentRepository.RecoverDeletedAsync(id, removedByEmployeeId);
     }
 
+    /// <inheritdoc/>
     public async Task DeleteAsync(int id)
     {
         if (!authService.IsAuthenticated || !authService.IdCurrentUser.HasValue)
@@ -121,11 +148,29 @@ public class DocumentService(
         }
         else
         {
-            await documentRepository.RemoveSoftAsync(id, authService.IdCurrentUser.Value, authService.IdAdmin, DateTime.Now);
+            await documentRepository.RemoveSoftAsync(
+                id,
+                authService.IdCurrentUser.Value,
+                authService.IdAdmin,
+                DateTime.Now);
         }
     }
 
-    private static void TrimDocumentProperties(Document document)
+    /// <inheritdoc/>
+    public async Task<byte[]> CreateDocumentCsvAsync(int id)
+    {
+        var documentForCsvExportModel = await documentQuery.GetDocumentForCsvExportAsync(id) ??
+            throw new NotFoundException(nameof(DocumentForCsvExportModel), id);
+
+        var bytesDocument = exportService.ConvertDocumentToCsv(documentForCsvExportModel);
+        return bytesDocument;
+    }
+
+    /// <summary>
+    /// Очищает строковые свойства документа от лишних пробелов.
+    /// </summary>
+    /// <param name="document">Документ для обработки.</param>
+    private static void TrimDocumentStrings(Document document)
     {
         if (document.OutgoingDocumentNumberInputDocument is not null)
         {
@@ -166,15 +211,5 @@ public class DocumentService(
         {
             document.DocumentSummaryOutputDocument = document.DocumentSummaryOutputDocument.Trim();
         }
-    }
-
-    public async Task<byte[]> CreateDocumentCsvAsync(int id)
-    {                                               
-        var documentForCsvExportModel = await documentQuery.GetDocumentForCsvExportAsync(id) ?? 
-                                                throw new NotFoundException(nameof(DocumentForCsvExportModel), id);
-
-        var bytesDocument = exportService.ConvertDocumentToCsv(documentForCsvExportModel);
-
-        return bytesDocument;
     }
 }

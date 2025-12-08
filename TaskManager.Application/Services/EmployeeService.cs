@@ -8,33 +8,46 @@ using TaskManager.Domain.Repositories;
 
 namespace TaskManager.Application.Services;
 
+/// <summary>
+/// Реализация сервиса для управления сотрудниками.
+/// </summary>
+/// <remarks>
+/// Обеспечивает бизнес-логику работы с сотрудниками, включая валидацию данных,
+/// проверку уникальности логинов и взаимодействие с репозиториями.
+/// </remarks>
+/// <param name="employeeQuery">Запросы для получения данных о сотрудниках.</param>
+/// <param name="employeeRepository">Репозиторий для работы с данными сотрудников.</param>
 public class EmployeeService(
-    IEmployeeQuery employeeQuery, 
+    IEmployeeQuery employeeQuery,
     IEmployeeRepository employeeRepository) : IEmployeeService
 {
+    /// <summary>
+    /// Пароль по умолчанию для новых сотрудников.
+    /// </summary>
     private const string DefaultPassword = "Qwerty123";
 
+    /// <inheritdoc/>
     public async Task<List<Employee>> GetRegularEmployeesAsync()
     {
-        var employee = await employeeQuery.GetRegularEmployeesAsync();
-
-        return employee;
+        var employees = await employeeQuery.GetRegularEmployeesAsync();
+        return employees;
     }
 
+    /// <inheritdoc/>
     public async Task<List<EmployeeSelectModel>> GetResponsibleEmployeesAsync()
     {
         var responsibleEmployees = await employeeQuery.GetResponsibleEmployeesAsync();
-
         return responsibleEmployees;
     }
 
+    /// <inheritdoc/>
     public async Task<Employee?> GetByIdAsync(int id)
     {
         var employee = await employeeRepository.GetByIdAsync(id);
-
         return employee;
     }
 
+    /// <inheritdoc/>
     public async Task CreateAsync(Employee employee)
     {
         var loginExists = await employeeRepository.IsLoginExistAsync(employee.Login);
@@ -44,7 +57,7 @@ public class EmployeeService(
             throw new LoginAlreadyExistsException(employee.Login);
         }
 
-        TrimEmployeeProperties(employee);
+        TrimEmployeeStrings(employee);
 
         employee.Password = DefaultPassword;
         employee.Role = RolesDictionary.Employee;
@@ -52,6 +65,7 @@ public class EmployeeService(
         await employeeRepository.AddAsync(employee);
     }
 
+    /// <inheritdoc/>
     public async Task EditAsync(Employee employee)
     {
         var loginExists = await employeeRepository.IsLoginExistAsync(employee.Login, employee.Id);
@@ -61,11 +75,15 @@ public class EmployeeService(
             throw new LoginAlreadyExistsException(employee.Login);
         }
 
-        TrimEmployeeProperties(employee);
+        TrimEmployeeStrings(employee);
         await employeeRepository.UpdateAsync(employee);
     }
 
-    private static void TrimEmployeeProperties(Employee employee)
+    /// <summary>
+    /// Очищает строковые свойства сотрудника от лишних пробелов.
+    /// </summary>
+    /// <param name="employee">Сотрудник для обработки.</param>
+    private static void TrimEmployeeStrings(Employee employee)
     {
         if (employee.FullName is not null)
         {

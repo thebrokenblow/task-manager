@@ -2,7 +2,19 @@
 
 namespace TaskManager.Application.Services.Interfaces;
 
+/// <summary>
+/// Сервис для экспорта данных в различные форматы.
+/// </summary>
+/// <remarks>
+/// Предоставляет методы для преобразования данных в форматы, пригодные для экспорта и обмена.
+/// </remarks>
 public interface IExportService
 {
+    /// <summary>
+    /// Преобразует данные документа в CSV формат.
+    /// </summary>
+    /// <param name="documentForExportModel">Модель документа для экспорта.</param>
+    /// <returns>Массив байтов, представляющий CSV-файл в кодировке UTF-8 с BOM.</returns>
+    /// <exception cref="ArgumentNullException">Выбрасывается, если переданная модель документа равна null.</exception>
     byte[] ConvertDocumentToCsv(DocumentForCsvExportModel documentForExportModel);
 }
