@@ -16,7 +16,7 @@ public class AuthService(
         httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
 
     public bool IsAdmin =>
-        httpContextAccessor.HttpContext?.User.IsInRole(RolesDictionary.Admin.ToString()) ?? false;
+        httpContextAccessor.HttpContext?.User.IsInRole(UserRole.Admin.ToString()) ?? false;
 
     public string? FullName =>
        httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value.ToString();

@@ -4,7 +4,7 @@
 /// Словарь ролей пользователей в системе
 /// Определяет уровни доступа и права пользователей
 /// </summary>
-public enum RolesDictionary
+public enum UserRole
 {
     /// <summary>
     /// Роль сотрудника

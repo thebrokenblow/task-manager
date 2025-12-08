@@ -60,7 +60,7 @@ public class EmployeeService(
         TrimEmployeeStrings(employee);
 
         employee.Password = DefaultPassword;
-        employee.Role = RolesDictionary.Employee;
+        employee.Role = UserRole.Employee;
 
         await employeeRepository.AddAsync(employee);
     }

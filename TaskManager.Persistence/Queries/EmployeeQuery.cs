@@ -11,7 +11,7 @@ public class EmployeeQuery(TaskManagerDbContext context) : IEmployeeQuery
 {
     public async Task<List<Employee>> GetRegularEmployeesAsync()
     {
-        var employees = await context.Employees.Where(employee => employee.Role != RolesDictionary.Admin)
+        var employees = await context.Employees.Where(employee => employee.Role != UserRole.Admin)
                                                .OrderBy(employee => employee.Department)
                                                .ThenBy(employee => employee.FullName)
                                                .ToListAsync();
@@ -21,7 +21,7 @@ public class EmployeeQuery(TaskManagerDbContext context) : IEmployeeQuery
 
     public async Task<List<EmployeeSelectModel>> GetResponsibleEmployeesAsync()
     {
-        var employees = await context.Employees.Where(employee => employee.Role != RolesDictionary.Admin)
+        var employees = await context.Employees.Where(employee => employee.Role != UserRole.Admin)
                                                .OrderBy(employee => employee.Department)
                                                .ThenBy(employee => employee.FullName)
                                                .Select(employee => new EmployeeSelectModel  

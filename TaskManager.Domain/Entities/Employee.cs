@@ -41,5 +41,5 @@ public class Employee
     /// Тип сотрудника.
     /// Обязательное свойство.
     /// </summary>
-    public required RolesDictionary Role { get; set; }
+    public required UserRole Role { get; set; }
 }
