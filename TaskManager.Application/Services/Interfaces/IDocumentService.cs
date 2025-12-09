@@ -13,14 +13,31 @@ namespace TaskManager.Application.Services.Interfaces;
 /// </remarks>
 public interface IDocumentService
 {
+
     /// <summary>
-    /// Получает постраничный список документов с возможностью поиска.
+    /// Получает постраничный список документов с расширенными параметрами фильтрации.
     /// </summary>
-    /// <param name="searchTerm">Строка поиска для фильтрации документов.</param>
-    /// <param name="page">Номер текущей страницы.</param>
-    /// <param name="pageSize">Размер страницы (количество элементов на странице).</param>
-    /// <returns>Объект <see cref="PagedResult{T}"/> с документами для отображения в списке.</returns>
-    Task<PagedResult<DocumentForOverviewModel>> GetPagedAsync(string? searchTerm, int page, int pageSize);
+    /// <param name="searchTerm">Термин для поиска по текстовым полям документов. Если null или пустая строка - поиск не применяется.</param>
+    /// <param name="showMyTasks">Флаг, указывающий показывать только задачи текущего пользователя (true) или все задачи (false).</param>
+    /// <param name="startOutgoingDocumentDateOutputDocument">Начальная дата для фильтрации по дате исходящего документа (включительно). Если null - фильтр не применяется.</param>
+    /// <param name="endOutgoingDocumentDateOutputDocument">Конечная дата для фильтрации по дате исходящего документа (включительно). Если null - фильтр не применяется.</param>
+    /// <param name="page">Номер текущей страницы (начинается с 1).</param>
+    /// <param name="pageSize">Размер страницы - количество элементов на странице.</param>
+    /// <returns>Объект <see cref="PagedResult{T}"/> с отфильтрованными и постранично разбитыми документами для отображения.</returns>
+    /// <remarks>
+    /// Метод поддерживает комбинирование фильтров:
+    /// - Поиск по тексту работает независимо от других фильтров
+    /// - Фильтр по датам применяется только если заданы обе границы
+    /// - Фильтр по задачам пользователя зависит от контекста аутентификации
+    /// - Для администраторов могут показываться дополнительные документы
+    /// </remarks>
+    Task<PagedResult<DocumentForOverviewModel>> GetPagedAsync(
+        string? searchTerm,
+        bool showMyTasks,
+        DateOnly? startOutgoingDocumentDateOutputDocument,
+        DateOnly? endOutgoingDocumentDateOutputDocument,
+        int page,
+        int pageSize);
 
     /// <summary>
     /// Получает документ по его идентификатору.

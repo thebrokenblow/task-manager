@@ -37,13 +37,25 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" style="min-width: 220px;">
                                     <li>
+                                        <a class="dropdown-item text-dark" asp-controller="Documents" asp-action="UserDocuments" asp-route-userId="@authService.IdCurrentUser">
+                                            <i class="bi bi-check-square"></i> Мои задачи
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+
+                                    <li>
                                         <a class="dropdown-item text-dark" asp-controller="Accounts" asp-action="ChangePassword" asp-route-id="@authService.IdCurrentUser">
                                             <i class="bi bi-key"></i> Сменить пароль
                                         </a>
                                     </li>
+
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
+
                                     <li>
                                         <form method="post" asp-controller="Accounts" asp-action="Logout" class="d-inline w-100">
                                             <button type="submit" class="dropdown-item text-danger w-100">

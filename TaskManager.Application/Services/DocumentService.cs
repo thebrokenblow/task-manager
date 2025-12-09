@@ -26,8 +26,26 @@ public class DocumentService(
     IExportService exportService) : IDocumentService
 {
     /// <inheritdoc/>
-    public async Task<PagedResult<DocumentForOverviewModel>> GetPagedAsync(string? searchTerm, int page, int pageSize)
+    public async Task<PagedResult<DocumentForOverviewModel>> GetPagedAsync(
+        string? searchTerm,
+        bool showMyTasks,
+        DateOnly? startOutgoingDocumentDateOutputDocument,
+        DateOnly? endOutgoingDocumentDateOutputDocument,
+        int page, 
+        int pageSize)
     {
+        if (showMyTasks && !authService.IsAuthenticated)
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        int? idResponsibleEmployeeInputDocument = null;
+
+        if (showMyTasks)
+        {
+            idResponsibleEmployeeInputDocument = authService.IdCurrentUser;
+        }
+
         int countDocuments;
         List<DocumentForOverviewModel> documents;
 
@@ -38,6 +56,9 @@ public class DocumentService(
             // Администраторы видят все документы, включая архивные
             (documents, countDocuments) = await documentQuery.GetDocumentsAsync(
                 searchTerm,
+                startOutgoingDocumentDateOutputDocument,
+                endOutgoingDocumentDateOutputDocument,
+                idResponsibleEmployeeInputDocument,
                 countSkip,
                 pageSize,
                 DocumentStatus.Archived);
@@ -47,6 +68,9 @@ public class DocumentService(
             // Обычные пользователи видят только активные документы
             (documents, countDocuments) = await documentQuery.GetDocumentsAsync(
                 searchTerm,
+                startOutgoingDocumentDateOutputDocument,
+                endOutgoingDocumentDateOutputDocument,
+                idResponsibleEmployeeInputDocument,
                 countSkip,
                 pageSize,
                 DocumentStatus.Active);

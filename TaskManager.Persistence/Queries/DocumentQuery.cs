@@ -10,13 +10,29 @@ namespace TaskManager.Persistence.Queries;
 public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
 {
     public async Task<(List<DocumentForOverviewModel> documents, int countDocuments)> GetDocumentsAsync(
-        string? searchTerm, 
+        string? searchTerm,
+        DateOnly? startOutgoingDocumentDateOutputDocument,
+        DateOnly? endOutgoingDocumentDateOutputDocument,
+        int? idResponsibleEmployeeInputDocument,
         int countSkip, 
         int countTake,
         DocumentStatus documentStatus)
     {
         var queryDocuments = context.Documents.Include(document => document.ResponsibleEmployeeInputDocument)
                                               .AsQueryable();
+
+        if (startOutgoingDocumentDateOutputDocument != null && endOutgoingDocumentDateOutputDocument != null)
+        {
+            queryDocuments = queryDocuments.Where(document =>
+                                document.OutgoingDocumentDateOutputDocument >= startOutgoingDocumentDateOutputDocument &&
+                                document.OutgoingDocumentDateOutputDocument <= endOutgoingDocumentDateOutputDocument);
+        }
+
+        if (idResponsibleEmployeeInputDocument != null)
+        {
+            queryDocuments = queryDocuments.Where(document =>
+                                document.IdResponsibleEmployeeInputDocument == idResponsibleEmployeeInputDocument);
+        }
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {

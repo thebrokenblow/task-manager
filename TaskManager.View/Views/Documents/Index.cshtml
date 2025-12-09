@@ -46,7 +46,10 @@
                     </h6>
                 </div>
                 <div class="card-body">
-                    <form method="get" asp-action="Index" class="row g-3 align-items-end">
+                    <form method="get" asp-action="Index" class="row g-3 align-items-end" id="searchForm">
+                        <input type="hidden" name="totalPages" value="@Model.PagedDocuments.TotalPages">
+
+                        <!-- Первая строка: поле поиска -->
                         <div class="col-md-12">
                             <div class="d-flex align-items-center gap-2">
                                 <input type="text" class="form-control" name="inputSearch" value="@Model.InputString"
@@ -56,15 +59,59 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <div class="d-flex align-items-center gap-2">
-                                <label class="form-label text-nowrap mb-0">Записей:</label>
-                                <select class="form-select" name="pageSize">
-                                    <option value="50" selected="@(Model.PagedDocuments.PageSize == 50)">50</option>
-                                    <option value="75" selected="@(Model.PagedDocuments.PageSize == 75)">75</option>
-                                    <option value="100" selected="@(Model.PagedDocuments.PageSize == 100)">100</option>
-                                    <option value="200" selected="@(Model.PagedDocuments.PageSize == 200)">200</option>
-                                </select>
+        
+                        <!-- Вторая строка: фильтры -->
+                        <div class="col-md-12">
+                            <div class="row g-3 align-items-end">
+                                <!-- Левая часть: календари -->
+                                <div class="col-md-6">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <label class="form-label text-nowrap mb-0">С:</label>
+                                                <input type="date" class="form-control" name="startOutgoingDocumentDateOutputDocument" 
+                                                       value="@(Model.StartOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd))"
+                                                       id="startDatePicker">
+                                            </div>
+                                        </div>
+    
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <label class="form-label text-nowrap mb-0">По:</label>
+                                                <input type="date" class="form-control" name="endOutgoingDocumentDateOutputDocument" 
+                                                       value="@(Model.EndOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd))" 
+                                                       id="endDatePicker">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                
+                                <!-- Центральная часть: чекбокс "Мои задачи" -->
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="showMyTasks" value="true" 
+                                               id="showMyTasksCheckbox" @(Model.ShowMyTasks ? "checked" : string.Empty)>
+                                        <label class="form-check-label" for="showMyTasksCheckbox">
+                                            <i class="bi bi-person-check me-1"></i>Мои задачи
+                                        </label>
+                                        @if (Model.ShowMyTasks)
+                                        {
+                                            <input type="hidden" name="showMyTasks" value="false">
+                                        }
+                                    </div>
+                                </div>
+                
+                                <!-- Правая часть: количество записей -->
+                                <div class="col-md-3">
+                                    <div class="d-flex justify-content-end">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <label class="form-label text-nowrap mb-0">Записей:</label>
+                                            <select class="form-select" name="pageSize" id="pageSizeSelect" 
+                                                    asp-for="PagedDocuments.PageSize" asp-items="Model.CountsDocumentsOnPage">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -210,6 +257,10 @@
                                 <a class="page-link"
                                    asp-action="Index"
                                    asp-route-inputSearch="@Model.InputString"
+                                   asp-route-showMyTasks="@Model.ShowMyTasks"
+                                   asp-route-startOutgoingDocumentDateOutputDocument="@Model.StartOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd)"
+                                   asp-route-endOutgoingDocumentDateOutputDocument="@Model.EndOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd)"
+                                   asp-route-totalPages="@Model.PagedDocuments.TotalPages"
                                    asp-route-pageSize="@Model.PagedDocuments.PageSize"
                                    asp-route-page="@(Model.PagedDocuments.PageNumber - 1)">
                                     <i class="fas fa-chevron-left"></i>
@@ -221,7 +272,11 @@
                                 <li class="page-item @GetAtributeCurrentPage(Model.PagedDocuments, pageNumber)">
                                     <a class="page-link"
                                        asp-action="Index"
+                                       asp-route-showMyTasks="@Model.ShowMyTasks"
                                        asp-route-inputSearch="@Model.InputString"
+                                       asp-route-startOutgoingDocumentDateOutputDocument="@Model.StartOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd)"
+                                       asp-route-endOutgoingDocumentDateOutputDocument="@Model.EndOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd)"
+                                       asp-route-totalPages="@Model.PagedDocuments.TotalPages"
                                        asp-route-pageSize="@Model.PagedDocuments.PageSize"
                                        asp-route-page="@pageNumber">@pageNumber</a>
                                 </li>
@@ -231,6 +286,10 @@
                                 <a class="page-link"
                                    asp-action="Index"
                                    asp-route-inputSearch="@Model.InputString"
+                                   asp-route-showMyTasks="@Model.ShowMyTasks"
+                                   asp-route-startOutgoingDocumentDateOutputDocument="@Model.StartOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd)"
+                                   asp-route-endOutgoingDocumentDateOutputDocument="@Model.EndOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd)"
+                                   asp-route-totalPages="@Model.PagedDocuments.TotalPages"
                                    asp-route-pageSize="@Model.PagedDocuments.PageSize"
                                    asp-route-page="@(Model.PagedDocuments.PageNumber + 1)">
                                     <i class="fas fa-chevron-right"></i>
@@ -289,4 +348,19 @@
 
         return string.Empty;
     }
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pageSizeSelect = document.getElementById('pageSizeSelect');
+            const searchForm = document.getElementById('searchForm');
+            
+            if (pageSizeSelect && searchForm) {
+                pageSizeSelect.addEventListener('change', function() {
+                    searchForm.submit();
+                });
+            }
+        });
+    </script>
 }

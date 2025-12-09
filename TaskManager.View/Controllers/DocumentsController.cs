@@ -21,21 +21,54 @@ public class DocumentsController(
 
     private const int DefaultDueDateDaysOffset = 5;
 
+    private readonly int[] CountsDocumentsOnPage = [DefaultCountDocumentsOnPage, 75, 150, 200];
+
     [HttpGet]
     public async Task<IActionResult> Index(
         string inputSearch,
+        int totalPages,
+        DateOnly? startOutgoingDocumentDateOutputDocument,
+        DateOnly? endOutgoingDocumentDateOutputDocument,
+        bool showMyTasks,
         int page = DefaultNumberPage,
         int pageSize = DefaultCountDocumentsOnPage) 
     {
-        var pagedDocuments = await documentService.GetPagedAsync(inputSearch, page, pageSize);
-
-        var indexDocumentViewModel = new IndexDocumentViewModel
+        try
         {
-            InputString = inputSearch,
-            PagedDocuments = pagedDocuments
-        };
+            if (!CountsDocumentsOnPage.Contains(pageSize))
+            {
+                pageSize = DefaultCountDocumentsOnPage;
+            }
 
-        return View(indexDocumentViewModel);
+            if (page < 0 || page > totalPages)
+            {
+                page = DefaultNumberPage;
+            }
+
+            var pagedDocuments = await documentService.GetPagedAsync(
+                inputSearch,
+                showMyTasks,
+                startOutgoingDocumentDateOutputDocument,
+                endOutgoingDocumentDateOutputDocument,
+                page,
+                pageSize);
+
+            var indexDocumentViewModel = new IndexDocumentViewModel
+            {
+                InputString = inputSearch,
+                PagedDocuments = pagedDocuments,
+                CountsDocumentsOnPage = new(CountsDocumentsOnPage),
+                ShowMyTasks = showMyTasks,
+                StartOutgoingDocumentDateOutputDocument = startOutgoingDocumentDateOutputDocument,
+                EndOutgoingDocumentDateOutputDocument = endOutgoingDocumentDateOutputDocument,
+            };
+
+            return View(indexDocumentViewModel);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return RedirectToUnauthorizedError();
+        }
     }
 
     [HttpGet]
