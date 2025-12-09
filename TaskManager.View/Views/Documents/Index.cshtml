@@ -69,18 +69,22 @@
                                         <div class="col-md-6">
                                             <div class="d-flex align-items-center gap-2">
                                                 <label class="form-label text-nowrap mb-0">С:</label>
-                                                <input type="date" class="form-control" name="startOutgoingDocumentDateOutputDocument" 
-                                                       value="@(Model.StartOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd))"
-                                                       id="startDatePicker">
+                                                <input type="date" 
+                                                       class="form-control" 
+                                                       name="startOutgoingDocumentDateOutputDocument" 
+                                                       placeholder="дд.мм.гггг"
+                                                       value="@(Model.StartOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd))">
                                             </div>
                                         </div>
     
                                         <div class="col-md-6">
                                             <div class="d-flex align-items-center gap-2">
                                                 <label class="form-label text-nowrap mb-0">По:</label>
-                                                <input type="date" class="form-control" name="endOutgoingDocumentDateOutputDocument" 
-                                                       value="@(Model.EndOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd))" 
-                                                       id="endDatePicker">
+                                                <input type="date" 
+                                                       class="form-control" 
+                                                       name="endOutgoingDocumentDateOutputDocument" 
+                                                       placeholder="дд.мм.гггг"
+                                                       value="@(Model.EndOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd))" >
                                             </div>
                                         </div>
                                     </div>
