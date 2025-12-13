@@ -20,5 +20,5 @@ public interface IEmployeeQuery
     /// Получает список сотрудников, которые могут быть назначены ответственными.
     /// </summary>
     /// <returns>Список моделей сотрудников для выбора</returns>
-    Task<List<EmployeeSelectModel>> GetResponsibleEmployeesAsync();
+    Task<List<EmployeeSelectModel>> GetResponsibleEmployeesAsync(string department);
 }

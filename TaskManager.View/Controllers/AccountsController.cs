@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManager.Domain.Model.Employees;
 using TaskManager.Domain.Repositories;
 using TaskManager.Domain.Services;
-using TaskManager.View.Utils;
+using TaskManager.View.Utilities;
 using TaskManager.View.ViewModel.Employees;
 
 namespace TaskManager.View.Controllers;

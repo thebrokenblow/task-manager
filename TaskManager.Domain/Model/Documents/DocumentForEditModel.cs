@@ -52,7 +52,13 @@ public class DocumentForEditModel
     public required DateOnly IncomingDocumentDateInputDocument { get; init; }
 
     /// <summary>
-    /// Ответственные отделы. Входные данные документа. Заполняет хозяин записи (делопроизводитель).
+    /// Ответственный отдел. Входные данные документа. Заполняет хозяин записи (делопроизводитель).
+    /// Необязательное свойство.
+    /// </summary>
+    public required string? ResponsibleDepartmentInputDocument { get; set; }
+
+    /// <summary>
+    /// Привлечённые отделы. Входные данные документа. Заполняет хозяин записи (делопроизводитель).
     /// Обязательное свойство.
     /// </summary>
     public required string? ResponsibleDepartmentsInputDocument { get; init; }

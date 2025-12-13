@@ -1,7 +1,7 @@
 ﻿using TaskManager.Domain.Model.Documents;
 using TaskManager.Domain.Services;
 
-namespace TaskManager.View.Utils;
+namespace TaskManager.View.Utilities;
 
 public class DocumentStyler(IAuthService authService)
 {

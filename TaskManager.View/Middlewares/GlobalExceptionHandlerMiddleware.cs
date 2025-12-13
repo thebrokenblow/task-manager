@@ -1,5 +1,5 @@
 ﻿using TaskManager.View.Controllers;
-using TaskManager.View.Utils;
+using TaskManager.View.Utilities;
 
 namespace TaskManager.View.Middlewares;
 

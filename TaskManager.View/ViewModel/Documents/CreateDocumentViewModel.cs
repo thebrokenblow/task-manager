@@ -7,4 +7,5 @@ public class CreateDocumentViewModel
 {
     public required Document Document { get; init; }
     public required SelectList ResponsibleEmployees { get; init; }
+    public required SelectList ResponsibleDepartments { get; init; }
 }

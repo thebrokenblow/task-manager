@@ -1,4 +1,4 @@
-﻿namespace TaskManager.View.Utils;
+﻿namespace TaskManager.View.Utilities;
 
 /// <summary>
 /// Словарь CSS классов для стилизации таблиц.

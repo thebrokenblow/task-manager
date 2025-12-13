@@ -16,6 +16,7 @@ public static class DependencyInjection
 
         services.AddScoped<IDocumentQuery, DocumentQuery>();
         services.AddScoped<IEmployeeQuery, EmployeeQuery>();
+        services.AddScoped<IDepartmentQuery, DepartmentQuery>();
 
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();

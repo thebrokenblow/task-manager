@@ -1,67 +1,36 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TaskManager.Domain.Entities;
-using TaskManager.Domain.Enums;
 using TaskManager.Domain.Model.Documents;
 using TaskManager.Domain.Queries;
 using TaskManager.Persistence.Data;
+using TaskManager.Persistence.Extensions;
 
 namespace TaskManager.Persistence.Queries;
 
 public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
 {
     public async Task<(List<DocumentForOverviewModel> documents, int countDocuments)> GetDocumentsAsync(
-        string? searchTerm,
-        DateOnly? startOutgoingDocumentDateOutputDocument,
-        DateOnly? endOutgoingDocumentDateOutputDocument,
-        int? idResponsibleEmployeeInputDocument,
+        DocumentFilterModel documentFilterModel,
         int countSkip, 
-        int countTake,
-        DocumentStatus documentStatus)
+        int countTake)
     {
         var queryDocuments = context.Documents.Include(document => document.ResponsibleEmployeeInputDocument)
                                               .AsQueryable();
 
-        if (startOutgoingDocumentDateOutputDocument != null && endOutgoingDocumentDateOutputDocument != null)
+        queryDocuments = queryDocuments.FilterByOutputDate(documentFilterModel)
+                                       .FilterByResponsibleEmployee(documentFilterModel);
+
+        if (!string.IsNullOrWhiteSpace(documentFilterModel.SearchTerm) || 
+            documentFilterModel.StartOutgoingDocumentDateOutputDocument.HasValue ||
+            documentFilterModel.EndOutgoingDocumentDateOutputDocument.HasValue)
         {
-            queryDocuments = queryDocuments.Where(document =>
-                                document.OutgoingDocumentDateOutputDocument >= startOutgoingDocumentDateOutputDocument &&
-                                document.OutgoingDocumentDateOutputDocument <= endOutgoingDocumentDateOutputDocument);
-        }
-
-        if (idResponsibleEmployeeInputDocument != null)
-        {
-            queryDocuments = queryDocuments.Where(document =>
-                                document.IdResponsibleEmployeeInputDocument == idResponsibleEmployeeInputDocument);
-        }
-
-        if (!string.IsNullOrWhiteSpace(searchTerm))
-        {
-            queryDocuments = queryDocuments.Where(document =>
-                                    (document.OutgoingDocumentNumberInputDocument != null &&
-                                        EF.Functions.ILike(document.OutgoingDocumentNumberInputDocument, $"%{searchTerm}%")) ||
-
-                                    (document.DocumentSummaryInputDocument != null &&
-                                        EF.Functions.ILike(document.DocumentSummaryInputDocument, $"%{searchTerm}%")) ||
-
-                                    (document.IncomingDocumentNumberInputDocument != null &&
-                                        EF.Functions.ILike(document.IncomingDocumentNumberInputDocument, $"%{searchTerm}%")) ||
-
-                                    (document.OutgoingDocumentNumberOutputDocument != null &&
-                                        EF.Functions.ILike(document.OutgoingDocumentNumberOutputDocument, $"%{searchTerm}%")));
+            queryDocuments = queryDocuments.FilterByDocumentSearchTerm(documentFilterModel.SearchTerm)
+                                           .FilterByOutputDate(documentFilterModel);
         }
         else
         {
-            if (documentStatus == DocumentStatus.Active)
-            {
-                queryDocuments = GetFilterActiveDocumentsAsync(queryDocuments);
-            }
-
-            if (documentStatus == DocumentStatus.Archived)
-            {
-                queryDocuments = GetFilterArchivedDocumentsAsync(queryDocuments);
-            }
+            queryDocuments = queryDocuments.FilterDocumentStatus(documentFilterModel);
         }
-
+        
         var countDocuments = await queryDocuments.CountAsync();
 
         var documents = await queryDocuments.OrderBy(document => document.TaskDueDateInputDocument)
@@ -97,23 +66,6 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
         return (documents, countDocuments);
     }
 
-    public static IQueryable<Document> GetFilterActiveDocumentsAsync(IQueryable<Document> queryDocuments)
-    {
-        queryDocuments = queryDocuments.Where(document => !document.IsCompleted &&
-                                                           document.RemovedByEmployeeId == null &&
-                                                           document.RemoveDateTime == null);
-
-        return queryDocuments;
-    }
-
-    public static IQueryable<Document> GetFilterArchivedDocumentsAsync(IQueryable<Document> queryDocuments)
-    {
-        queryDocuments = queryDocuments.Where(document => document.RemovedByEmployeeId != null &&
-                                                          document.RemoveDateTime != null);
-
-        return queryDocuments;
-    }
-
     public async Task<DocumentForEditModel?> GetDocumentForEditAsync(int id)
     {
         var document = await context.Documents
@@ -127,6 +79,7 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
                                         IsExternalDocumentInputDocument = document.IsExternalDocumentInputDocument,
                                         IncomingDocumentNumberInputDocument = document.IncomingDocumentNumberInputDocument,
                                         IncomingDocumentDateInputDocument = document.IncomingDocumentDateInputDocument,
+                                        ResponsibleDepartmentInputDocument = document.ResponsibleDepartmentInputDocument,
                                         ResponsibleDepartmentsInputDocument = document.ResponsibleDepartmentsInputDocument,
                                         TaskDueDateInputDocument = document.TaskDueDateInputDocument,
                                         IdResponsibleEmployeeInputDocument = document.IdResponsibleEmployeeInputDocument,

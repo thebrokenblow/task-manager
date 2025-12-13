@@ -38,6 +38,26 @@ public class AuthService(
         }
     }
 
+    public UserRole? Role
+    {
+        get
+        {
+            var roleValue = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (string.IsNullOrEmpty(roleValue))
+            {
+                return null;
+            }
+
+            if (Enum.TryParse<UserRole>(roleValue, true, out var role))
+            {
+                return role;
+            }
+
+            return null;
+        }
+    }
+
     public async Task<bool> LoginAsync(EmployeeLoginModel loginViewModel)
     {
         var user = await employeeRepository.GetByLoginAsync(loginViewModel.Login);

@@ -1,4 +1,5 @@
-﻿using TaskManager.Domain.Model.Employees;
+﻿using TaskManager.Domain.Enums;
+using TaskManager.Domain.Model.Employees;
 
 namespace TaskManager.Domain.Services;
 
@@ -32,6 +33,11 @@ public interface IAuthService
     /// Получает идентификатор администратора системы.
     /// </summary>
     int IdAdmin { get; }
+
+    /// <summary>
+    /// Получает роль пользователя.
+    /// </summary>
+    UserRole? Role { get; }
 
     /// <summary>
     /// Выполняет аутентификацию пользователя по учетным данным.

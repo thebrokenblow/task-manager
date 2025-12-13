@@ -1,4 +1,5 @@
 ﻿using TaskManager.Application.Common;
+using TaskManager.Application.Dtos.Documents;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Model.Documents;
 
@@ -13,7 +14,6 @@ namespace TaskManager.Application.Services.Interfaces;
 /// </remarks>
 public interface IDocumentService
 {
-
     /// <summary>
     /// Получает постраничный список документов с расширенными параметрами фильтрации.
     /// </summary>
@@ -32,10 +32,7 @@ public interface IDocumentService
     /// - Для администраторов могут показываться дополнительные документы
     /// </remarks>
     Task<PagedResult<DocumentForOverviewModel>> GetPagedAsync(
-        string? searchTerm,
-        bool showMyTasks,
-        DateOnly? startOutgoingDocumentDateOutputDocument,
-        DateOnly? endOutgoingDocumentDateOutputDocument,
+        DocumentFilterDto documentFilterModel,
         int page,
         int pageSize);
 

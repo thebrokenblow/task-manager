@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using TaskManager.Domain.Services;
 using TaskManager.View.Controllers;
-using TaskManager.View.Utils;
+using TaskManager.View.Utilities;
 
 namespace TaskManager.View.Filters;
 

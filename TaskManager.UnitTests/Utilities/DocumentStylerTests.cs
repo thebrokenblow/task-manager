@@ -1,8 +1,8 @@
 ﻿using TaskManager.Domain.Model.Documents;
 using TaskManager.UnitTests.Stubs;
-using TaskManager.View.Utils;
+using TaskManager.View.Utilities;
 
-namespace TaskManager.UnitTests.Utils;
+namespace TaskManager.UnitTests.Utilities;
 
 /// <summary>
 /// Набор unit-тестов для класса <see cref="DocumentStyler"/>.

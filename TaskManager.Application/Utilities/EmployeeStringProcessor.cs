@@ -1,0 +1,31 @@
+﻿namespace TaskManager.Application.Utilities;
+
+public class EmployeeStringProcessor
+{
+    private const string SpaceSeparator = " ";
+    private const string UnderscoreSeparator = "_";
+
+    public static string? CleanSpaces(string? input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return null;
+        }
+
+        var elements = input.Split(SpaceSeparator, StringSplitOptions.RemoveEmptyEntries);
+
+        return string.Join(SpaceSeparator, elements);
+    }
+
+    public static string? ConvertSpacesToUnderscore(string? input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return null;
+        }
+
+        var elements = input.Split(SpaceSeparator, StringSplitOptions.RemoveEmptyEntries);
+
+        return string.Join(UnderscoreSeparator, elements);
+    }
+}

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Domain.Model.Documents;
-using TaskManager.Domain.Utils;
+using TaskManager.Domain.Utilities;
 
 namespace TaskManager.Application.Services;
 

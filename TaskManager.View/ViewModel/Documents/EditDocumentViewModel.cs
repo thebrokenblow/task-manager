@@ -8,4 +8,5 @@ public class EditDocumentViewModel
     public required DocumentForEditModel Document { get; init; }
     public required SelectList ResponsibleEmployees { get; init; }
     public string? ErrorMessage { get; init; }
+    public required SelectList ResponsibleDepartments { get; init; }
 }

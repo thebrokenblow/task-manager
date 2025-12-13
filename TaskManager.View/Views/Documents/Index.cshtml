@@ -2,8 +2,8 @@
 @using TaskManager.Domain.Model
 @using TaskManager.Domain.Model.Documents
 @using TaskManager.Domain.Services
-@using TaskManager.Domain.Utils
-@using TaskManager.View.Utils
+@using TaskManager.Domain.Utilities
+@using TaskManager.View.Utilities
 @using TaskManager.View.ViewModel
 @using TaskManager.View.ViewModel.Employees
 
@@ -59,7 +59,7 @@
                                 </button>
                             </div>
                         </div>
-        
+
                         <!-- Вторая строка: фильтры -->
                         <div class="col-md-12">
                             <div class="row g-3 align-items-end">
@@ -72,39 +72,56 @@
                                                 <input type="date" 
                                                        class="form-control" 
                                                        name="startOutgoingDocumentDateOutputDocument" 
-                                                       placeholder="дд.мм.гггг"
-                                                       value="@(Model.StartOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd))">
+                                                       value="@Model.StartOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd)">
                                             </div>
                                         </div>
-    
+
                                         <div class="col-md-6">
                                             <div class="d-flex align-items-center gap-2">
                                                 <label class="form-label text-nowrap mb-0">По:</label>
                                                 <input type="date" 
                                                        class="form-control" 
                                                        name="endOutgoingDocumentDateOutputDocument" 
-                                                       placeholder="дд.мм.гггг"
-                                                       value="@(Model.EndOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd))" >
+                                                       value="@Model.EndOutgoingDocumentDateOutputDocument?.ToString(DateFormatDictionary.DateFormatYyyyMmDd)" >
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                
-                                <!-- Центральная часть: чекбокс "Мои задачи" -->
+
+                                <!-- Центральная часть: чекбоксы -->
                                 <div class="col-md-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="showMyTasks" value="true" 
-                                               id="showMyTasksCheckbox" @(Model.ShowMyTasks ? "checked" : string.Empty)>
-                                        <label class="form-check-label" for="showMyTasksCheckbox">
-                                            <i class="bi bi-person-check me-1"></i>Мои задачи
-                                        </label>
-                                        @if (Model.ShowMyTasks)
-                                        {
-                                            <input type="hidden" name="showMyTasks" value="false">
-                                        }
+                                    <div class="d-flex gap-2">
+                                        <!-- Чекбокс "Мои задачи" -->
+                                        <div class="form-check">
+                                            @if (authService.IsAuthenticated)
+                                            {
+                                                <input class="form-check-input" type="checkbox" name="showMyTasks" value="true" 
+                                                       id="showMyTasksCheckbox" @(Model.ShowMyTasks ? "checked" : string.Empty)>
+                                                <label class="form-check-label" for="showMyTasksCheckbox">
+                                                    <i class="bi bi-person-check me-1"></i>Мои задачи
+                                                </label>
+                                                @if (Model.ShowMyTasks)
+                                                {
+                                                    <input type="hidden" name="showMyTasks" value="false">
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <input class="form-check-input" type="checkbox" name="showMyTasks" value="true" 
+                                                       id="showMyTasksCheckbox" @(Model.ShowMyTasks ? "checked" : string.Empty) disabled
+                                                       style="cursor: not-allowed; opacity: 0.6;">
+                                                <label class="form-check-label" for="showMyTasksCheckbox" style="opacity: 0.6;">
+                                                    <i class="bi bi-person-check me-1"></i>Мои задачи
+                                                </label>
+                                                @if (Model.ShowMyTasks)
+                                                {
+                                                    <input type="hidden" name="showMyTasks" value="false">
+                                                }
+                                            }
+                                        </div>
                                     </div>
                                 </div>
-                
+
                                 <!-- Правая часть: количество записей -->
                                 <div class="col-md-3">
                                     <div class="d-flex justify-content-end">
@@ -221,7 +238,7 @@
                                                             </form>
                                                         }
 
-                                                             @*Проверка на владельца записи*@
+                                                             @* Проверка на владельца записи *@
                                                         @if (document.CreatedByEmployeeId == authService.IdCurrentUser || authService.IsAdmin)
                                                         {
                                                             <a asp-action="Delete" asp-route-id="@document.Id"

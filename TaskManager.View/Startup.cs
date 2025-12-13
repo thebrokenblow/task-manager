@@ -5,7 +5,7 @@ using TaskManager.Persistence;
 using TaskManager.View.Extensions;
 using TaskManager.View.Middlewares;
 using TaskManager.View.Services;
-using TaskManager.View.Utils;
+using TaskManager.View.Utilities;
 
 namespace TaskManager.View;
 

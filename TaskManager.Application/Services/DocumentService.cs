@@ -1,4 +1,5 @@
 ﻿using TaskManager.Application.Common;
+using TaskManager.Application.Dtos.Documents;
 using TaskManager.Application.Exceptions;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Application.Validations;
@@ -20,6 +21,7 @@ namespace TaskManager.Application.Services;
 /// валидацию данных и взаимодействие с репозиториями.
 /// </remarks>
 public class DocumentService(
+    IDepartmentQuery departmentQuery,
     IDocumentQuery documentQuery,
     IDocumentRepository documentRepository,
     IAuthService authService,
@@ -27,21 +29,13 @@ public class DocumentService(
 {
     /// <inheritdoc/>
     public async Task<PagedResult<DocumentForOverviewModel>> GetPagedAsync(
-        string? searchTerm,
-        bool showMyTasks,
-        DateOnly? startOutgoingDocumentDateOutputDocument,
-        DateOnly? endOutgoingDocumentDateOutputDocument,
+        DocumentFilterDto documentFilterDto,
         int page, 
         int pageSize)
     {
-        if (showMyTasks && !authService.IsAuthenticated)
-        {
-            throw new UnauthorizedAccessException();
-        }
-
         int? idResponsibleEmployeeInputDocument = null;
 
-        if (showMyTasks)
+        if (documentFilterDto.IsShowMyTasks)
         {
             idResponsibleEmployeeInputDocument = authService.IdCurrentUser;
         }
@@ -51,30 +45,26 @@ public class DocumentService(
 
         int countSkip = (page - 1) * pageSize;
 
-        if (authService.IsAdmin)
+        string? responsibleDepartment = null;
+        if (authService.IsAuthenticated && authService.IdCurrentUser.HasValue)
         {
-            // Администраторы видят все документы, включая архивные
-            (documents, countDocuments) = await documentQuery.GetDocumentsAsync(
-                searchTerm,
-                startOutgoingDocumentDateOutputDocument,
-                endOutgoingDocumentDateOutputDocument,
-                idResponsibleEmployeeInputDocument,
-                countSkip,
-                pageSize,
-                DocumentStatus.Archived);
+            responsibleDepartment = await departmentQuery.GetByIdEmployeeAsync(authService.IdCurrentUser.Value);
         }
-        else
+        
+        var documentFilterModel = new DocumentFilterModel
         {
-            // Обычные пользователи видят только активные документы
-            (documents, countDocuments) = await documentQuery.GetDocumentsAsync(
-                searchTerm,
-                startOutgoingDocumentDateOutputDocument,
-                endOutgoingDocumentDateOutputDocument,
-                idResponsibleEmployeeInputDocument,
-                countSkip,
-                pageSize,
-                DocumentStatus.Active);
-        }
+            SearchTerm = documentFilterDto.SearchTerm,
+            StartOutgoingDocumentDateOutputDocument = documentFilterDto.StartOutgoingDocumentDateOutputDocument,
+            EndOutgoingDocumentDateOutputDocument = documentFilterDto.EndOutgoingDocumentDateOutputDocument,
+            IdResponsibleEmployeeInputDocument = idResponsibleEmployeeInputDocument,
+            ResponsibleDepartmentInputDocument = responsibleDepartment,
+            UserRole = authService.Role,
+        };
+
+        (documents, countDocuments) = await documentQuery.GetDocumentsAsync(
+            documentFilterModel,
+            countSkip,
+            pageSize);
 
         var pagedResult = new PagedResult<DocumentForOverviewModel>(
             documents,

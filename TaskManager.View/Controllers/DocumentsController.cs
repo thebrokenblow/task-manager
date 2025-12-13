@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Net.Mime;
+using TaskManager.Application.Dtos.Documents;
 using TaskManager.Application.Exceptions;
+using TaskManager.Application.Services;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Exceptions;
+using TaskManager.Domain.Model.Departments;
 using TaskManager.View.Filters;
-using TaskManager.View.Utils;
+using TaskManager.View.Utilities;
 using TaskManager.View.ViewModel.Documents;
 using TaskManager.View.ViewModel.Employees;
 
@@ -14,7 +17,8 @@ namespace TaskManager.View.Controllers;
 
 public class DocumentsController(
     IDocumentService documentService,
-    IEmployeeService employeeService) : Controller
+    IEmployeeService employeeService,
+    IDepartmentService departmentService) : Controller
 {
     private const int DefaultNumberPage = 1;
     private const int DefaultCountDocumentsOnPage = 50;
@@ -45,11 +49,16 @@ public class DocumentsController(
                 page = DefaultNumberPage;
             }
 
+            var documentFilterModel = new DocumentFilterDto
+            {
+                SearchTerm = inputSearch,
+                IsShowMyTasks = showMyTasks,
+                StartOutgoingDocumentDateOutputDocument = startOutgoingDocumentDateOutputDocument,
+                EndOutgoingDocumentDateOutputDocument = endOutgoingDocumentDateOutputDocument,
+            };
+
             var pagedDocuments = await documentService.GetPagedAsync(
-                inputSearch,
-                showMyTasks,
-                startOutgoingDocumentDateOutputDocument,
-                endOutgoingDocumentDateOutputDocument,
+                documentFilterModel,
                 page,
                 pageSize);
 
@@ -87,15 +96,21 @@ public class DocumentsController(
         };
 
         var responsibleEmployees = await employeeService.GetResponsibleEmployeesAsync();
-
         var responsibleEmployeesSelectList = new SelectList(
                                                     responsibleEmployees,
                                                     nameof(EmployeeForSelect.Id),
                                                     nameof(EmployeeForSelect.FullNameAndDepartment));
 
+        var departments = await departmentService.GetAllAsync();
+        var departmentsSelectList = new SelectList(
+                                            departments, 
+                                            nameof(DepartmentSelectModel.NameDepartment), 
+                                            nameof(DepartmentSelectModel.NameDepartment));
+
         var createDocumentViewModel = new CreateDocumentViewModel
         {
             Document = document,
+            ResponsibleDepartments = departmentsSelectList,
             ResponsibleEmployees = responsibleEmployeesSelectList,
         };
 
@@ -127,16 +142,22 @@ public class DocumentsController(
         }
 
         var responsibleEmployees = await employeeService.GetResponsibleEmployeesAsync();
-
-
         var responsibleEmployeesSelectList = new SelectList(
                                                     responsibleEmployees,
                                                     nameof(EmployeeForSelect.Id),
                                                     nameof(EmployeeForSelect.FullNameAndDepartment));
 
+
+        var departments = await departmentService.GetAllAsync();
+        var departmentsSelectList = new SelectList(
+                                            departments,
+                                            nameof(DepartmentSelectModel.NameDepartment),
+                                            nameof(DepartmentSelectModel.NameDepartment));
+
         var editDocumentViewModel = new EditDocumentViewModel
         {
             Document = document,
+            ResponsibleDepartments = departmentsSelectList,
             ResponsibleEmployees = responsibleEmployeesSelectList,
             ErrorMessage = errorMessage
         };

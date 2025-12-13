@@ -56,6 +56,12 @@ public class Document
     public required DateOnly IncomingDocumentDateInputDocument { get; set; }
 
     /// <summary>
+    /// Ответственный отдел. Входные данные документа. Заполняет хозяин записи (делопроизводитель).
+    /// Необязательное свойство.
+    /// </summary>
+    public string? ResponsibleDepartmentInputDocument { get; set; } 
+
+    /// <summary>
     /// Ответственные отделы. Входные данные документа. Заполняет хозяин записи (делопроизводитель).
     /// Необязательное свойство.
     /// </summary>

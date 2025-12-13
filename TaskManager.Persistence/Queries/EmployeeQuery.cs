@@ -19,9 +19,9 @@ public class EmployeeQuery(TaskManagerDbContext context) : IEmployeeQuery
         return employees;
     }
 
-    public async Task<List<EmployeeSelectModel>> GetResponsibleEmployeesAsync()
+    public async Task<List<EmployeeSelectModel>> GetResponsibleEmployeesAsync(string department)
     {
-        var employees = await context.Employees.Where(employee => employee.Role != UserRole.Admin)
+        var employees = await context.Employees.Where(employee => employee.Role != UserRole.Admin && employee.Department == department)
                                                .OrderBy(employee => employee.Department)
                                                .ThenBy(employee => employee.FullName)
                                                .Select(employee => new EmployeeSelectModel  

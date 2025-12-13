@@ -67,9 +67,20 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
             .HasComment("Дата входящего документа. Входные данные документа. Заполняет хозяин записи (делопроизводитель).")
             .IsRequired();
 
+        builder.Property(document => document.IncomingDocumentDateInputDocument)
+            .HasColumnName("incoming_document_date_input_document")
+            .HasColumnType("date")
+            .HasComment("Дата входящего документа. Входные данные документа. Заполняет хозяин записи (делопроизводитель).")
+            .IsRequired();
+
+        builder.Property(document => document.ResponsibleDepartmentInputDocument)
+            .HasColumnName("responsible_department_input_document")
+            .HasComment("ответственный отдел входящего документа. Входные данные документа. Заполняет хозяин записи (делопроизводитель).")
+            .IsRequired(false);
+
         builder.Property(document => document.ResponsibleDepartmentsInputDocument)
             .HasColumnName("responsible_departments_input_document")
-            .HasComment("Ответственные отделы. Входные данные документа. Заполняет хозяин записи (делопроизводитель).")
+            .HasComment("Привлеченные отделы. Входные данные документа. Заполняет хозяин записи (делопроизводитель).")
             .IsRequired(false);
 
         builder.Property(document => document.TaskDueDateInputDocument)

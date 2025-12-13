@@ -1,17 +1,20 @@
-﻿using TaskManager.Domain.Model.Employees;
+﻿using TaskManager.Domain.Enums;
+using TaskManager.Domain.Model.Employees;
 using TaskManager.Domain.Services;
 
 namespace TaskManager.UnitTests.Stubs;
 
 public class AuthServiceStub : IAuthService
 {
-    public int IdAdmin => default;
-    public int? IdCurrentUser => default;
+    public int IdAdmin => 1;
+    public int? IdCurrentUser => null;
 
     public bool IsAuthenticated => default;
     public bool IsAdmin => default;
 
-    public string? FullName => default;
+    public string? FullName => null;
+
+    public UserRole? Role => null;
 
     public async Task<bool> LoginAsync(EmployeeLoginModel employeeLoginModel)
     {

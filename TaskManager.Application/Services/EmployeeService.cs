@@ -2,9 +2,11 @@
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Enums;
+using TaskManager.Domain.Exceptions;
 using TaskManager.Domain.Model.Employees;
 using TaskManager.Domain.Queries;
 using TaskManager.Domain.Repositories;
+using TaskManager.Domain.Services;
 
 namespace TaskManager.Application.Services;
 
@@ -18,6 +20,8 @@ namespace TaskManager.Application.Services;
 /// <param name="employeeQuery">Запросы для получения данных о сотрудниках.</param>
 /// <param name="employeeRepository">Репозиторий для работы с данными сотрудников.</param>
 public class EmployeeService(
+    IAuthService authService,
+    IDepartmentQuery departmentQuery,
     IEmployeeQuery employeeQuery,
     IEmployeeRepository employeeRepository) : IEmployeeService
 {
@@ -36,7 +40,16 @@ public class EmployeeService(
     /// <inheritdoc/>
     public async Task<List<EmployeeSelectModel>> GetResponsibleEmployeesAsync()
     {
-        var responsibleEmployees = await employeeQuery.GetResponsibleEmployeesAsync();
+        if (!authService.IsAuthenticated || !authService.IdCurrentUser.HasValue)
+        {
+            throw new UnauthorizedAccessException("Пользователь не аутентифицирован");
+        }
+
+        var department = await departmentQuery.GetByIdEmployeeAsync(authService.IdCurrentUser.Value) ?? 
+            throw new NotFoundException("У пользователя не указан отдел", authService.IdCurrentUser.Value);
+
+        var responsibleEmployees = await employeeQuery.GetResponsibleEmployeesAsync(department);
+
         return responsibleEmployees;
     }
 
@@ -58,6 +71,12 @@ public class EmployeeService(
         }
 
         TrimEmployeeStrings(employee);
+
+        var departmentElements = employee.Department.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+        employee.Department = string.Join(" ", departmentElements);
+
+        var loginElements = employee.Login.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+        employee.Login = string.Join("_", loginElements);
 
         employee.Password = DefaultPassword;
         employee.Role = UserRole.Employee;
