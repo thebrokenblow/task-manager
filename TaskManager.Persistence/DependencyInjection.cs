@@ -8,8 +8,16 @@ using TaskManager.Persistence.Repositories;
 
 namespace TaskManager.Persistence;
 
+/// <summary>
+/// Расширение для регистрации зависимостей слоя Persistence.
+/// </summary>
 public static class DependencyInjection
 {
+    /// <summary>
+    /// Регистрирует сервисы слоя Persistence.
+    /// </summary>
+    /// <param name="services">Коллекция сервисов.</param>
+    /// <param name="connectionString">Строка подключения к базе данных.</param>
     public static IServiceCollection AddPersistence(this IServiceCollection services, string connectionString)
     {
         services.AddDbContext<TaskManagerDbContext>(options => options.UseNpgsql(connectionString));

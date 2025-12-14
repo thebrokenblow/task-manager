@@ -4,8 +4,8 @@ using TaskManager.Application.Exceptions;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Application.Validations;
 using TaskManager.Domain.Entities;
-using TaskManager.Domain.Enums;
 using TaskManager.Domain.Exceptions;
+using TaskManager.Domain.Model.Departments;
 using TaskManager.Domain.Model.Documents;
 using TaskManager.Domain.Queries;
 using TaskManager.Domain.Repositories;
@@ -14,12 +14,8 @@ using TaskManager.Domain.Services;
 namespace TaskManager.Application.Services;
 
 /// <summary>
-/// Реализация сервиса для управления документами.
+/// Сервис для управления документами.
 /// </summary>
-/// <remarks>
-/// Обеспечивает бизнес-логику работы с документами, включая управление доступом,
-/// валидацию данных и взаимодействие с репозиториями.
-/// </remarks>
 public class DocumentService(
     IDepartmentQuery departmentQuery,
     IDocumentQuery documentQuery,
@@ -27,10 +23,15 @@ public class DocumentService(
     IAuthService authService,
     IExportService exportService) : IDocumentService
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// Получает постраничный список документов.
+    /// </summary>
+    /// <param name="documentFilterDto">Модель фильтрации документов.</param>
+    /// <param name="page">Номер страницы.</param>
+    /// <param name="pageSize">Размер страницы.</param>
     public async Task<PagedResult<DocumentForOverviewModel>> GetPagedAsync(
         DocumentFilterDto documentFilterDto,
-        int page, 
+        int page,
         int pageSize)
     {
         int? idResponsibleEmployeeInputDocument = null;
@@ -45,19 +46,19 @@ public class DocumentService(
 
         int countSkip = (page - 1) * pageSize;
 
-        string? responsibleDepartment = null;
+        DepartmentModel? departmentModel = null;
         if (authService.IsAuthenticated && authService.IdCurrentUser.HasValue)
         {
-            responsibleDepartment = await departmentQuery.GetByIdEmployeeAsync(authService.IdCurrentUser.Value);
+            departmentModel = await departmentQuery.GetDepartmentByEmployeeIdAsync(authService.IdCurrentUser.Value);
         }
-        
+
         var documentFilterModel = new DocumentFilterModel
         {
             SearchTerm = documentFilterDto.SearchTerm,
             StartOutgoingDocumentDateOutputDocument = documentFilterDto.StartOutgoingDocumentDateOutputDocument,
             EndOutgoingDocumentDateOutputDocument = documentFilterDto.EndOutgoingDocumentDateOutputDocument,
             IdResponsibleEmployeeInputDocument = idResponsibleEmployeeInputDocument,
-            ResponsibleDepartmentInputDocument = responsibleDepartment,
+            ResponsibleDepartmentInputDocument = departmentModel?.Name,
             UserRole = authService.Role,
         };
 
@@ -75,28 +76,40 @@ public class DocumentService(
         return pagedResult;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Получает данные документа для редактирования.
+    /// </summary>
+    /// <param name="id">Идентификатор документа.</param>
     public async Task<DocumentForEditModel?> GetDocumentForEditAsync(int id)
     {
         var document = await documentQuery.GetDocumentForEditAsync(id);
         return document;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Получает данные документа для удаления.
+    /// </summary>
+    /// <param name="id">Идентификатор документа.</param>
     public async Task<DocumentForDeleteModel?> GetDocumentForDeleteAsync(int id)
     {
         var document = await documentQuery.GetDocumentForDeleteAsync(id);
         return document;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Получает документ по его идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор документа.</param>
     public async Task<Document?> GetByIdAsync(int id)
     {
         var document = await documentRepository.GetByIdAsync(id);
         return document;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Изменяет статус завершения документа.
+    /// </summary>
+    /// <param name="id">Идентификатор документа.</param>
     public async Task ChangeStatusAsync(int id)
     {
         var documentForChangeStatusModel = await documentQuery.GetDocumentForChangeStatusAsync(id) ??
@@ -113,7 +126,10 @@ public class DocumentService(
         await documentRepository.UpdateStatusAsync(id, !documentForChangeStatusModel.IsCompleted);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Создает новый документ.
+    /// </summary>
+    /// <param name="document">Документ для создания.</param>
     public async Task CreateAsync(Document document)
     {
         if (!authService.IsAuthenticated || !authService.IdCurrentUser.HasValue)
@@ -127,7 +143,10 @@ public class DocumentService(
         await documentRepository.AddAsync(document);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Редактирует существующий документ.
+    /// </summary>
+    /// <param name="document">Документ с обновленными данными.</param>
     public async Task EditAsync(Document document)
     {
         TrimDocumentStrings(document);
@@ -138,7 +157,10 @@ public class DocumentService(
         await documentRepository.UpdateAsync(document);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Восстанавливает удаленный документ.
+    /// </summary>
+    /// <param name="id">Идентификатор документа.</param>
     public async Task RecoverDeletedAsync(int id)
     {
         var removedByEmployeeId = await documentQuery.GetIdEmployeeRemovedAsync(id) ??
@@ -148,7 +170,10 @@ public class DocumentService(
         await documentRepository.RecoverDeletedAsync(id, removedByEmployeeId);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Удаляет документ.
+    /// </summary>
+    /// <param name="id">Идентификатор документа.</param>
     public async Task DeleteAsync(int id)
     {
         if (!authService.IsAuthenticated || !authService.IdCurrentUser.HasValue)
@@ -170,7 +195,10 @@ public class DocumentService(
         }
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Создает CSV-файл с данными документа.
+    /// </summary>
+    /// <param name="id">Идентификатор документа.</param>
     public async Task<byte[]> CreateDocumentCsvAsync(int id)
     {
         var documentForCsvExportModel = await documentQuery.GetDocumentForCsvExportAsync(id) ??

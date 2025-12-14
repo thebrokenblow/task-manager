@@ -6,10 +6,6 @@ namespace TaskManager.Application.Services.Interfaces;
 /// <summary>
 /// Сервис для управления сотрудниками.
 /// </summary>
-/// <remarks>
-/// Предоставляет методы для работы с сотрудниками, включая получение списков сотрудников,
-/// создание, редактирование и управление данными сотрудников.
-/// </remarks>
 public interface IEmployeeService
 {
     /// <summary>
@@ -35,17 +31,11 @@ public interface IEmployeeService
     /// Создает нового сотрудника.
     /// </summary>
     /// <param name="employee">Объект сотрудника для создания.</param>
-    /// <exception cref="LoginAlreadyExistsException">
-    /// Выбрасывается, если логин сотрудника уже существует в системе.
-    /// </exception>
     Task CreateAsync(Employee employee);
 
     /// <summary>
     /// Редактирует существующего сотрудника.
     /// </summary>
     /// <param name="employee">Объект сотрудника с обновленными данными.</param>
-    /// <exception cref="LoginAlreadyExistsException">
-    /// Выбрасывается, если обновленный логин сотрудника уже используется другим сотрудником.
-    /// </exception>
     Task EditAsync(Employee employee);
 }

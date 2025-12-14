@@ -1,5 +1,8 @@
 ﻿namespace TaskManager.Domain.Model.Documents;
 
+/// <summary>
+/// Модель для отображения информации о документах в системе
+/// </summary>
 public class DocumentForOverviewModel
 {
     /// <summary>

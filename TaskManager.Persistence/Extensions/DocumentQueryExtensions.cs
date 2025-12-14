@@ -5,8 +5,16 @@ using TaskManager.Domain.Model.Documents;
 
 namespace TaskManager.Persistence.Extensions;
 
+/// <summary>
+/// Методы расширения для запросов к документам.
+/// </summary>
 public static class DocumentQueryExtensions
 {
+    /// <summary>
+    /// Фильтрует документы по поисковому запросу.
+    /// </summary>
+    /// <param name="queryDocuments">Запрос документов.</param>
+    /// <param name="searchTerm">Поисковый запрос.</param>
     public static IQueryable<Document> FilterByDocumentSearchTerm(
         this IQueryable<Document> queryDocuments,
         string? searchTerm)
@@ -30,13 +38,18 @@ public static class DocumentQueryExtensions
         return queryDocuments;
     }
 
+    /// <summary>
+    /// Фильтрует документы по статусу в зависимости от роли пользователя.
+    /// </summary>
+    /// <param name="queryDocuments">Запрос документов.</param>
+    /// <param name="documentFilterModel">Модель фильтрации документов.</param>
     public static IQueryable<Document> FilterDocumentStatus(
         this IQueryable<Document> queryDocuments,
         DocumentFilterModel documentFilterModel)
     {
         if (documentFilterModel.UserRole == UserRole.Admin)
         {
-            queryDocuments = queryDocuments.Where(document => 
+            queryDocuments = queryDocuments.Where(document =>
                 document.RemovedByEmployeeId != null &&
                 document.RemoveDateTime != null);
         }
@@ -48,7 +61,7 @@ public static class DocumentQueryExtensions
                                                     document.RemoveDateTime == null);
         }
         else if (documentFilterModel.UserRole == UserRole.Employee)
-        { 
+        {
             queryDocuments = queryDocuments.Where(document =>
                                                    !document.IsCompleted &&
                                                     document.ResponsibleDepartmentInputDocument == documentFilterModel.ResponsibleDepartmentInputDocument &&
@@ -66,6 +79,11 @@ public static class DocumentQueryExtensions
         return queryDocuments;
     }
 
+    /// <summary>
+    /// Фильтрует документы по ответственному сотруднику.
+    /// </summary>
+    /// <param name="queryDocuments">Запрос документов.</param>
+    /// <param name="documentFilterModel">Модель фильтрации документов.</param>
     public static IQueryable<Document> FilterByResponsibleEmployee(
         this IQueryable<Document> queryDocuments,
         DocumentFilterModel documentFilterModel)
@@ -79,6 +97,11 @@ public static class DocumentQueryExtensions
         return queryDocuments;
     }
 
+    /// <summary>
+    /// Фильтрует документы по дате исходящего документа.
+    /// </summary>
+    /// <param name="queryDocuments">Запрос документов.</param>
+    /// <param name="documentFilterModel">Модель фильтрации документов.</param>
     public static IQueryable<Document> FilterByOutputDate(
         this IQueryable<Document> queryDocuments,
         DocumentFilterModel documentFilterModel)

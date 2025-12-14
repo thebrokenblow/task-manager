@@ -2,7 +2,13 @@
 
 namespace TaskManager.Application.Services.Interfaces;
 
+/// <summary>
+/// Сервис для работы с подразделениями.
+/// </summary>
 public interface IDepartmentService
 {
+    /// <summary>
+    /// Получает все подразделения.
+    /// </summary>
     Task<List<DepartmentSelectModel>> GetAllAsync();
 }

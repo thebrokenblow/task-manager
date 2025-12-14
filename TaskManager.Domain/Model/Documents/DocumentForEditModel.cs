@@ -1,5 +1,8 @@
 ﻿namespace TaskManager.Domain.Model.Documents;
 
+/// <summary>
+/// Модель документа для отображения информации об Документе при редактировании
+/// </summary>
 public class DocumentForEditModel
 {
     /// <summary>

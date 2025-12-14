@@ -4,8 +4,15 @@ using TaskManager.Domain.Entities;
 
 namespace TaskManager.Persistence.Data.Configurations;
 
+/// <summary>
+/// Конфигурация таблицы документов.
+/// </summary>
 public class DocumentConfiguration : IEntityTypeConfiguration<Document>
 {
+    /// <summary>
+    /// Настраивает таблицу документов.
+    /// </summary>
+    /// <param name="builder">Построитель конфигурации сущности Document.</param>
     public void Configure(EntityTypeBuilder<Document> builder)
     {
         builder.ToTable("documents",

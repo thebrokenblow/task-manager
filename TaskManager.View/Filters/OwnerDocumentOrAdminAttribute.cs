@@ -7,9 +7,16 @@ using TaskManager.View.Utilities;
 
 namespace TaskManager.View.Filters;
 
+/// <summary>
+/// Атрибут для ограничения доступа владельцу документа или администратору.
+/// </summary>
 [AttributeUsage(AttributeTargets.Method)]
 public class OwnerDocumentOrAdminAttribute : Attribute, IAsyncAuthorizationFilter
 {
+    /// <summary>
+    /// Проверяет права доступа пользователя к документу.
+    /// </summary>
+    /// <param name="context">Контекст авторизации.</param>
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
         var authService = context.HttpContext.RequestServices.GetService<IAuthService>() ??

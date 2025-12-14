@@ -1,5 +1,6 @@
 ﻿using TaskManager.Application.Exceptions;
 using TaskManager.Application.Services.Interfaces;
+using TaskManager.Application.Utilities;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Enums;
 using TaskManager.Domain.Exceptions;
@@ -25,45 +26,67 @@ public class EmployeeService(
     IEmployeeQuery employeeQuery,
     IEmployeeRepository employeeRepository) : IEmployeeService
 {
+    private readonly IAuthService _authService = 
+        authService ?? throw new ArgumentNullException(nameof(authService));
+
+    private readonly IDepartmentQuery _departmentQuery = 
+        departmentQuery ?? throw new ArgumentNullException(nameof(departmentQuery));
+
+    private readonly IEmployeeQuery _employeeQuery = 
+        employeeQuery ?? throw new ArgumentNullException(nameof(employeeQuery));
+
+    private readonly IEmployeeRepository _employeeRepository = 
+        employeeRepository ?? throw new ArgumentNullException(nameof(employeeRepository));
+
     /// <summary>
     /// Пароль по умолчанию для новых сотрудников.
     /// </summary>
     private const string DefaultPassword = "Qwerty123";
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Получает список обычных сотрудников.
+    /// </summary>
     public async Task<List<Employee>> GetRegularEmployeesAsync()
     {
-        var employees = await employeeQuery.GetRegularEmployeesAsync();
+        var employees = await _employeeQuery.GetRegularEmployeesAsync();
         return employees;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Получает список ответственных сотрудников.
+    /// </summary>
     public async Task<List<EmployeeSelectModel>> GetResponsibleEmployeesAsync()
     {
-        if (!authService.IsAuthenticated || !authService.IdCurrentUser.HasValue)
+        if (!_authService.IsAuthenticated || !_authService.IdCurrentUser.HasValue)
         {
             throw new UnauthorizedAccessException("Пользователь не аутентифицирован");
         }
 
-        var department = await departmentQuery.GetByIdEmployeeAsync(authService.IdCurrentUser.Value) ?? 
-            throw new NotFoundException("У пользователя не указан отдел", authService.IdCurrentUser.Value);
+        var departmentModel = await _departmentQuery.GetDepartmentByEmployeeIdAsync(_authService.IdCurrentUser.Value) ??
+            throw new NotFoundException("У пользователя не указан отдел", _authService.IdCurrentUser.Value);
 
-        var responsibleEmployees = await employeeQuery.GetResponsibleEmployeesAsync(department);
+        var responsibleEmployees = await _employeeQuery.GetResponsibleEmployeesAsync(departmentModel.Name);
 
         return responsibleEmployees;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Получает сотрудника по его идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор сотрудника.</param>
     public async Task<Employee?> GetByIdAsync(int id)
     {
-        var employee = await employeeRepository.GetByIdAsync(id);
+        var employee = await _employeeRepository.GetByIdAsync(id);
         return employee;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Создает нового сотрудника.
+    /// </summary>
+    /// <param name="employee">Сотрудник для создания.</param>
     public async Task CreateAsync(Employee employee)
     {
-        var loginExists = await employeeRepository.IsLoginExistAsync(employee.Login);
+        var loginExists = await _employeeRepository.IsLoginExistAsync(employee.Login);
 
         if (loginExists)
         {
@@ -72,22 +95,22 @@ public class EmployeeService(
 
         TrimEmployeeStrings(employee);
 
-        var departmentElements = employee.Department.Split(" ", StringSplitOptions.RemoveEmptyEntries);
-        employee.Department = string.Join(" ", departmentElements);
-
-        var loginElements = employee.Login.Split(" ", StringSplitOptions.RemoveEmptyEntries);
-        employee.Login = string.Join("_", loginElements);
+        employee.Department = EmployeeStringProcessor.CleanSpaces(employee.Department);
+        employee.Login = EmployeeStringProcessor.ConvertSpacesToUnderscore(employee.Login);
 
         employee.Password = DefaultPassword;
         employee.Role = UserRole.Employee;
 
-        await employeeRepository.AddAsync(employee);
+        await _employeeRepository.AddAsync(employee);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Редактирует существующего сотрудника.
+    /// </summary>
+    /// <param name="employee">Сотрудник с обновленными данными.</param>
     public async Task EditAsync(Employee employee)
     {
-        var loginExists = await employeeRepository.IsLoginExistAsync(employee.Login, employee.Id);
+        var loginExists = await _employeeRepository.IsLoginExistAsync(employee.Login, employee.Id);
 
         if (loginExists)
         {
@@ -95,7 +118,7 @@ public class EmployeeService(
         }
 
         TrimEmployeeStrings(employee);
-        await employeeRepository.UpdateAsync(employee);
+        await _employeeRepository.UpdateAsync(employee);
     }
 
     /// <summary>

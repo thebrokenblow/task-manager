@@ -6,9 +6,16 @@ using TaskManager.View.Utilities;
 
 namespace TaskManager.View.Filters;
 
+/// <summary>
+/// Атрибут для ограничения доступа только для администраторов.
+/// </summary>
 [AttributeUsage(AttributeTargets.Method)]
 public class AdminOnlyAttribute : Attribute, IAuthorizationFilter
 {
+    /// <summary>
+    /// Проверяет права доступа пользователя.
+    /// </summary>
+    /// <param name="context">Контекст авторизации.</param>
     public void OnAuthorization(AuthorizationFilterContext context)
     {
         var authService = context.HttpContext.RequestServices.GetService<IAuthService>() ??

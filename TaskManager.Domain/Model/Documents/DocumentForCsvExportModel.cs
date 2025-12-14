@@ -1,5 +1,8 @@
 ﻿namespace TaskManager.Domain.Model.Documents;
 
+/// <summary>
+/// Модель для выгрузки в Csv формат
+/// </summary>
 public class DocumentForCsvExportModel
 {
     /// <summary>

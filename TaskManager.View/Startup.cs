@@ -9,8 +9,15 @@ using TaskManager.View.Utilities;
 
 namespace TaskManager.View;
 
+/// <summary>
+/// Класс настройки приложения.
+/// </summary>
 public class Startup(IConfiguration configuration)
 {
+    /// <summary>
+    /// Настраивает сервисы приложения.
+    /// </summary>
+    /// <param name="services">Коллекция сервисов.</param>
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpContextAccessor();
@@ -30,6 +37,11 @@ public class Startup(IConfiguration configuration)
         services.AddPersistence(connectionString);
     }
 
+    /// <summary>
+    /// Настраивает конвейер обработки HTTP-запросов.
+    /// </summary>
+    /// <param name="app">Построитель приложения.</param>
+    /// <param name="env">Окружение веб-хостинга.</param>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (!env.IsDevelopment())
@@ -37,7 +49,7 @@ public class Startup(IConfiguration configuration)
             app.UseExceptionHandler("/Home/Error");
             app.UseHsts();
         }
-        
+
         app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
         app.UseHttpsRedirection();

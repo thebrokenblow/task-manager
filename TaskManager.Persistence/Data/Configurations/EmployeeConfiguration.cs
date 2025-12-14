@@ -4,8 +4,15 @@ using TaskManager.Domain.Entities;
 
 namespace TaskManager.Persistence.Data.Configurations;
 
+/// <summary>
+/// Конфигурация таблицы сотрудников.
+/// </summary>
 public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
 {
+    /// <summary>
+    /// Настраивает таблицу сотрудников.
+    /// </summary>
+    /// <param name="builder">Построитель конфигурации сущности Employee.</param>
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
         builder.ToTable("employees",

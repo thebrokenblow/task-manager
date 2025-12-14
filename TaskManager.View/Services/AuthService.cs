@@ -8,21 +8,44 @@ using TaskManager.Domain.Services;
 
 namespace TaskManager.View.Services;
 
+/// <summary>
+/// Сервис для управления аутентификацией.
+/// </summary>
 public class AuthService(
     IEmployeeRepository employeeRepository,
     IHttpContextAccessor httpContextAccessor) : IAuthService
 {
+    /// <summary>
+    /// Количество дней действия cookie аутентификации.
+    /// </summary>
+    private const int CookieExpireDays = 30;
+
+    /// <summary>
+    /// Проверяет, аутентифицирован ли пользователь.
+    /// </summary>
     public bool IsAuthenticated =>
         httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
 
+    /// <summary>
+    /// Проверяет, является ли пользователь администратором.
+    /// </summary>
     public bool IsAdmin =>
         httpContextAccessor.HttpContext?.User.IsInRole(UserRole.Admin.ToString()) ?? false;
 
+    /// <summary>
+    /// Получает полное имя текущего пользователя.
+    /// </summary>
     public string? FullName =>
        httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value.ToString();
 
+    /// <summary>
+    /// Идентификатор администратора.
+    /// </summary>
     public int IdAdmin => 1;
 
+    /// <summary>
+    /// Идентификатор текущего пользователя.
+    /// </summary>
     public int? IdCurrentUser
     {
         get
@@ -38,6 +61,9 @@ public class AuthService(
         }
     }
 
+    /// <summary>
+    /// Роль текущего пользователя.
+    /// </summary>
     public UserRole? Role
     {
         get
@@ -58,6 +84,10 @@ public class AuthService(
         }
     }
 
+    /// <summary>
+    /// Выполняет вход пользователя в систему.
+    /// </summary>
+    /// <param name="loginViewModel">Модель данных для входа.</param>
     public async Task<bool> LoginAsync(EmployeeLoginModel loginViewModel)
     {
         var user = await employeeRepository.GetByLoginAsync(loginViewModel.Login);
@@ -79,7 +109,7 @@ public class AuthService(
         var authProperties = new AuthenticationProperties
         {
             IsPersistent = true,
-            ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
+            ExpiresUtc = DateTimeOffset.UtcNow.AddDays(CookieExpireDays)
         };
 
         await httpContextAccessor.HttpContext!.SignInAsync(
@@ -90,6 +120,9 @@ public class AuthService(
         return true;
     }
 
+    /// <summary>
+    /// Выполняет выход пользователя из системы.
+    /// </summary>
     public async Task LogoutAsync()
     {
         await httpContextAccessor.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

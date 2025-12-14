@@ -5,26 +5,39 @@ using TaskManager.Persistence.Data;
 
 namespace TaskManager.Persistence.Queries;
 
+/// <summary>
+/// Запросы для работы с подразделениями.
+/// </summary>
 public class DepartmentQuery(TaskManagerDbContext context) : IDepartmentQuery
 {
+    /// <summary>
+    /// Получает все подразделения.
+    /// </summary>
     public async Task<List<DepartmentSelectModel>> GetAllAsync()
     {
         var departments = await context.Employees.Select(employee => employee.Department)
                                                  .Distinct()
                                                  .Select(department => new DepartmentSelectModel
                                                  {
-                                                    NameDepartment = department
+                                                     Name = department
                                                  })
-                                                 .OrderBy(department => department.NameDepartment)
+                                                 .OrderBy(department => department.Name)
                                                  .ToListAsync();
 
         return departments;
     }
 
-    public Task<string?> GetByIdEmployeeAsync(int idCurrentUser)
+    /// <summary>
+    /// Получает подразделение по идентификатору сотрудника.
+    /// </summary>
+    /// <param name="employeeId">Идентификатор сотрудника.</param>
+    public Task<DepartmentModel?> GetDepartmentByEmployeeIdAsync(int employeeId)
     {
-        var nameDepartment = context.Employees.Where(employee => employee.Id == idCurrentUser)
-                                              .Select(employee => employee.Department)
+        var nameDepartment = context.Employees.Where(employee => employee.Id == employeeId)
+                                              .Select(employee => new DepartmentModel
+                                              {
+                                                  Name = employee.Department
+                                              })
                                               .FirstOrDefaultAsync();
 
         return nameDepartment;

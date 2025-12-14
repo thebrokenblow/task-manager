@@ -5,11 +5,11 @@ public class EmployeeStringProcessor
     private const string SpaceSeparator = " ";
     private const string UnderscoreSeparator = "_";
 
-    public static string? CleanSpaces(string? input)
+    public static string CleanSpaces(string? input)
     {
         if (string.IsNullOrWhiteSpace(input))
         {
-            return null;
+            return string.Empty;
         }
 
         var elements = input.Split(SpaceSeparator, StringSplitOptions.RemoveEmptyEntries);
@@ -17,11 +17,11 @@ public class EmployeeStringProcessor
         return string.Join(SpaceSeparator, elements);
     }
 
-    public static string? ConvertSpacesToUnderscore(string? input)
+    public static string ConvertSpacesToUnderscore(string? input)
     {
         if (string.IsNullOrWhiteSpace(input))
         {
-            return null;
+            return string.Empty;
         }
 
         var elements = input.Split(SpaceSeparator, StringSplitOptions.RemoveEmptyEntries);

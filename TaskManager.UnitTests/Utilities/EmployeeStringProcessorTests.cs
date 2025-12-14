@@ -74,12 +74,14 @@ public class EmployeeStringProcessorTests
     {
         // Arrange
         string? input = null;
+        var expected = string.Empty;
+
 
         // Act
         var result = EmployeeStringProcessor.CleanSpaces(input);
 
         // Assert
-        Assert.Null(result);
+        Assert.Equal(expected, result);
     }
 
     /// <summary>
@@ -90,7 +92,7 @@ public class EmployeeStringProcessorTests
     {
         // Arrange
         var input = string.Empty;
-        string? expected = null;
+        var expected = string.Empty;
 
         // Act
         var result = EmployeeStringProcessor.CleanSpaces(input);
@@ -107,7 +109,7 @@ public class EmployeeStringProcessorTests
     {
         // Arrange
         var input = "     ";
-        string? expected = null;
+        var expected = string.Empty;
 
         // Act
         var result = EmployeeStringProcessor.CleanSpaces(input);
@@ -230,12 +232,14 @@ public class EmployeeStringProcessorTests
     {
         // Arrange
         string? input = null;
+        var expected = string.Empty;
+
 
         // Act
         var result = EmployeeStringProcessor.ConvertSpacesToUnderscore(input);
 
         // Assert
-        Assert.Null(result);
+        Assert.Equal(expected, result);
     }
 
     /// <summary>
@@ -246,7 +250,7 @@ public class EmployeeStringProcessorTests
     {
         // Arrange
         var input = string.Empty;
-        string? expected = null;
+        var expected = string.Empty;
 
         // Act
         var result = EmployeeStringProcessor.ConvertSpacesToUnderscore(input);
@@ -263,7 +267,7 @@ public class EmployeeStringProcessorTests
     {
         // Arrange
         var input = "     ";
-        string? expected = null;
+        var expected = string.Empty;
 
         // Act
         var result = EmployeeStringProcessor.ConvertSpacesToUnderscore(input);

@@ -98,14 +98,14 @@ public class DocumentsController(
         var responsibleEmployees = await employeeService.GetResponsibleEmployeesAsync();
         var responsibleEmployeesSelectList = new SelectList(
                                                     responsibleEmployees,
-                                                    nameof(EmployeeForSelect.Id),
-                                                    nameof(EmployeeForSelect.FullNameAndDepartment));
+                                                    nameof(EmployeeForSelectViewModel.Id),
+                                                    nameof(EmployeeForSelectViewModel.FullNameAndDepartment));
 
         var departments = await departmentService.GetAllAsync();
         var departmentsSelectList = new SelectList(
                                             departments, 
-                                            nameof(DepartmentSelectModel.NameDepartment), 
-                                            nameof(DepartmentSelectModel.NameDepartment));
+                                            nameof(DepartmentSelectModel.Name), 
+                                            nameof(DepartmentSelectModel.Name));
 
         var createDocumentViewModel = new CreateDocumentViewModel
         {
@@ -144,15 +144,15 @@ public class DocumentsController(
         var responsibleEmployees = await employeeService.GetResponsibleEmployeesAsync();
         var responsibleEmployeesSelectList = new SelectList(
                                                     responsibleEmployees,
-                                                    nameof(EmployeeForSelect.Id),
-                                                    nameof(EmployeeForSelect.FullNameAndDepartment));
+                                                    nameof(EmployeeForSelectViewModel.Id),
+                                                    nameof(EmployeeForSelectViewModel.FullNameAndDepartment));
 
 
         var departments = await departmentService.GetAllAsync();
         var departmentsSelectList = new SelectList(
                                             departments,
-                                            nameof(DepartmentSelectModel.NameDepartment),
-                                            nameof(DepartmentSelectModel.NameDepartment));
+                                            nameof(DepartmentSelectModel.Name),
+                                            nameof(DepartmentSelectModel.Name));
 
         var editDocumentViewModel = new EditDocumentViewModel
         {
