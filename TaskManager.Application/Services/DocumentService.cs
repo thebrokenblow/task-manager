@@ -42,7 +42,7 @@ public class DocumentService(
         }
 
         int countDocuments;
-        List<DocumentForOverviewModel> documents;
+        IEnumerable<DocumentForOverviewModel> documents;
 
         int countSkip = (page - 1) * pageSize;
 

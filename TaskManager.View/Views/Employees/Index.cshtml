@@ -26,13 +26,13 @@
                     <p class="text-muted mb-0 small">Управление сотрудниками организации</p>
                 </div>
                 <div class="bg-light rounded px-2 py-1">
-                    <span class="text-muted small">Всего: <strong>@Model.Employees.Count</strong></span>
+                    <span class="text-muted small">Всего: <strong>@Model.Employees.Count()</strong></span>
                 </div>
             </div>
         </div>
     </div>
 
-    @if (Model.Employees.Count > 0)
+    @if (Model.Employees.Count() > 0)
     {
         <div class="row">
             <div class="col-12">

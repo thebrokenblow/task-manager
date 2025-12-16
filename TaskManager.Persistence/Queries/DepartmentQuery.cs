@@ -6,23 +6,32 @@ using TaskManager.Persistence.Data;
 namespace TaskManager.Persistence.Queries;
 
 /// <summary>
-/// Запросы для работы с подразделениями.
+/// Предоставляет запросы для работы с данными подразделений.
+/// Реализует сценарии чтения данных.
 /// </summary>
 public class DepartmentQuery(TaskManagerDbContext context) : IDepartmentQuery
 {
+    private readonly TaskManagerDbContext _context =
+        context ?? throw new ArgumentNullException(nameof(context));
+
     /// <summary>
-    /// Получает все подразделения.
+    /// Получает все подразделения из системы.
     /// </summary>
-    public async Task<List<DepartmentSelectModel>> GetAllAsync()
+    /// <returns>
+    /// Задача, результат которой содержит перечисление моделей <see cref="DepartmentSelectModel"/>,
+    /// отсортированных по названию подразделения.
+    /// </returns>
+    public async Task<IEnumerable<DepartmentSelectModel>> GetDepartmentsAsync()
     {
-        var departments = await context.Employees.Select(employee => employee.Department)
-                                                 .Distinct()
-                                                 .Select(department => new DepartmentSelectModel
-                                                 {
-                                                     Name = department
-                                                 })
-                                                 .OrderBy(department => department.Name)
-                                                 .ToListAsync();
+        var departments = await _context.Employees
+            .Select(employee => employee.Department)
+            .Distinct()
+            .Select(department => new DepartmentSelectModel
+            {
+                Name = department
+            })
+            .OrderBy(department => department.Name)
+            .ToListAsync();
 
         return departments;
     }
@@ -31,14 +40,19 @@ public class DepartmentQuery(TaskManagerDbContext context) : IDepartmentQuery
     /// Получает подразделение по идентификатору сотрудника.
     /// </summary>
     /// <param name="employeeId">Идентификатор сотрудника.</param>
-    public Task<DepartmentModel?> GetDepartmentByEmployeeIdAsync(int employeeId)
+    /// <returns>
+    /// Задача, результат которой содержит модель <see cref="DepartmentModel"/> 
+    /// с названием подразделения сотрудника или <c>null</c>, если сотрудник не найден.
+    /// </returns>
+    public async Task<DepartmentModel?> GetDepartmentByEmployeeIdAsync(int employeeId)
     {
-        var nameDepartment = context.Employees.Where(employee => employee.Id == employeeId)
-                                              .Select(employee => new DepartmentModel
-                                              {
-                                                  Name = employee.Department
-                                              })
-                                              .FirstOrDefaultAsync();
+        var nameDepartment = await _context.Employees
+            .Where(employee => employee.Id == employeeId)
+            .Select(employee => new DepartmentModel
+            {
+                Name = employee.Department
+            })
+            .FirstOrDefaultAsync();
 
         return nameDepartment;
     }

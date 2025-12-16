@@ -10,5 +10,5 @@ public interface IDepartmentService
     /// <summary>
     /// Получает все подразделения.
     /// </summary>
-    Task<List<DepartmentSelectModel>> GetAllAsync();
+    Task<IEnumerable<DepartmentSelectModel>> GetAllAsync();
 }

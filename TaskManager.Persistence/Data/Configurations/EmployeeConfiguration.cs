@@ -12,7 +12,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
     /// <summary>
     /// Настраивает таблицу сотрудников.
     /// </summary>
-    /// <param name="builder">Построитель конфигурации сущности Employee.</param>
+    /// <param name="builder">Строитель конфигурации сущности Employee.</param>
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
         builder.ToTable("employees",

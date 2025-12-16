@@ -1,24 +1,37 @@
-﻿using TaskManager.Domain.Entities;
+﻿using TaskManager.Domain.Enums;
 using TaskManager.Domain.Model.Employees;
 
 namespace TaskManager.Domain.Queries;
 
 /// <summary>
-/// Интерфейс для выполнения запросов к данным сотрудников.
-/// Определяет контракты для получения информации о сотрудниках в различных представлениях и состояниях.
-/// Интерфейс служит абстракцией для взаимодействия с хранилищем данных (базой данных).
+/// Предоставляет запросы для работы с данными сотрудников.
+/// Реализует сценарии чтения данных.
 /// </summary>
 public interface IEmployeeQuery
 {
     /// <summary>
-    /// Получает список обычных сотрудников.
+    /// Получает список обычных сотрудников (не администраторов) для обзора.
     /// </summary>
-    /// <returns>Список сотрудников</returns>
-    Task<List<Employee>> GetRegularEmployeesAsync();
+    /// <returns>
+    /// Задача, результат которой содержит перечисление моделей <see cref="EmployeeForOverviewModel"/>,
+    /// отсортированных по отделу и полному имени.
+    /// </returns>
+    /// <remarks>
+    /// Метод возвращает только сотрудников с ролью отличной от <see cref="UserRole.Admin"/>.
+    /// </remarks>
+    Task<IEnumerable<EmployeeForOverviewModel>> GetEmployeesAsync();
 
     /// <summary>
-    /// Получает список сотрудников, которые могут быть назначены ответственными.
+    /// Получает список сотрудников указанного отдела.
     /// </summary>
-    /// <returns>Список моделей сотрудников для выбора</returns>
-    Task<List<EmployeeSelectModel>> GetResponsibleEmployeesAsync(string department);
+    /// <param name="department">Название отдела для фильтрации сотрудников.</param>
+    /// <returns>
+    /// Задача, результат которой содержит перечисление моделей <see cref="EmployeeSelectModel"/>
+    /// сотрудников указанного отдела, отсортированных по отделу и полному имени.
+    /// </returns>
+    /// <remarks>
+    /// Метод возвращает сотрудников с ролью отличной от <see cref="UserRole.Admin"/>
+    /// и принадлежащих указанному отделу.
+    /// </remarks>
+    Task<IEnumerable<EmployeeSelectModel>> GetEmployeesByDepartmentAsync(string department);
 }

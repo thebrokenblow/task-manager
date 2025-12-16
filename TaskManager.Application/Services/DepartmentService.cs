@@ -12,9 +12,9 @@ public class DepartmentService(IDepartmentQuery departmentQuery) : IDepartmentSe
     /// <summary>
     /// Получает все подразделения.
     /// </summary>
-    public async Task<List<DepartmentSelectModel>> GetAllAsync()
+    public async Task<IEnumerable<DepartmentSelectModel>> GetAllAsync()
     {
-        var departments = await departmentQuery.GetAllAsync();
+        var departments = await departmentQuery.GetDepartmentsAsync();
 
         return departments;
     }

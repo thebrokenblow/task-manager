@@ -46,16 +46,17 @@ public class EmployeeService(
     /// <summary>
     /// Получает список обычных сотрудников.
     /// </summary>
-    public async Task<List<Employee>> GetRegularEmployeesAsync()
+    public async Task<IEnumerable<EmployeeForOverviewModel>> GetRegularEmployeesAsync()
     {
-        var employees = await _employeeQuery.GetRegularEmployeesAsync();
+        var employees = await _employeeQuery.GetEmployeesAsync();
+
         return employees;
     }
 
     /// <summary>
     /// Получает список ответственных сотрудников.
     /// </summary>
-    public async Task<List<EmployeeSelectModel>> GetResponsibleEmployeesAsync()
+    public async Task<IEnumerable<EmployeeSelectModel>> GetResponsibleEmployeesAsync()
     {
         if (!_authService.IsAuthenticated || !_authService.IdCurrentUser.HasValue)
         {
@@ -65,7 +66,7 @@ public class EmployeeService(
         var departmentModel = await _departmentQuery.GetDepartmentByEmployeeIdAsync(_authService.IdCurrentUser.Value) ??
             throw new NotFoundException("У пользователя не указан отдел", _authService.IdCurrentUser.Value);
 
-        var responsibleEmployees = await _employeeQuery.GetResponsibleEmployeesAsync(departmentModel.Name);
+        var responsibleEmployees = await _employeeQuery.GetEmployeesByDepartmentAsync(departmentModel.Name);
 
         return responsibleEmployees;
     }

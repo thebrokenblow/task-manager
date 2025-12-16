@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TaskManager.Domain.Entities;
 using TaskManager.Domain.Enums;
 using TaskManager.Domain.Model.Employees;
 using TaskManager.Domain.Queries;
@@ -8,38 +7,73 @@ using TaskManager.Persistence.Data;
 namespace TaskManager.Persistence.Queries;
 
 /// <summary>
-/// Запросы для работы с сотрудниками.
+/// Предоставляет запросы для работы с данными сотрудников.
+/// Реализует сценарии чтения данных.
 /// </summary>
 public class EmployeeQuery(TaskManagerDbContext context) : IEmployeeQuery
 {
+    private readonly TaskManagerDbContext _context =
+        context ?? throw new ArgumentNullException(nameof(context));
+
     /// <summary>
-    /// Получает список обычных сотрудников.
+    /// Получает список обычных сотрудников (не администраторов) для обзора.
     /// </summary>
-    public async Task<List<Employee>> GetRegularEmployeesAsync()
+    /// <returns>
+    /// Задача, результат которой содержит перечисление моделей <see cref="EmployeeForOverviewModel"/>,
+    /// отсортированных по отделу и полному имени.
+    /// </returns>
+    /// <remarks>
+    /// Метод возвращает только сотрудников с ролью отличной от <see cref="UserRole.Admin"/>.
+    /// </remarks>
+    public async Task<IEnumerable<EmployeeForOverviewModel>> GetEmployeesAsync()
     {
-        var employees = await context.Employees.Where(employee => employee.Role != UserRole.Admin)
-                                               .OrderBy(employee => employee.Department)
-                                               .ThenBy(employee => employee.FullName)
-                                               .ToListAsync();
+        var employees = await _context.Employees
+            .Where(employee => employee.Role != UserRole.Admin)
+            .Select(employee => new EmployeeForOverviewModel
+            {
+                Id = employee.Id,
+                FullName = employee.FullName,
+                Department = employee.Department
+            })
+            .OrderBy(employee => employee.Department)
+            .ThenBy(employee => employee.FullName)
+            .ToListAsync();
 
         return employees;
     }
 
     /// <summary>
-    /// Получает список ответственных сотрудников отдела.
+    /// Получает список сотрудников указанного отдела.
     /// </summary>
-    /// <param name="department">Название отдела.</param>
-    public async Task<List<EmployeeSelectModel>> GetResponsibleEmployeesAsync(string department)
+    /// <param name="department">Название отдела для фильтрации сотрудников.</param>
+    /// <returns>
+    /// Задача, результат которой содержит перечисление моделей <see cref="EmployeeSelectModel"/>
+    /// сотрудников указанного отдела, отсортированных по отделу и полному имени.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Выбрасывается, если <paramref name="department"/> равен <c>null</c> или пустой строке.
+    /// </exception>
+    /// <remarks>
+    /// Метод возвращает сотрудников с ролью отличной от <see cref="UserRole.Admin"/>
+    /// и принадлежащих указанному отделу.
+    /// </remarks>
+    public async Task<IEnumerable<EmployeeSelectModel>> GetEmployeesByDepartmentAsync(string department)
     {
-        var employees = await context.Employees.Where(employee => employee.Role != UserRole.Admin && employee.Department == department)
-                                               .OrderBy(employee => employee.Department)
-                                               .ThenBy(employee => employee.FullName)
-                                               .Select(employee => new EmployeeSelectModel
-                                               {
-                                                   Id = employee.Id,
-                                                   FullNameAndDepartment = $"{employee.FullName} ({employee.Department})"
-                                               })
-                                               .ToListAsync();
+        if (string.IsNullOrWhiteSpace(department))
+        {
+            throw new ArgumentException("Название отдела не может быть пустым", nameof(department));
+        }
+
+        var employees = await _context.Employees
+            .Where(employee => employee.Role != UserRole.Admin && employee.Department == department)
+            .OrderBy(employee => employee.Department)
+            .ThenBy(employee => employee.FullName)
+            .Select(employee => new EmployeeSelectModel
+            {
+                Id = employee.Id,
+                FullNameAndDepartment = $"{employee.FullName} ({employee.Department})"
+            })
+            .ToListAsync();
 
         return employees;
     }

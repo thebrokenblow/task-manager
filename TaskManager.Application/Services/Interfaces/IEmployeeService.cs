@@ -12,13 +12,13 @@ public interface IEmployeeService
     /// Получает список обычных сотрудников (не администраторов).
     /// </summary>
     /// <returns>Список сотрудников с ролью "Сотрудник".</returns>
-    Task<List<Employee>> GetRegularEmployeesAsync();
+    Task<IEnumerable<EmployeeForOverviewModel>> GetRegularEmployeesAsync();
 
     /// <summary>
     /// Получает список ответственных сотрудников для выбора в интерфейсе.
     /// </summary>
     /// <returns>Список моделей сотрудников для выпадающих списков.</returns>
-    Task<List<EmployeeSelectModel>> GetResponsibleEmployeesAsync();
+    Task<IEnumerable<EmployeeSelectModel>> GetResponsibleEmployeesAsync();
 
     /// <summary>
     /// Получает сотрудника по его идентификатору.

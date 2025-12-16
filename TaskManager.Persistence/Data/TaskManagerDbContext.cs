@@ -6,7 +6,6 @@ namespace TaskManager.Persistence.Data;
 
 /// <summary>
 /// Контекст базы данных приложения TaskManager.
-/// Представляет сеанс с базой данных для выполнения операций CRUD.
 /// </summary>
 public class TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options) : DbContext(options)
 {

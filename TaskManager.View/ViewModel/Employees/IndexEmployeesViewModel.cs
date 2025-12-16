@@ -1,4 +1,5 @@
 ﻿using TaskManager.Domain.Entities;
+using TaskManager.Domain.Model.Employees;
 
 namespace TaskManager.View.ViewModel.Employees;
 
@@ -10,7 +11,7 @@ public class IndexEmployeesViewModel
     /// <summary>
     /// Список сотрудников.
     /// </summary>
-    public required List<Employee> Employees { get; init; }
+    public required IEnumerable<EmployeeForOverviewModel> Employees { get; init; }
 
     /// <summary>
     /// Сотрудник, которого не удалось создать.

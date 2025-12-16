@@ -12,7 +12,7 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
     /// <summary>
     /// Настраивает таблицу документов.
     /// </summary>
-    /// <param name="builder">Построитель конфигурации сущности Document.</param>
+    /// <param name="builder">Строитель конфигурации сущности Document.</param>
     public void Configure(EntityTypeBuilder<Document> builder)
     {
         builder.ToTable("documents",
