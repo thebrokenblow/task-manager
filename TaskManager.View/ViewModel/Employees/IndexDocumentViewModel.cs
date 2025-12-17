@@ -17,7 +17,7 @@ public class IndexDocumentViewModel
     /// <summary>
     /// Флаг отображения только моих задач.
     /// </summary>
-    public required bool ShowMyTasks { get; init; }
+    public required bool IsShowMyDocuments { get; init; }
 
     /// <summary>
     /// Список доступных размеров страницы.

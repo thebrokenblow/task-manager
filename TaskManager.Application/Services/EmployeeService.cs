@@ -13,13 +13,9 @@ namespace TaskManager.Application.Services;
 
 /// <summary>
 /// Реализация сервиса для управления сотрудниками.
-/// </summary>
-/// <remarks>
 /// Обеспечивает бизнес-логику работы с сотрудниками, включая валидацию данных,
-/// проверку уникальности логинов и взаимодействие с репозиториями.
-/// </remarks>
-/// <param name="employeeQuery">Запросы для получения данных о сотрудниках.</param>
-/// <param name="employeeRepository">Репозиторий для работы с данными сотрудников.</param>
+/// проверку уникальности логинов, обработку строковых данных и взаимодействие с репозиториями.
+/// </summary>
 public class EmployeeService(
     IAuthService authService,
     IDepartmentQuery departmentQuery,
@@ -44,18 +40,43 @@ public class EmployeeService(
     private const string DefaultPassword = "Qwerty123";
 
     /// <summary>
-    /// Получает список обычных сотрудников.
+    /// Получает список обычных сотрудников (не администраторов).
     /// </summary>
+    /// <returns>
+    /// Задача, результат которой содержит перечисление моделей <see cref="EmployeeForOverviewModel"/>,
+    /// отсортированных по отделу и полному имени.
+    /// </returns>
+    /// <remarks>
+    /// Возвращает только сотрудников с ролью отличной от <see cref="UserRole.Admin"/>.
+    /// Результат сортируется сначала по отделу, затем по полному имени.
+    /// </remarks>
     public async Task<IEnumerable<EmployeeForOverviewModel>> GetRegularEmployeesAsync()
     {
-        var employees = await _employeeQuery.GetEmployeesAsync();
+        var employees = await _employeeQuery.GetRegularEmployeesAsync();
 
         return employees;
     }
 
     /// <summary>
-    /// Получает список ответственных сотрудников.
+    /// Получает список ответственных сотрудников отдела текущего пользователя.
     /// </summary>
+    /// <returns>
+    /// Задача, результат которой содержит перечисление моделей <see cref="EmployeeSelectModel"/>
+    /// сотрудников отдела текущего пользователя.
+    /// </returns>
+    /// <exception cref="UnauthorizedAccessException">
+    /// Выбрасывается, если пользователь не аутентифицирован.
+    /// </exception>
+    /// <exception cref="NotFoundException">
+    /// Выбрасывается, если у текущего пользователя не указан отдел.
+    /// </exception>
+    /// <remarks>
+    /// <para>Метод выполняет следующие шаги:</para>
+    /// <para>1. Проверяет аутентификацию текущего пользователя</para>
+    /// <para>2. Получает отдел текущего пользователя</para>
+    /// <para>3. Возвращает сотрудников этого отдела с ролью отличной от администратора</para>
+    /// <para>Результат сортируется по отделу и полному имени.</para>
+    /// </remarks>
     public async Task<IEnumerable<EmployeeSelectModel>> GetResponsibleEmployeesAsync()
     {
         if (!_authService.IsAuthenticated || !_authService.IdCurrentUser.HasValue)
@@ -75,9 +96,14 @@ public class EmployeeService(
     /// Получает сотрудника по его идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор сотрудника.</param>
+    /// <returns>
+    /// Задача, результат которой содержит сущность <see cref="Employee"/>
+    /// или <c>null</c>, если сотрудник не найден.
+    /// </returns>
     public async Task<Employee?> GetByIdAsync(int id)
     {
         var employee = await _employeeRepository.GetByIdAsync(id);
+        
         return employee;
     }
 
@@ -85,20 +111,40 @@ public class EmployeeService(
     /// Создает нового сотрудника.
     /// </summary>
     /// <param name="employee">Сотрудник для создания.</param>
+    /// <returns>Задача, представляющая асинхронную операцию создания.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Выбрасывается, если <paramref name="employee"/> равен <c>null</c>.
+    /// </exception>
+    /// <exception cref="LoginAlreadyExistsException">
+    /// Выбрасывается, если логин сотрудника уже существует в системе.
+    /// </exception>
+    /// <remarks>
+    /// <para>При создании сотрудника выполняется:</para>
+    /// <para>1. Проверка уникальности логина</para>
+    /// <para>2. Очистка строковых полей от лишних пробелов</para>
+    /// <para>3. Нормализация отдела (удаление лишних пробелов)</para>
+    /// <para>4. Преобразование пробелов в логине в подчеркивания</para>
+    /// <para>5. Установка пароля по умолчанию</para>
+    /// <para>6. Установка роли "Сотрудник"</para>
+    /// <para>7. Сохранение в базу данных</para>
+    /// </remarks>
     public async Task CreateAsync(Employee employee)
     {
-        var loginExists = await _employeeRepository.IsLoginExistAsync(employee.Login);
+        ArgumentNullException.ThrowIfNull(employee);
 
+        // Проверка уникальности логина
+        var loginExists = await _employeeRepository.IsLoginExistAsync(employee.Login);
         if (loginExists)
         {
             throw new LoginAlreadyExistsException(employee.Login);
         }
 
+        // Очистка и нормализация данных
         TrimEmployeeStrings(employee);
-
         employee.Department = EmployeeStringProcessor.CleanSpaces(employee.Department);
         employee.Login = EmployeeStringProcessor.ConvertSpacesToUnderscore(employee.Login);
 
+        // Установка значений по умолчанию
         employee.Password = DefaultPassword;
         employee.Role = UserRole.Employee;
 
@@ -109,16 +155,34 @@ public class EmployeeService(
     /// Редактирует существующего сотрудника.
     /// </summary>
     /// <param name="employee">Сотрудник с обновленными данными.</param>
+    /// <returns>Задача, представляющая асинхронную операцию редактирования.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Выбрасывается, если <paramref name="employee"/> равен <c>null</c>.
+    /// </exception>
+    /// <exception cref="LoginAlreadyExistsException">
+    /// Выбрасывается, если обновленный логин уже существует у другого сотрудника.
+    /// </exception>
+    /// <remarks>
+    /// <para>При редактировании сотрудника выполняется:</para>
+    /// <para>1. Проверка уникальности логина (исключая текущего сотрудника)</para>
+    /// <para>2. Очистка строковых полей от лишних пробелов</para>
+    /// <para>3. Обновление в базе данных</para>
+    /// <para>Примечание: пароль и роль не изменяются этим методом.</para>
+    /// </remarks>
     public async Task EditAsync(Employee employee)
     {
-        var loginExists = await _employeeRepository.IsLoginExistAsync(employee.Login, employee.Id);
+        ArgumentNullException.ThrowIfNull(employee);
 
+        // Проверка уникальности логина (исключая текущего сотрудника)
+        var loginExists = await _employeeRepository.IsLoginExistAsync(employee.Login, employee.Id);
         if (loginExists)
         {
             throw new LoginAlreadyExistsException(employee.Login);
         }
 
+        // Очистка данных
         TrimEmployeeStrings(employee);
+
         await _employeeRepository.UpdateAsync(employee);
     }
 

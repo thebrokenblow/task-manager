@@ -25,7 +25,7 @@ public class EmployeeQuery(TaskManagerDbContext context) : IEmployeeQuery
     /// <remarks>
     /// Метод возвращает только сотрудников с ролью отличной от <see cref="UserRole.Admin"/>.
     /// </remarks>
-    public async Task<IEnumerable<EmployeeForOverviewModel>> GetEmployeesAsync()
+    public async Task<IEnumerable<EmployeeForOverviewModel>> GetRegularEmployeesAsync()
     {
         var employees = await _context.Employees
             .Where(employee => employee.Role != UserRole.Admin)

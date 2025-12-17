@@ -10,8 +10,4 @@
 /// </remarks>
 public class LoginAlreadyExistsException(string login) : Exception($"Сотрудник с логином '{login}' уже есть в системе")
 {
-    /// <summary>
-    /// Получает логин, который вызвал конфликт при регистрации.
-    /// </summary>
-    public string Login { get; } = login;
 }

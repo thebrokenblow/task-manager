@@ -33,7 +33,7 @@ public class DocumentsController(
         int totalPages,
         DateOnly? startOutgoingDocumentDateOutputDocument,
         DateOnly? endOutgoingDocumentDateOutputDocument,
-        bool showMyTasks,
+        bool isShowMyDocuments,
         int page = DefaultNumberPage,
         int pageSize = DefaultCountDocumentsOnPage) 
     {
@@ -52,7 +52,7 @@ public class DocumentsController(
             var documentFilterModel = new DocumentFilterDto
             {
                 SearchTerm = inputSearch,
-                IsShowMyTasks = showMyTasks,
+                IsShowMyDocuments = isShowMyDocuments,
                 StartOutgoingDocumentDateOutputDocument = startOutgoingDocumentDateOutputDocument,
                 EndOutgoingDocumentDateOutputDocument = endOutgoingDocumentDateOutputDocument,
             };
@@ -67,7 +67,7 @@ public class DocumentsController(
                 InputString = inputSearch,
                 PagedDocuments = pagedDocuments,
                 CountsDocumentsOnPage = new(CountsDocumentsOnPage),
-                ShowMyTasks = showMyTasks,
+                IsShowMyDocuments = isShowMyDocuments,
                 StartOutgoingDocumentDateOutputDocument = startOutgoingDocumentDateOutputDocument,
                 EndOutgoingDocumentDateOutputDocument = endOutgoingDocumentDateOutputDocument,
             };
@@ -101,7 +101,7 @@ public class DocumentsController(
                                                     nameof(EmployeeForSelectViewModel.Id),
                                                     nameof(EmployeeForSelectViewModel.FullNameAndDepartment));
 
-        var departments = await departmentService.GetAllAsync();
+        var departments = await departmentService.GetDepartmentsAsync();
         var departmentsSelectList = new SelectList(
                                             departments, 
                                             nameof(DepartmentSelectModel.Name), 
@@ -148,7 +148,7 @@ public class DocumentsController(
                                                     nameof(EmployeeForSelectViewModel.FullNameAndDepartment));
 
 
-        var departments = await departmentService.GetAllAsync();
+        var departments = await departmentService.GetDepartmentsAsync();
         var departmentsSelectList = new SelectList(
                                             departments,
                                             nameof(DepartmentSelectModel.Name),

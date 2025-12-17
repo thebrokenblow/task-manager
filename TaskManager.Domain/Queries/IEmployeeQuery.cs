@@ -19,7 +19,7 @@ public interface IEmployeeQuery
     /// <remarks>
     /// Метод возвращает только сотрудников с ролью отличной от <see cref="UserRole.Admin"/>.
     /// </remarks>
-    Task<IEnumerable<EmployeeForOverviewModel>> GetEmployeesAsync();
+    Task<IEnumerable<EmployeeForOverviewModel>> GetRegularEmployeesAsync();
 
     /// <summary>
     /// Получает список сотрудников указанного отдела.

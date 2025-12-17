@@ -11,9 +11,9 @@ public class DocumentFilterDto
     public required string? SearchTerm { get; init; }
 
     /// <summary>
-    /// Фильтр по задачам текущего пользователя.
+    /// Фильтр по документам текущего пользователя.
     /// </summary>
-    public required bool IsShowMyTasks { get; init; }
+    public required bool IsShowMyDocuments { get; init; }
 
     /// <summary>
     /// Начальная дата диапазона для даты исходящего документа.
