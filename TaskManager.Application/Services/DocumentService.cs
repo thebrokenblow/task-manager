@@ -1,12 +1,14 @@
 ﻿using TaskManager.Application.Common;
 using TaskManager.Application.Dtos.Documents;
 using TaskManager.Application.Exceptions;
+using TaskManager.Application.Factories;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Application.Validations;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Exceptions;
 using TaskManager.Domain.Model.Departments;
 using TaskManager.Domain.Model.Documents;
+using TaskManager.Domain.Model.Documents.Edit;
 using TaskManager.Domain.Queries;
 using TaskManager.Domain.Repositories;
 using TaskManager.Domain.Services;
@@ -18,7 +20,7 @@ namespace TaskManager.Application.Services;
 /// Предоставляет бизнес-логику для операций с документами, включая CRUD-операции,
 /// фильтрацию, пагинацию и управление статусами.
 /// </summary>
-public class DocumentService(
+public sealed class DocumentService(
     IDepartmentQuery departmentQuery,
     IDocumentQuery documentQuery,
     IDocumentRepository documentRepository,
@@ -137,10 +139,10 @@ public class DocumentService(
     /// </summary>
     /// <param name="id">Идентификатор документа.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="DocumentForEditModel"/>
+    /// Задача, результат которой содержит модель <see cref="DocumentForOverviewEditModel"/>
     /// или <c>null</c>, если документ не найден.
     /// </returns>
-    public async Task<DocumentForEditModel?> GetDocumentForEditAsync(int id)
+    public async Task<DocumentForOverviewEditModel?> GetDocumentForEditAsync(int id)
     {
         var document = await _documentQuery.GetDocumentForEditAsync(id);
 
@@ -200,10 +202,10 @@ public class DocumentService(
     /// <summary>
     /// Создает новый документ.
     /// </summary>
-    /// <param name="document">Документ для создания.</param>
+    /// <param name="createdDocumentDto">Документ для создания.</param>
     /// <returns>Задача, представляющая асинхронную операцию создания.</returns>
     /// <exception cref="ArgumentNullException">
-    /// Выбрасывается, если <paramref name="document"/> равен <c>null</c>.
+    /// Выбрасывается, если <paramref name="createdDocumentDto"/> равен <c>null</c>.
     /// </exception>
     /// <exception cref="UnauthorizedAccessException">
     /// Выбрасывается, если пользователь не аутентифицирован.
@@ -214,9 +216,9 @@ public class DocumentService(
     /// <para>2. Установка идентификатора создателя документа</para>
     /// <para>3. Сохранение в базу данных</para>
     /// </remarks>
-    public async Task CreateAsync(Document document)
+    public async Task CreateAsync(CreatedDocumentDto createdDocumentDto)
     {
-        ArgumentNullException.ThrowIfNull(document);
+        ArgumentNullException.ThrowIfNull(createdDocumentDto);
 
         if (!_authService.IsAuthenticated || !_authService.IdCurrentUser.HasValue)
         {
@@ -224,21 +226,19 @@ public class DocumentService(
         }
 
         // Очистка строковых полей
-        TrimDocumentStrings(document);
+        TrimDocumentStrings(createdDocumentDto);
 
-        // Установка создателя документа
-        document.CreatedByEmployeeId = _authService.IdCurrentUser.Value;
-
+        var document = DocumentFactory.CreateDocument(createdDocumentDto, _authService.IdCurrentUser.Value);
         await _documentRepository.AddAsync(document);
     }
 
     /// <summary>
     /// Редактирует существующий документ.
     /// </summary>
-    /// <param name="document">Документ с обновленными данными.</param>
+    /// <param name="editedDocumentDto">Документ с обновленными данными.</param>
     /// <returns>Задача, представляющая асинхронную операцию редактирования.</returns>
     /// <exception cref="ArgumentNullException">
-    /// Выбрасывается, если <paramref name="document"/> равен <c>null</c>.
+    /// Выбрасывается, если <paramref name="editedDocumentDto"/> равен <c>null</c>.
     /// </exception>
     /// <remarks>
     /// <para>При редактировании выполняется:</para>
@@ -246,18 +246,20 @@ public class DocumentService(
     /// <para>2. Установка даты и автора последнего редактирования</para>
     /// <para>3. Обновление в базе данных</para>
     /// </remarks>
-    public async Task EditAsync(Document document)
+    public async Task EditAsync(EditedDocumentDto editedDocumentDto)
     {
-        ArgumentNullException.ThrowIfNull(document);
+        if (!_authService.IsAuthenticated || !_authService.IdCurrentUser.HasValue)
+        {
+            throw new UnauthorizedAccessException("Пользователь не аутентифицирован");
+        }
+
+        ArgumentNullException.ThrowIfNull(editedDocumentDto);
 
         // Очистка строковых полей
-        TrimDocumentStrings(document);
+        TrimDocumentStrings(editedDocumentDto);
 
-        // Установка информации о редактировании
-        document.LastEditedDateTime = DateTime.Now;
-        document.LastEditedByEmployeeId = _authService.IdCurrentUser;
-
-        await _documentRepository.UpdateAsync(document);
+        var documentForEditModel = DocumentFactory.CreateDocumentForEdit(editedDocumentDto, _authService.IdCurrentUser.Value);
+        await _documentRepository.UpdateAsync(documentForEditModel);
     }
 
     /// <summary>
@@ -345,49 +347,106 @@ public class DocumentService(
     }
 
     /// <summary>
+    /// Очищает строковые свойства DTO документа от лишних пробелов.
+    /// </summary>
+    /// <param name="сreatedDocumentDto">DTO документа для обработки.</param>
+    private static void TrimDocumentStrings(CreatedDocumentDto сreatedDocumentDto)
+    {
+        if (сreatedDocumentDto.OutgoingDocumentNumberInputDocument is not null)
+        {
+            сreatedDocumentDto.OutgoingDocumentNumberInputDocument = сreatedDocumentDto.OutgoingDocumentNumberInputDocument.Trim();
+        }
+
+        if (сreatedDocumentDto.CustomerInputDocument is not null)
+        {
+            сreatedDocumentDto.CustomerInputDocument = сreatedDocumentDto.CustomerInputDocument.Trim();
+        }
+
+        if (сreatedDocumentDto.DocumentSummaryInputDocument is not null)
+        {
+            сreatedDocumentDto.DocumentSummaryInputDocument = сreatedDocumentDto.DocumentSummaryInputDocument.Trim();
+        }
+
+        if (сreatedDocumentDto.IncomingDocumentNumberInputDocument is not null)
+        {
+            сreatedDocumentDto.IncomingDocumentNumberInputDocument = сreatedDocumentDto.IncomingDocumentNumberInputDocument.Trim();
+        }
+
+        if (сreatedDocumentDto.ResponsibleDepartmentInputDocument is not null)
+        {
+            сreatedDocumentDto.ResponsibleDepartmentInputDocument = сreatedDocumentDto.ResponsibleDepartmentInputDocument.Trim();
+        }
+
+        if (сreatedDocumentDto.ResponsibleDepartmentsInputDocument is not null)
+        {
+            сreatedDocumentDto.ResponsibleDepartmentsInputDocument = сreatedDocumentDto.ResponsibleDepartmentsInputDocument.Trim();
+        }
+
+        if (сreatedDocumentDto.OutgoingDocumentNumberOutputDocument is not null)
+        {
+            сreatedDocumentDto.OutgoingDocumentNumberOutputDocument = сreatedDocumentDto.OutgoingDocumentNumberOutputDocument.Trim();
+        }
+
+        if (сreatedDocumentDto.RecipientOutputDocument is not null)
+        {
+            сreatedDocumentDto.RecipientOutputDocument = сreatedDocumentDto.RecipientOutputDocument.Trim();
+        }
+
+        if (сreatedDocumentDto.DocumentSummaryOutputDocument is not null)
+        {
+            сreatedDocumentDto.DocumentSummaryOutputDocument = сreatedDocumentDto.DocumentSummaryOutputDocument.Trim();
+        }
+    }
+
+    /// <summary>
     /// Очищает строковые свойства документа от лишних пробелов.
     /// </summary>
-    /// <param name="document">Документ для обработки.</param>
-    private static void TrimDocumentStrings(Document document)
+    /// <param name="editedDocumentDto">DTO документа для обработки.</param>
+    private static void TrimDocumentStrings(EditedDocumentDto editedDocumentDto)
     {
-        if (document.OutgoingDocumentNumberInputDocument is not null)
+        if (editedDocumentDto.OutgoingDocumentNumberInputDocument is not null)
         {
-            document.OutgoingDocumentNumberInputDocument = document.OutgoingDocumentNumberInputDocument.Trim();
+            editedDocumentDto.OutgoingDocumentNumberInputDocument = editedDocumentDto.OutgoingDocumentNumberInputDocument.Trim();
         }
 
-        if (document.CustomerInputDocument is not null)
+        if (editedDocumentDto.CustomerInputDocument is not null)
         {
-            document.CustomerInputDocument = document.CustomerInputDocument.Trim();
+            editedDocumentDto.CustomerInputDocument = editedDocumentDto.CustomerInputDocument.Trim();
         }
 
-        if (document.DocumentSummaryInputDocument is not null)
+        if (editedDocumentDto.DocumentSummaryInputDocument is not null)
         {
-            document.DocumentSummaryInputDocument = document.DocumentSummaryInputDocument.Trim();
+            editedDocumentDto.DocumentSummaryInputDocument = editedDocumentDto.DocumentSummaryInputDocument.Trim();
         }
 
-        if (document.IncomingDocumentNumberInputDocument is not null)
+        if (editedDocumentDto.IncomingDocumentNumberInputDocument is not null)
         {
-            document.IncomingDocumentNumberInputDocument = document.IncomingDocumentNumberInputDocument.Trim();
+            editedDocumentDto.IncomingDocumentNumberInputDocument = editedDocumentDto.IncomingDocumentNumberInputDocument.Trim();
         }
 
-        if (document.ResponsibleDepartmentsInputDocument is not null)
+        if (editedDocumentDto.ResponsibleDepartmentInputDocument is not null)
         {
-            document.ResponsibleDepartmentsInputDocument = document.ResponsibleDepartmentsInputDocument.Trim();
+            editedDocumentDto.ResponsibleDepartmentInputDocument = editedDocumentDto.ResponsibleDepartmentInputDocument.Trim();
         }
 
-        if (document.OutgoingDocumentNumberOutputDocument is not null)
+        if (editedDocumentDto.ResponsibleDepartmentsInputDocument is not null)
         {
-            document.OutgoingDocumentNumberOutputDocument = document.OutgoingDocumentNumberOutputDocument.Trim();
+            editedDocumentDto.ResponsibleDepartmentsInputDocument = editedDocumentDto.ResponsibleDepartmentsInputDocument.Trim();
         }
 
-        if (document.RecipientOutputDocument is not null)
+        if (editedDocumentDto.OutgoingDocumentNumberOutputDocument is not null)
         {
-            document.RecipientOutputDocument = document.RecipientOutputDocument.Trim();
+            editedDocumentDto.OutgoingDocumentNumberOutputDocument = editedDocumentDto.OutgoingDocumentNumberOutputDocument.Trim();
         }
 
-        if (document.DocumentSummaryOutputDocument is not null)
+        if (editedDocumentDto.RecipientOutputDocument is not null)
         {
-            document.DocumentSummaryOutputDocument = document.DocumentSummaryOutputDocument.Trim();
+            editedDocumentDto.RecipientOutputDocument = editedDocumentDto.RecipientOutputDocument.Trim();
+        }
+
+        if (editedDocumentDto.DocumentSummaryOutputDocument is not null)
+        {
+            editedDocumentDto.DocumentSummaryOutputDocument = editedDocumentDto.DocumentSummaryOutputDocument.Trim();
         }
     }
 }

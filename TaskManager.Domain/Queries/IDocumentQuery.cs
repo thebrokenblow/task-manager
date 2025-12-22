@@ -29,13 +29,13 @@ public interface IDocumentQuery
     /// </summary>
     /// <param name="id">Идентификатор документа.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="DocumentForEditModel"/> 
+    /// Задача, результат которой содержит модель <see cref="DocumentForOverviewEditModel"/> 
     /// или <c>null</c>, если документ не найден.
     /// </returns>
     /// <remarks>
     /// Запрос возвращает все поля документа, необходимые для формы редактирования.
     /// </remarks>
-    Task<DocumentForEditModel?> GetDocumentForEditAsync(int id);
+    Task<DocumentForOverviewEditModel?> GetDocumentForEditAsync(int id);
 
     /// <summary>
     /// Получает данные документа для подтверждения удаления.

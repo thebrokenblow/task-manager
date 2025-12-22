@@ -117,16 +117,16 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
     /// </summary>
     /// <param name="id">Идентификатор документа.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="DocumentForEditModel"/> 
+    /// Задача, результат которой содержит модель <see cref="DocumentForOverviewEditModel"/> 
     /// или <c>null</c>, если документ не найден.
     /// </returns>
     /// <remarks>
     /// Запрос возвращает все поля документа, необходимые для формы редактирования.
     /// </remarks>
-    public async Task<DocumentForEditModel?> GetDocumentForEditAsync(int id)
+    public async Task<DocumentForOverviewEditModel?> GetDocumentForEditAsync(int id)
     {
         var document = await _context.Documents
-            .Select(document => new DocumentForEditModel
+            .Select(document => new DocumentForOverviewEditModel
             {
                 Id = document.Id,
                 OutgoingDocumentNumberInputDocument = document.OutgoingDocumentNumberInputDocument,

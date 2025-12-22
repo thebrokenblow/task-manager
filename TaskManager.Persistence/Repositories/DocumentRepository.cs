@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Exceptions;
+using TaskManager.Domain.Model.Documents.Edit;
 using TaskManager.Domain.Repositories;
 using TaskManager.Persistence.Data;
 
@@ -14,21 +15,6 @@ public class DocumentRepository(TaskManagerDbContext context) : IDocumentReposit
 {
     private readonly TaskManagerDbContext _context =
         context ?? throw new ArgumentNullException(nameof(context));
-
-    /// <summary>
-    /// Получает документ по его идентификатору.
-    /// </summary>
-    /// <param name="id">Идентификатор документа.</param>
-    /// <returns>
-    /// Задача, результат которой содержит документ или <c>null</c>, 
-    /// если документ с указанным идентификатором не найден.
-    /// </returns>
-    public async Task<Document?> GetByIdAsync(int id)
-    {
-        var document = await _context.Documents.FindAsync(id);
-
-        return document;
-    }
 
     /// <summary>
     /// Добавляет новый документ в систему.
@@ -52,20 +38,71 @@ public class DocumentRepository(TaskManagerDbContext context) : IDocumentReposit
     /// <summary>
     /// Обновляет данные существующего документа.
     /// </summary>
-    /// <param name="document">Документ с обновленными данными.</param>
+    /// <param name="documentForEditModel">Документ с обновленными данными.</param>
     /// <returns>Задача, представляющая асинхронную операцию обновления.</returns>
     /// <exception cref="ArgumentNullException">
-    /// Выбрасывается, если <paramref name="document"/> равен <c>null</c>.
+    /// Выбрасывается, если <paramref name="documentForEditModel"/> равен <c>null</c>.
     /// </exception>
-    /// <exception cref="DbUpdateException">
-    /// Выбрасывается при возникновении ошибок при сохранении в базу данных.
+    /// <exception cref="NotFoundException">
+    /// Выбрасывается, если документ с указанным Id не найден.
     /// </exception>
-    public async Task UpdateAsync(Document document)
+    public async Task UpdateAsync(DocumentForEditModel documentForEditModel)
     {
-        ArgumentNullException.ThrowIfNull(document);
+        ArgumentNullException.ThrowIfNull(documentForEditModel);
 
-        _context.Update(document);
-        await _context.SaveChangesAsync();
+        var affectedRows = await _context.Documents
+            .Where(document => document.Id == documentForEditModel.Id)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(document => document.OutgoingDocumentNumberInputDocument,
+                    documentForEditModel.OutgoingDocumentNumberInputDocument)
+                .SetProperty(document => document.SourceDocumentDateInputDocument,
+                    documentForEditModel.SourceDocumentDateInputDocument)
+                .SetProperty(document => document.CustomerInputDocument,
+                    documentForEditModel.CustomerInputDocument)
+                .SetProperty(document => document.DocumentSummaryInputDocument,
+                    documentForEditModel.DocumentSummaryInputDocument)
+                .SetProperty(document => document.IsExternalDocumentInputDocument,
+                    documentForEditModel.IsExternalDocumentInputDocument)
+                .SetProperty(document => document.IncomingDocumentNumberInputDocument,
+                    documentForEditModel.IncomingDocumentNumberInputDocument)
+                .SetProperty(document => document.IncomingDocumentDateInputDocument,
+                    documentForEditModel.IncomingDocumentDateInputDocument)
+                .SetProperty(document => document.ResponsibleDepartmentInputDocument,
+                    documentForEditModel.ResponsibleDepartmentInputDocument)
+                .SetProperty(document => document.ResponsibleDepartmentsInputDocument,
+                    documentForEditModel.ResponsibleDepartmentsInputDocument)
+                .SetProperty(document => document.TaskDueDateInputDocument,
+                    documentForEditModel.TaskDueDateInputDocument)
+                .SetProperty(document => document.IdResponsibleEmployeeInputDocument,
+                    documentForEditModel.IdResponsibleEmployeeInputDocument)
+                .SetProperty(document => document.IsExternalDocumentOutputDocument,
+                    documentForEditModel.IsExternalDocumentOutputDocument)
+                .SetProperty(document => document.OutgoingDocumentNumberOutputDocument,
+                    documentForEditModel.OutgoingDocumentNumberOutputDocument)
+                .SetProperty(document => document.OutgoingDocumentDateOutputDocument,
+                    documentForEditModel.OutgoingDocumentDateOutputDocument)
+                .SetProperty(document => document.RecipientOutputDocument,
+                    documentForEditModel.RecipientOutputDocument)
+                .SetProperty(document => document.DocumentSummaryOutputDocument,
+                    documentForEditModel.DocumentSummaryOutputDocument)
+                .SetProperty(document => document.IsUnderControl,
+                    documentForEditModel.IsUnderControl)
+                .SetProperty(document => document.IsCompleted,
+                    documentForEditModel.IsCompleted)
+                .SetProperty(document => document.CreatedByEmployeeId,
+                    documentForEditModel.CreatedByEmployeeId)
+                .SetProperty(document => document.RemoveDateTime,
+                    documentForEditModel.RemoveDateTime)
+                .SetProperty(document => document.LastEditedDateTime,
+                    documentForEditModel.LastEditedDateTime)
+                .SetProperty(document => document.LastEditedByEmployeeId,
+                    documentForEditModel.LastEditedByEmployeeId)
+            );
+
+        if (affectedRows == 0)
+        {
+            throw new NotFoundException(nameof(Document), documentForEditModel.Id);
+        }
     }
 
     /// <summary>

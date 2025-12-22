@@ -32,10 +32,10 @@ public interface IDocumentService
     /// </summary>
     /// <param name="id">Идентификатор документа.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="DocumentForEditModel"/>
+    /// Задача, результат которой содержит модель <see cref="DocumentForOverviewEditModel"/>
     /// или <c>null</c>, если документ не найден.
     /// </returns>
-    Task<DocumentForEditModel?> GetDocumentForEditAsync(int id);
+    Task<DocumentForOverviewEditModel?> GetDocumentForEditAsync(int id);
 
     /// <summary>
     /// Получает данные документа для подтверждения удаления.
@@ -57,16 +57,16 @@ public interface IDocumentService
     /// <summary>
     /// Создает новый документ.
     /// </summary>
-    /// <param name="document">Документ для создания.</param>
+    /// <param name="createdDocumentDto">Документ для создания.</param>
     /// <returns>Задача, представляющая асинхронную операцию создания.</returns>
-    Task CreateAsync(Document document);
+    Task CreateAsync(CreatedDocumentDto createdDocumentDto);
 
     /// <summary>
     /// Редактирует существующий документ.
     /// </summary>
-    /// <param name="document">Документ с обновленными данными.</param>
+    /// <param name="editedDocumentDto">Документ с обновленными данными.</param>
     /// <returns>Задача, представляющая асинхронную операцию редактирования.</returns>
-    Task EditAsync(Document document);
+    Task EditAsync(EditedDocumentDto editedDocumentDto);
 
     /// <summary>
     /// Восстанавливает удаленный документ (отменяет мягкое удаление).

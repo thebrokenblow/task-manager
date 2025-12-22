@@ -1,10 +1,12 @@
-﻿using TaskManager.Application.Exceptions;
+﻿using TaskManager.Application.Dtos.Employees;
+using TaskManager.Application.Exceptions;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Application.Utilities;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Enums;
 using TaskManager.Domain.Exceptions;
 using TaskManager.Domain.Model.Employees;
+using TaskManager.Domain.Model.Employees.Edit;
 using TaskManager.Domain.Queries;
 using TaskManager.Domain.Repositories;
 using TaskManager.Domain.Services;
@@ -16,7 +18,7 @@ namespace TaskManager.Application.Services;
 /// Обеспечивает бизнес-логику работы с сотрудниками, включая валидацию данных,
 /// проверку уникальности логинов, обработку строковых данных и взаимодействие с репозиториями.
 /// </summary>
-public class EmployeeService(
+public sealed class EmployeeService(
     IAuthService authService,
     IDepartmentQuery departmentQuery,
     IEmployeeQuery employeeQuery,
@@ -97,13 +99,13 @@ public class EmployeeService(
     /// </summary>
     /// <param name="id">Идентификатор сотрудника.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="EmployeeFotEditModel"/> 
+    /// Задача, результат которой содержит модель <see cref="EmployeeFotOverviewEditModel"/> 
     /// или <c>null</c>, если сотрудник не найден.
     /// </returns>
     /// <remarks>
     /// Запрос возвращает все поля сотрудника, необходимые для формы редактирования.
     /// </remarks>
-    public async Task<EmployeeFotEditModel?> GetEmployeeForEditAsync(int id)
+    public async Task<EmployeeFotOverviewEditModel?> GetEmployeeForEditAsync(int id)
     {
         var employee = await _employeeQuery.GetEmployeeForEditAsync(id);
         
@@ -113,43 +115,38 @@ public class EmployeeService(
     /// <summary>
     /// Создает нового сотрудника.
     /// </summary>
-    /// <param name="employee">Сотрудник для создания.</param>
+    /// <param name="createdEmployeeDto">Сотрудник для создания.</param>
     /// <returns>Задача, представляющая асинхронную операцию создания.</returns>
     /// <exception cref="ArgumentNullException">
-    /// Выбрасывается, если <paramref name="employee"/> равен <c>null</c>.
+    /// Выбрасывается, если <paramref name="createdEmployeeDto"/> равен <c>null</c>.
     /// </exception>
     /// <exception cref="LoginAlreadyExistsException">
     /// Выбрасывается, если логин сотрудника уже существует в системе.
     /// </exception>
-    /// <remarks>
-    /// <para>При создании сотрудника выполняется:</para>
-    /// <para>1. Проверка уникальности логина</para>
-    /// <para>2. Очистка строковых полей от лишних пробелов</para>
-    /// <para>3. Нормализация отдела (удаление лишних пробелов)</para>
-    /// <para>4. Преобразование пробелов в логине в подчеркивания</para>
-    /// <para>5. Установка пароля по умолчанию</para>
-    /// <para>6. Установка роли "Сотрудник"</para>
-    /// <para>7. Сохранение в базу данных</para>
-    /// </remarks>
-    public async Task CreateAsync(Employee employee)
+    public async Task CreateAsync(CreatedEmployeeDto createdEmployeeDto)
     {
-        ArgumentNullException.ThrowIfNull(employee);
+        ArgumentNullException.ThrowIfNull(createdEmployeeDto);
 
         // Проверка уникальности логина
-        var loginExists = await _employeeRepository.IsLoginExistAsync(employee.Login);
+        var loginExists = await _employeeRepository.IsLoginExistAsync(createdEmployeeDto.Login);
         if (loginExists)
         {
-            throw new LoginAlreadyExistsException(employee.Login);
+            throw new LoginAlreadyExistsException(createdEmployeeDto.Login);
         }
 
-        // Очистка и нормализация данных
+        var employee = new Employee
+        {
+            FullName = createdEmployeeDto.FullName,
+            Department = createdEmployeeDto.Department,
+            Login = createdEmployeeDto.Login,
+            Password = DefaultPassword,
+            Role = UserRole.Employee
+        };
+
         TrimEmployeeStrings(employee);
+
         employee.Department = EmployeeStringProcessor.CleanSpaces(employee.Department);
         employee.Login = EmployeeStringProcessor.ConvertSpacesToUnderscore(employee.Login);
-
-        // Установка значений по умолчанию
-        employee.Password = DefaultPassword;
-        employee.Role = UserRole.Employee;
 
         await _employeeRepository.AddAsync(employee);
     }
@@ -157,36 +154,58 @@ public class EmployeeService(
     /// <summary>
     /// Редактирует существующего сотрудника.
     /// </summary>
-    /// <param name="employee">Сотрудник с обновленными данными.</param>
+    /// <param name="editedEmployeeDto">Сотрудник с обновленными данными.</param>
     /// <returns>Задача, представляющая асинхронную операцию редактирования.</returns>
     /// <exception cref="ArgumentNullException">
-    /// Выбрасывается, если <paramref name="employee"/> равен <c>null</c>.
+    /// Выбрасывается, если <paramref name="editedEmployeeDto"/> равен <c>null</c>.
     /// </exception>
     /// <exception cref="LoginAlreadyExistsException">
     /// Выбрасывается, если обновленный логин уже существует у другого сотрудника.
     /// </exception>
-    /// <remarks>
-    /// <para>При редактировании сотрудника выполняется:</para>
-    /// <para>1. Проверка уникальности логина (исключая текущего сотрудника)</para>
-    /// <para>2. Очистка строковых полей от лишних пробелов</para>
-    /// <para>3. Обновление в базе данных</para>
-    /// <para>Примечание: пароль и роль не изменяются этим методом.</para>
-    /// </remarks>
-    public async Task EditAsync(Employee employee)
+    public async Task EditAsync(EditedEmployeeDto editedEmployeeDto)
     {
-        ArgumentNullException.ThrowIfNull(employee);
+        ArgumentNullException.ThrowIfNull(editedEmployeeDto);
 
         // Проверка уникальности логина (исключая текущего сотрудника)
-        var loginExists = await _employeeRepository.IsLoginExistAsync(employee.Login, employee.Id);
+        var loginExists = await _employeeRepository.IsLoginExistAsync(editedEmployeeDto.Login, editedEmployeeDto.Id);
         if (loginExists)
         {
-            throw new LoginAlreadyExistsException(employee.Login);
+            throw new LoginAlreadyExistsException(editedEmployeeDto.Login);
         }
 
-        // Очистка данных
-        //TrimEmployeeStrings(employee);
+        TrimEmployeeStrings(editedEmployeeDto);
 
-        await _employeeRepository.UpdateAsync(employee);
+        var employeeFotEditModel = new EmployeeFotEditModel
+        {
+            Id = editedEmployeeDto.Id,
+            FullName = editedEmployeeDto.FullName ?? string.Empty,
+            Department = editedEmployeeDto.Department ?? string.Empty,
+            Login = editedEmployeeDto.Login ?? string.Empty,
+        };
+
+        await _employeeRepository.UpdateBasicInfoAsync(employeeFotEditModel);
+    }
+
+    /// <summary>
+    /// Очищает строковые свойства сотрудника от лишних пробелов.
+    /// </summary>
+    /// <param name="editedEmployeeDto">Сотрудник для обработки.</param>
+    private static void TrimEmployeeStrings(EditedEmployeeDto editedEmployeeDto)
+    {
+        if (editedEmployeeDto.FullName is not null)
+        {
+            editedEmployeeDto.FullName = editedEmployeeDto.FullName.Trim();
+        }
+
+        if (editedEmployeeDto.Department is not null)
+        {
+            editedEmployeeDto.Department = editedEmployeeDto.Department.Trim();
+        }
+
+        if (editedEmployeeDto.Login is not null)
+        {
+            editedEmployeeDto.Login = editedEmployeeDto.Login.Trim();
+        }
     }
 
     /// <summary>

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TaskManager.Domain.Exceptions;
 using TaskManager.Domain.Model.Employees;
+using TaskManager.Domain.Queries;
 using TaskManager.Domain.Repositories;
 using TaskManager.Domain.Services;
 using TaskManager.View.Utilities;
@@ -9,7 +11,8 @@ using TaskManager.View.ViewModel.Employees;
 namespace TaskManager.View.Controllers;
 
 [AllowAnonymous]
-public class AccountsController(
+public sealed class AccountsController(
+    IEmployeeQuery employeeQuery,
     IEmployeeRepository employeeRepository, 
     IAuthService authService) : Controller
 {
@@ -68,9 +71,14 @@ public class AccountsController(
     [HttpGet]
     public async Task<IActionResult> ChangePassword(int id)
     {
-        var employee = await employeeRepository.GetByIdAsync(id);
+        var isExist = await employeeRepository.IsExistAsync(id);
+        if (!isExist)
+        {
+            return RedirectToNotFoundError();
+        }
 
-        if (employee == null)
+        var password = await employeeQuery.GetPasswordAsync(id);
+        if (string.IsNullOrEmpty(password))
         {
             return RedirectToNotFoundError();
         }
@@ -78,24 +86,23 @@ public class AccountsController(
         var passwordViewModel = new EmployeePasswordViewModel
         {
             Id = id,
-            Password = employee.Password
+            Password = password
         };
 
         return View(passwordViewModel);
     }
 
     [HttpPost]
-    public async Task<IActionResult> ChangePasswordConfirmed(int id, EmployeePasswordViewModel passwordViewModel)
+    public async Task<IActionResult> ChangePasswordConfirmed(EmployeePasswordViewModel passwordViewModel)
     {
-        var employee = await employeeRepository.GetByIdAsync(id);
-
-        if (employee is null)
+        try
+        {
+            await employeeRepository.UpdatePasswordAsync(passwordViewModel.Id, passwordViewModel.Password);
+        }
+        catch (NotFoundException)
         {
             return RedirectToNotFoundError();
         }
-
-        employee.Password = passwordViewModel.Password;
-        await employeeRepository.UpdateAsync(employee);
 
         return RedirectToDocuments();
     }

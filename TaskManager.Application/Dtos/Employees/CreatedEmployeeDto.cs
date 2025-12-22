@@ -1,15 +1,7 @@
-﻿namespace TaskManager.Domain.Model.Employees;
+﻿namespace TaskManager.Application.Dtos.Employees;
 
-/// <summary>
-/// Модель сотрудника для отображения информации об сотруднике при редактировании
-/// </summary>
-public class EmployeeFotEditModel
+public class CreatedEmployeeDto
 {
-    /// <summary>
-    /// Уникальный идентификатор сотрудника
-    /// </summary>
-    public int Id { get; set; }
-
     /// <summary>
     /// Полное имя сотрудника (фамилия и инициалы).
     /// Обязательное свойство.

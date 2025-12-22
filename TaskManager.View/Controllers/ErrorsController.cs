@@ -2,7 +2,7 @@
 
 namespace TaskManager.View.Controllers;
 
-public class ErrorsController : Controller
+public sealed class ErrorsController : Controller
 {
     [HttpGet]
     public IActionResult UnhandledError()

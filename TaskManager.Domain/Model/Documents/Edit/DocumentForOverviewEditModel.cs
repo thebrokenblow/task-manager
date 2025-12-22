@@ -3,7 +3,7 @@
 /// <summary>
 /// Модель документа для отображения информации об документе при редактировании
 /// </summary>
-public class DocumentForEditModel
+public class DocumentForOverviewEditModel
 {
     /// <summary>
     /// Уникальный идентификатор документа в системе.

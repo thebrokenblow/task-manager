@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Enums;
 using TaskManager.Domain.Model.Employees;
+using TaskManager.Domain.Model.Employees.Edit;
 using TaskManager.Domain.Queries;
 using TaskManager.Persistence.Data;
 
@@ -83,17 +84,17 @@ public class EmployeeQuery(TaskManagerDbContext context) : IEmployeeQuery
     /// </summary>
     /// <param name="id">Идентификатор сотрудника.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="EmployeeFotEditModel"/> 
+    /// Задача, результат которой содержит модель <see cref="EmployeeFotOverviewEditModel"/> 
     /// или <c>null</c>, если сотрудник не найден.
     /// </returns>
     /// <remarks>
     /// Запрос возвращает все поля сотрудника, необходимые для формы редактирования.
     /// </remarks>
-    public async Task<EmployeeFotEditModel?> GetEmployeeForEditAsync(int id)
+    public async Task<EmployeeFotOverviewEditModel?> GetEmployeeForEditAsync(int id)
     {
         var employees = await _context.Employees
             .Where(employee => employee.Id == id)
-            .Select(employee => new EmployeeFotEditModel
+            .Select(employee => new EmployeeFotOverviewEditModel
             {
                 Id = employee.Id,
                 FullName = employee.FullName,
@@ -103,5 +104,25 @@ public class EmployeeQuery(TaskManagerDbContext context) : IEmployeeQuery
             .FirstOrDefaultAsync();
 
         return employees;
+    }
+
+    /// <summary>
+    /// Получает пароль сотрудника по его идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор сотрудника.</param>
+    /// <returns>
+    /// Задача, результат которой содержит строку с паролем сотрудника,
+    /// или <c>null</c>, если сотрудник с указанным идентификатором не найден
+    /// или пароль не установлен.
+    /// </returns>
+    /// <remarks>
+    public async Task<string?> GetPasswordAsync(int id)
+    {
+        var password = await _context.Employees
+            .Where(employee => employee.Id == id)
+            .Select(x => x.Password)
+            .FirstOrDefaultAsync();
+
+        return password;
     }
 }

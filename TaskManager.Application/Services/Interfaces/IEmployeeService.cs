@@ -1,6 +1,8 @@
-﻿using TaskManager.Domain.Entities;
+﻿using TaskManager.Application.Dtos.Employees;
+using TaskManager.Domain.Entities;
 using TaskManager.Domain.Enums;
 using TaskManager.Domain.Model.Employees;
+using TaskManager.Domain.Model.Employees.Edit;
 
 namespace TaskManager.Application.Services.Interfaces;
 
@@ -37,22 +39,22 @@ public interface IEmployeeService
     /// </summary>
     /// <param name="id">Идентификатор сотрудника.</param>
     /// <returns>
-    /// Задача, результат которой содержит сущность <see cref="Employee"/>
+    /// Задача, результат которой содержит сущность <see cref="EmployeeFotOverviewEditModel"/>
     /// или <c>null</c>, если сотрудник не найден.
     /// </returns>
-    Task<EmployeeFotEditModel?> GetEmployeeForEditAsync(int id);
+    Task<EmployeeFotOverviewEditModel?> GetEmployeeForEditAsync(int id);
 
     /// <summary>
     /// Создает нового сотрудника.
     /// </summary>
-    /// <param name="employee">Сотрудник для создания.</param>
+    /// <param name="createdEmployeeDto">Сотрудник для создания.</param>
     /// <returns>Задача, представляющая асинхронную операцию создания.</returns>
-    Task CreateAsync(Employee employee);
+    Task CreateAsync(CreatedEmployeeDto createdEmployeeDto);
 
     /// <summary>
     /// Редактирует существующего сотрудника.
     /// </summary>
-    /// <param name="employee">Сотрудник с обновленными данными.</param>
+    /// <param name="editedEmployeeDto">Сотрудник с обновленными данными.</param>
     /// <returns>Задача, представляющая асинхронную операцию редактирования.</returns>
-    Task EditAsync(Employee employee);
+    Task EditAsync(EditedEmployeeDto editedEmployeeDto);
 }

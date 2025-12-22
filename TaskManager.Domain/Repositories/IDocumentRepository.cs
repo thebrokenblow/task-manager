@@ -1,4 +1,5 @@
 ﻿using TaskManager.Domain.Entities;
+using TaskManager.Domain.Model.Documents.Edit;
 
 namespace TaskManager.Domain.Repositories;
 
@@ -9,16 +10,6 @@ namespace TaskManager.Domain.Repositories;
 public interface IDocumentRepository
 {
     /// <summary>
-    /// Получает документ по его идентификатору.
-    /// </summary>
-    /// <param name="id">Идентификатор документа.</param>
-    /// <returns>
-    /// Задача, результат которой содержит документ или <c>null</c>, 
-    /// если документ с указанным идентификатором не найден.
-    /// </returns>
-    Task<Document?> GetByIdAsync(int id);
-
-    /// <summary>
     /// Добавляет новый документ в систему.
     /// </summary>
     /// <param name="document">Документ для добавления.</param>
@@ -28,9 +19,9 @@ public interface IDocumentRepository
     /// <summary>
     /// Обновляет данные существующего документа.
     /// </summary>
-    /// <param name="document">Документ с обновленными данными.</param>
+    /// <param name="documentForEditModel">Документ с обновленными данными.</param>
     /// <returns>Задача, представляющая асинхронную операцию обновления.</returns>
-    Task UpdateAsync(Document document);
+    Task UpdateAsync(DocumentForEditModel documentForEditModel);
 
     /// <summary>
     /// Полностью удаляет документ из базы данных (жесткое удаление).

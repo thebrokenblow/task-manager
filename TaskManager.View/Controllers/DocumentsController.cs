@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Net.Mime;
 using TaskManager.Application.Dtos.Documents;
 using TaskManager.Application.Exceptions;
-using TaskManager.Application.Services;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Exceptions;
@@ -15,7 +14,7 @@ using TaskManager.View.ViewModel.Employees;
 
 namespace TaskManager.View.Controllers;
 
-public class DocumentsController(
+public sealed class DocumentsController(
     IDocumentService documentService,
     IEmployeeService employeeService,
     IDepartmentService departmentService) : Controller
@@ -83,17 +82,7 @@ public class DocumentsController(
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        var document = new Document
-        {
-            IsExternalDocumentInputDocument = true,
-            IncomingDocumentNumberInputDocument = string.Empty,
-            IncomingDocumentDateInputDocument = DateOnly.FromDateTime(DateTime.Today),
-            TaskDueDateInputDocument = DateOnly.FromDateTime(DateTime.Today.AddDays(DefaultDueDateDaysOffset)),
-            IsExternalDocumentOutputDocument = true,
-            IsUnderControl = false,
-            IsCompleted = false,
-            CreatedByEmployeeId = default,
-        };
+        var document = CreateDefaultDocument();
 
         var responsibleEmployees = await employeeService.GetResponsibleEmployeesAsync();
         var responsibleEmployeesSelectList = new SelectList(
@@ -118,11 +107,11 @@ public class DocumentsController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Document document)
+    public async Task<IActionResult> Create(CreatedDocumentDto createdDocumentDto)
     {
         try
         {
-            await documentService.CreateAsync(document);
+            await documentService.CreateAsync(createdDocumentDto);
             return RedirectToAction(nameof(Index));
         }
         catch (UnauthorizedAccessException)
@@ -166,10 +155,17 @@ public class DocumentsController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(Document document)
+    public async Task<IActionResult> Edit(EditedDocumentDto editedDocumentDto)
     {
-        await documentService.EditAsync(document);
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            await documentService.EditAsync(editedDocumentDto);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return RedirectToUnauthorizedError();
+        }
     }
 
     [HttpGet]
@@ -248,6 +244,23 @@ public class DocumentsController(
         {
             return RedirectToNotFoundError();
         }
+    }
+
+    private static Document CreateDefaultDocument()
+    {
+        var document = new Document
+        {
+            IsExternalDocumentInputDocument = true,
+            IncomingDocumentNumberInputDocument = string.Empty,
+            IncomingDocumentDateInputDocument = DateOnly.FromDateTime(DateTime.Today),
+            TaskDueDateInputDocument = DateOnly.FromDateTime(DateTime.Today.AddDays(DefaultDueDateDaysOffset)),
+            IsExternalDocumentOutputDocument = true,
+            IsUnderControl = false,
+            IsCompleted = false,
+            CreatedByEmployeeId = default,
+        };
+
+        return document;
     }
 
     private RedirectToActionResult RedirectToUnauthorizedError()

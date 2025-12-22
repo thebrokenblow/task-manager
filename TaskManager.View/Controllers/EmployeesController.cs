@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using TaskManager.Application.Dtos.Employees;
 using TaskManager.Application.Exceptions;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Domain.Entities;
@@ -9,7 +10,7 @@ using TaskManager.View.ViewModel.Employees;
 
 namespace TaskManager.View.Controllers;
 
-public class EmployeesController(IEmployeeService employeeService) : Controller
+public sealed class EmployeesController(IEmployeeService employeeService) : Controller
 {
     private const string FailedCreatedEmployeeKey = "FailedCreatedEmployee";
     private const string TextFailedCreatedEmployeeKey = "TextFailedCreatedEmployee";
@@ -55,16 +56,16 @@ public class EmployeesController(IEmployeeService employeeService) : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Employee employee)
+    public async Task<IActionResult> Create(CreatedEmployeeDto createdEmployeeDto)
     {
         try
         {
-            await employeeService.CreateAsync(employee);
+            await employeeService.CreateAsync(createdEmployeeDto);
             return RedirectToAction(nameof(Index));
         }
         catch (LoginAlreadyExistsException)
         {
-            TempData[FailedCreatedEmployeeKey] = JsonSerializer.Serialize(employee);
+            TempData[FailedCreatedEmployeeKey] = JsonSerializer.Serialize(createdEmployeeDto);
             TempData[TextFailedCreatedEmployeeKey] = "Сотрудник с таким логином уже существует в системе";
 
             return RedirectToAction(nameof(Index));
@@ -99,18 +100,18 @@ public class EmployeesController(IEmployeeService employeeService) : Controller
 
     [HttpPost]
     [AdminOnly]
-    public async Task<IActionResult> Edit(Employee employee)
+    public async Task<IActionResult> Edit(EditedEmployeeDto editedEmployeeDto)
     {
         try
         {
-            await employeeService.EditAsync(employee);
+            await employeeService.EditAsync(editedEmployeeDto);
             return RedirectToAction(nameof(Index));
         }
         catch (LoginAlreadyExistsException)
         {
             TempData[TextFailedEditedEmployeeKey] = "Сотрудник с таким логином уже существует в системе";
 
-            return View(employee);
+            return View(editedEmployeeDto);
         }
         catch
         {

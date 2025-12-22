@@ -1,7 +1,9 @@
 ﻿@using TaskManager.Domain.Entities
+@using TaskManager.Domain.Model.Employees
+@using TaskManager.Domain.Model.Employees.Edit
 @using TaskManager.View.Controllers
 
-@model Employee
+@model EmployeeFotOverviewEditModel
 
 @{
     ViewData["Title"] = "Редактирование сотрудника";
@@ -39,8 +41,6 @@
                         }
 
                         <input type="hidden" class="form-control" value="@Model.Id" id="Id" name="Id">
-                        <input type="hidden" class="form-control" value="@Model.Role" id="Role" name="Role">
-                        <input type="hidden" class="form-control" value="@Model.Password" id="Password" name="Password">
 
                         <div class="col-md-4">
                             <label for="FullName" class="form-label required-field">

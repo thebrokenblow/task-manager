@@ -11,7 +11,7 @@ public class EditDocumentViewModel
     /// <summary>
     /// Документ для редактирования.
     /// </summary>
-    public required DocumentForEditModel Document { get; init; }
+    public required DocumentForOverviewEditModel Document { get; init; }
 
     /// <summary>
     /// Список ответственных сотрудников для выбора.

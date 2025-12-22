@@ -1,5 +1,6 @@
 ﻿using TaskManager.Domain.Enums;
 using TaskManager.Domain.Model.Employees;
+using TaskManager.Domain.Model.Employees.Edit;
 
 namespace TaskManager.Domain.Queries;
 
@@ -40,11 +41,23 @@ public interface IEmployeeQuery
     /// </summary>
     /// <param name="id">Идентификатор сотрудника.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="EmployeeFotEditModel"/> 
+    /// Задача, результат которой содержит модель <see cref="EmployeeFotOverviewEditModel"/> 
     /// или <c>null</c>, если сотрудник не найден.
     /// </returns>
     /// <remarks>
     /// Запрос возвращает все поля сотрудника, необходимые для формы редактирования.
     /// </remarks>
-    Task<EmployeeFotEditModel?> GetEmployeeForEditAsync(int id);
+    Task<EmployeeFotOverviewEditModel?> GetEmployeeForEditAsync(int id);
+
+    /// <summary>
+    /// Получает пароль сотрудника по его идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор сотрудника.</param>
+    /// <returns>
+    /// Задача, результат которой содержит строку с паролем сотрудника,
+    /// или <c>null</c>, если сотрудник с указанным идентификатором не найден
+    /// или пароль не установлен.
+    /// </returns>
+    /// <remarks>
+    Task<string?> GetPasswordAsync(int id);
 }
