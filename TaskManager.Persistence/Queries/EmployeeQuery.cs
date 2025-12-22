@@ -77,4 +77,31 @@ public class EmployeeQuery(TaskManagerDbContext context) : IEmployeeQuery
 
         return employees;
     }
+
+    /// <summary>
+    /// Получает данные сотрудника для редактирования.
+    /// </summary>
+    /// <param name="id">Идентификатор сотрудника.</param>
+    /// <returns>
+    /// Задача, результат которой содержит модель <see cref="EmployeeFotEditModel"/> 
+    /// или <c>null</c>, если сотрудник не найден.
+    /// </returns>
+    /// <remarks>
+    /// Запрос возвращает все поля сотрудника, необходимые для формы редактирования.
+    /// </remarks>
+    public async Task<EmployeeFotEditModel?> GetEmployeeForEditAsync(int id)
+    {
+        var employees = await _context.Employees
+            .Where(employee => employee.Id == id)
+            .Select(employee => new EmployeeFotEditModel
+            {
+                Id = employee.Id,
+                FullName = employee.FullName,
+                Department = employee.Department,
+                Login = employee.Login,
+            })
+            .FirstOrDefaultAsync();
+
+        return employees;
+    }
 }

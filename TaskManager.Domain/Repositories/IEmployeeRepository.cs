@@ -1,4 +1,5 @@
 ﻿using TaskManager.Domain.Entities;
+using TaskManager.Domain.Model.Employees;
 
 namespace TaskManager.Domain.Repositories;
 

@@ -93,16 +93,19 @@ public class EmployeeService(
     }
 
     /// <summary>
-    /// Получает сотрудника по его идентификатору.
+    /// Получает данные сотрудника для редактирования.
     /// </summary>
     /// <param name="id">Идентификатор сотрудника.</param>
     /// <returns>
-    /// Задача, результат которой содержит сущность <see cref="Employee"/>
+    /// Задача, результат которой содержит модель <see cref="EmployeeFotEditModel"/> 
     /// или <c>null</c>, если сотрудник не найден.
     /// </returns>
-    public async Task<Employee?> GetByIdAsync(int id)
+    /// <remarks>
+    /// Запрос возвращает все поля сотрудника, необходимые для формы редактирования.
+    /// </remarks>
+    public async Task<EmployeeFotEditModel?> GetEmployeeForEditAsync(int id)
     {
-        var employee = await _employeeRepository.GetByIdAsync(id);
+        var employee = await _employeeQuery.GetEmployeeForEditAsync(id);
         
         return employee;
     }
@@ -181,7 +184,7 @@ public class EmployeeService(
         }
 
         // Очистка данных
-        TrimEmployeeStrings(employee);
+        //TrimEmployeeStrings(employee);
 
         await _employeeRepository.UpdateAsync(employee);
     }

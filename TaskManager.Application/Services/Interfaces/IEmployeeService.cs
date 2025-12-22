@@ -33,14 +33,14 @@ public interface IEmployeeService
     Task<IEnumerable<EmployeeSelectModel>> GetResponsibleEmployeesAsync();
 
     /// <summary>
-    /// Получает сотрудника по его идентификатору.
+    /// Получает сотрудника по его идентификатору для редактирования.
     /// </summary>
     /// <param name="id">Идентификатор сотрудника.</param>
     /// <returns>
     /// Задача, результат которой содержит сущность <see cref="Employee"/>
     /// или <c>null</c>, если сотрудник не найден.
     /// </returns>
-    Task<Employee?> GetByIdAsync(int id);
+    Task<EmployeeFotEditModel?> GetEmployeeForEditAsync(int id);
 
     /// <summary>
     /// Создает нового сотрудника.

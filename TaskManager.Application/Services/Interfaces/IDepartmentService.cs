@@ -9,8 +9,10 @@ namespace TaskManager.Application.Services.Interfaces;
 public interface IDepartmentService
 {
     /// <summary>
-    /// Сервис для работы с подразделениями.
-    /// Предоставляет бизнес-логику для операций с подразделениями.
+    /// Получает все подразделения из системы.
     /// </summary>
+    /// <returns>
+    /// Задача, результат которой содержит перечисление моделей <see cref="DepartmentSelectModel"/>.
+    /// </returns>
     Task<IEnumerable<DepartmentSelectModel>> GetDepartmentsAsync();
 }

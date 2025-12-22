@@ -82,7 +82,7 @@ public class EmployeesController(IEmployeeService employeeService) : Controller
     {
         try
         {
-            var employee = await employeeService.GetByIdAsync(id);
+            var employee = await employeeService.GetEmployeeForEditAsync(id);
 
             if (employee is null)
             {

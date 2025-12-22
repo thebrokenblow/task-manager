@@ -34,4 +34,17 @@ public interface IEmployeeQuery
     /// и принадлежащих указанному отделу.
     /// </remarks>
     Task<IEnumerable<EmployeeSelectModel>> GetEmployeesByDepartmentAsync(string department);
+
+    /// <summary>
+    /// Получает данные сотрудника для редактирования.
+    /// </summary>
+    /// <param name="id">Идентификатор сотрудника.</param>
+    /// <returns>
+    /// Задача, результат которой содержит модель <see cref="EmployeeFotEditModel"/> 
+    /// или <c>null</c>, если сотрудник не найден.
+    /// </returns>
+    /// <remarks>
+    /// Запрос возвращает все поля сотрудника, необходимые для формы редактирования.
+    /// </remarks>
+    Task<EmployeeFotEditModel?> GetEmployeeForEditAsync(int id);
 }

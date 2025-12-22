@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Entities;
+using TaskManager.Domain.Exceptions;
+using TaskManager.Domain.Model.Employees;
 using TaskManager.Domain.Repositories;
 using TaskManager.Persistence.Data;
 
@@ -100,6 +102,23 @@ public class EmployeeRepository(TaskManagerDbContext context) : IEmployeeReposit
         await _context.SaveChangesAsync();
     }
 
+    public async Task UpdateAsync(EmployeeFotEditModel editedEmployee)
+    {
+        ArgumentNullException.ThrowIfNull(editedEmployee);
+
+        var affectedRows = await _context.Employees
+            .Where(employee => employee.Id == editedEmployee.Id)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(employee => employee.FullName, editedEmployee.FullName)
+                .SetProperty(employee => employee.Department, editedEmployee.Department)
+                .SetProperty(employee => employee.Department, editedEmployee.Department)
+            );
+
+        if (affectedRows == 0)
+        {
+            throw new NotFoundException(nameof(Employee), editedEmployee.Id);
+        }
+    }
     /// <summary>
     /// Обновляет данные существующего сотрудника.
     /// </summary>
