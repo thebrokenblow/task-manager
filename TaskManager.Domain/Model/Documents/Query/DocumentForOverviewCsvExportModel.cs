@@ -1,18 +1,10 @@
-﻿namespace TaskManager.Domain.Model.Documents;
+﻿namespace TaskManager.Domain.Model.Documents.Query;
 
 /// <summary>
-/// Модель документа для операции удаления
-/// Содержит полные данные документа перед удалением для подтверждения операции
+/// Модель для выгрузки в Csv формат
 /// </summary>
-public class DocumentForDeleteModel
+public sealed class DocumentForOverviewCsvExportModel
 {
-    /// <summary>
-    /// Уникальный идентификатор документа в системе.
-    /// </summary>
-    public int Id { get; init; }
-
-    // Исходные данные документа
-
     /// <summary>
     /// Исходный номер документа. Входные данные документа. Заполняет хозяин записи (делопроизводитель).
     /// Обязательное свойство.
@@ -47,7 +39,7 @@ public class DocumentForDeleteModel
     /// Входящий номер документа ВХ(46 ЦНИИ). Входные данные документа. Заполняет хозяин записи (делопроизводитель).
     /// Обязательное свойство.
     /// </summary>
-    public required string? IncomingDocumentNumberInputDocument { get; init; }
+    public required string IncomingDocumentNumberInputDocument { get; init; }
 
     /// <summary>
     /// Дата входящего документа. Входные данные документа. Заполняет хозяин записи (делопроизводитель).
@@ -68,16 +60,13 @@ public class DocumentForDeleteModel
     public required DateOnly TaskDueDateInputDocument { get; init; }
 
     /// <summary>
-    /// Идентификатор ответственного сотрудника. Входные данные документа. Заполняет исполнитель.
+    /// ФИО ответственного сотрудника. Входные данные документа. Заполняет исполнитель.
+    /// Навигационное свойство.
     /// Обязательное свойство.
     /// </summary>
-    public required int? IdResponsibleEmployeeInputDocument { get; init; }
+    public required string? FullNameResponsibleEmployeeInputDocument { get; init; }
 
-    /// <summary>
-    /// Полное имя ответственного сотрудника. Заполняется автоматически на основе IdResponsibleEmployeeInputDocument.
-    /// Обязательное свойство.
-    /// </summary>
-    public required string? ResponsibleEmployeeFullName { get; init; }
+    //Выходные данные документа
 
     /// <summary>
     /// Признак внешнего документа. Выходные данные документа. Заполняет исполнитель.
@@ -120,4 +109,10 @@ public class DocumentForDeleteModel
     /// Обязательное свойство.
     /// </summary>
     public required bool IsCompleted { get; init; }
+
+    /// <summary>
+    /// ФИО сотрудника, который создал документ.
+    /// Обязательное свойство.
+    /// </summary>
+    public required string FullNameCreatedEmployee { get; init; }
 }

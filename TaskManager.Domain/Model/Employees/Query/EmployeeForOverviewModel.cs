@@ -1,9 +1,9 @@
-﻿namespace TaskManager.Domain.Model.Employees;
+﻿namespace TaskManager.Domain.Model.Employees.Query;
 
 /// <summary>
 /// Модель для отображения информации о сотрудниках в системе
 /// </summary>
-public class EmployeeForOverviewModel
+public sealed class EmployeeForOverviewModel
 {
     /// <summary>
     /// Уникальный идентификатор сотрудника

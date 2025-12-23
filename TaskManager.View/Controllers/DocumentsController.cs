@@ -4,9 +4,8 @@ using System.Net.Mime;
 using TaskManager.Application.Dtos.Documents;
 using TaskManager.Application.Exceptions;
 using TaskManager.Application.Services.Interfaces;
-using TaskManager.Domain.Entities;
 using TaskManager.Domain.Exceptions;
-using TaskManager.Domain.Model.Departments;
+using TaskManager.Domain.Model.Departments.Query;
 using TaskManager.View.Filters;
 using TaskManager.View.Utilities;
 using TaskManager.View.ViewModel.Documents;
@@ -246,9 +245,9 @@ public sealed class DocumentsController(
         }
     }
 
-    private static Document CreateDefaultDocument()
+    private static CreatedDocumentDto CreateDefaultDocument()
     {
-        var document = new Document
+        var document = new CreatedDocumentDto
         {
             IsExternalDocumentInputDocument = true,
             IncomingDocumentNumberInputDocument = string.Empty,
@@ -256,8 +255,17 @@ public sealed class DocumentsController(
             TaskDueDateInputDocument = DateOnly.FromDateTime(DateTime.Today.AddDays(DefaultDueDateDaysOffset)),
             IsExternalDocumentOutputDocument = true,
             IsUnderControl = false,
-            IsCompleted = false,
-            CreatedByEmployeeId = default,
+            OutgoingDocumentDateOutputDocument = null,
+            OutgoingDocumentNumberInputDocument = null,
+            CustomerInputDocument = null,
+            DocumentSummaryInputDocument = null,
+            DocumentSummaryOutputDocument = null,
+            IdResponsibleEmployeeInputDocument = null,
+            OutgoingDocumentNumberOutputDocument = null,
+            RecipientOutputDocument = null,
+            ResponsibleDepartmentInputDocument = null,
+            ResponsibleDepartmentsInputDocument = null,
+            SourceDocumentDateInputDocument= null,         
         };
 
         return document;

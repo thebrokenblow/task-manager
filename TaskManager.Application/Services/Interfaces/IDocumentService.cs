@@ -1,7 +1,8 @@
 ﻿using TaskManager.Application.Common;
 using TaskManager.Application.Dtos.Documents;
-using TaskManager.Domain.Entities;
-using TaskManager.Domain.Model.Documents;
+using TaskManager.Domain.Model.Documents.Delete;
+using TaskManager.Domain.Model.Documents.Edit;
+using TaskManager.Domain.Model.Documents.Query;
 
 namespace TaskManager.Application.Services.Interfaces;
 
@@ -42,10 +43,10 @@ public interface IDocumentService
     /// </summary>
     /// <param name="id">Идентификатор документа.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="DocumentForDeleteModel"/>
+    /// Задача, результат которой содержит модель <see cref="DocumentForOverviewDeleteModel"/>
     /// или <c>null</c>, если документ не найден.
     /// </returns>
-    Task<DocumentForDeleteModel?> GetDocumentForDeleteAsync(int id);
+    Task<DocumentForOverviewDeleteModel?> GetDocumentForDeleteAsync(int id);
 
     /// <summary>
     /// Изменяет статус завершения документа (закрывает / открывает).

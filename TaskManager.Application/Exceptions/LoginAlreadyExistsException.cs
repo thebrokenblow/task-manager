@@ -8,6 +8,6 @@
 /// Это исключение наследуется от <see cref="Exception"/> и используется для обработки конфликтов
 /// при регистрации новых пользователей, когда указанный логин уже используется другим сотрудником.
 /// </remarks>
-public class LoginAlreadyExistsException(string login) : Exception($"Сотрудник с логином '{login}' уже есть в системе")
+public sealed class LoginAlreadyExistsException(string login) : Exception($"Сотрудник с логином '{login}' уже есть в системе")
 {
 }

@@ -1,6 +1,6 @@
 ﻿namespace TaskManager.Application.Dtos.Employees;
 
-public class CreatedEmployeeDto
+public sealed class CreatedEmployeeDto
 {
     /// <summary>
     /// Полное имя сотрудника (фамилия и инициалы).

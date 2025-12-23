@@ -1,6 +1,6 @@
 ﻿namespace TaskManager.Application.Dtos.Employees;
 
-public class EditedEmployeeDto
+public sealed class EditedEmployeeDto
 {
     public required int Id { get; init; }
     public required string FullName { get; set; }

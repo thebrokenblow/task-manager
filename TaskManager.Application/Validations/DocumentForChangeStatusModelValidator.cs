@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using TaskManager.Domain.Model.Documents;
+using TaskManager.Domain.Model.Documents.Edit;
 
 namespace TaskManager.Application.Validations;
 
@@ -10,7 +10,7 @@ namespace TaskManager.Application.Validations;
 /// Проверяет, что все обязательные поля выходных данных документа заполнены
 /// перед изменением статуса на закрытый.
 /// </remarks>
-public class DocumentForChangeStatusModelValidator : AbstractValidator<DocumentForChangeStatusModel>
+public sealed class DocumentForChangeStatusModelValidator : AbstractValidator<DocumentForChangeStatusModel>
 {
     /// <summary>
     /// Инициализирует новый экземпляр валидатора для модели изменения статуса документа.

@@ -3,7 +3,6 @@ using System.Text.Json;
 using TaskManager.Application.Dtos.Employees;
 using TaskManager.Application.Exceptions;
 using TaskManager.Application.Services.Interfaces;
-using TaskManager.Domain.Entities;
 using TaskManager.View.Filters;
 using TaskManager.View.Utilities;
 using TaskManager.View.ViewModel.Employees;
@@ -12,6 +11,9 @@ namespace TaskManager.View.Controllers;
 
 public sealed class EmployeesController(IEmployeeService employeeService) : Controller
 {
+    private readonly IEmployeeService _employeeService =
+        employeeService ?? throw new ArgumentNullException(nameof(employeeService));
+
     private const string FailedCreatedEmployeeKey = "FailedCreatedEmployee";
     private const string TextFailedCreatedEmployeeKey = "TextFailedCreatedEmployee";
     
@@ -20,39 +22,32 @@ public sealed class EmployeesController(IEmployeeService employeeService) : Cont
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        try
+        var employees = await _employeeService.GetRegularEmployeesAsync();
+
+        var indexEmployeesViewModel = new IndexEmployeesViewModel
         {
-            var employees = await employeeService.GetRegularEmployeesAsync();
+            Employees = employees
+        };
 
-            var indexEmployeesViewModel = new IndexEmployeesViewModel
+        if (TempData.TryGetValue(FailedCreatedEmployeeKey, out var failedEmployeeJson) &&
+            TempData.TryGetValue(TextFailedCreatedEmployeeKey, out var textFailed))
+        {
+            if (failedEmployeeJson is not null)
             {
-                Employees = employees
-            };
-
-            if (TempData.TryGetValue(FailedCreatedEmployeeKey, out var failedEmployeeJson) &&
-                TempData.TryGetValue(TextFailedCreatedEmployeeKey, out var textFailed))
-            {
-                if (failedEmployeeJson is not null)
-                {
-                    var failedEmployee = JsonSerializer.Deserialize<Employee>((string)failedEmployeeJson);
-                    indexEmployeesViewModel.FailedCreatedEmployee = failedEmployee;
-                }
-
-                if (textFailed is not null)
-                {
-                    indexEmployeesViewModel.TextFailedCreatedEmployee = textFailed.ToString();
-                }
+                var failedEmployee = JsonSerializer.Deserialize<CreatedEmployeeDto>((string)failedEmployeeJson);
+                indexEmployeesViewModel.FailedCreatedEmployee = failedEmployee;
             }
 
-            TempData.Remove(FailedCreatedEmployeeKey);
-            TempData.Remove(TextFailedCreatedEmployeeKey);
+            if (textFailed is not null)
+            {
+                indexEmployeesViewModel.TextFailedCreatedEmployee = textFailed.ToString();
+            }
+        }
 
-            return View(indexEmployeesViewModel);
-        }
-        catch
-        {
-            return RedirectToAction(nameof(Index));
-        }
+        TempData.Remove(FailedCreatedEmployeeKey);
+        TempData.Remove(TextFailedCreatedEmployeeKey);
+
+        return View(indexEmployeesViewModel);
     }
 
     [HttpPost]
@@ -60,42 +55,34 @@ public sealed class EmployeesController(IEmployeeService employeeService) : Cont
     {
         try
         {
-            await employeeService.CreateAsync(createdEmployeeDto);
+            await _employeeService.CreateAsync(createdEmployeeDto);
             return RedirectToAction(nameof(Index));
         }
         catch (LoginAlreadyExistsException)
         {
             TempData[FailedCreatedEmployeeKey] = JsonSerializer.Serialize(createdEmployeeDto);
             TempData[TextFailedCreatedEmployeeKey] = "Сотрудник с таким логином уже существует в системе";
-
-            return RedirectToAction(nameof(Index));
         }
         catch
         {
-            TempData[TextFailedCreatedEmployeeKey] = "Произошла ошибка при создании сотрудника";
-            return RedirectToAction(nameof(Index));
+            TempData[TextFailedCreatedEmployeeKey] = "Произошла ошибка при создании сотрудника, обратитесь к администратору";
         }
+
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
     [AdminOnly]
     public async Task<IActionResult> Edit(int id)
     {
-        try
-        {
-            var employee = await employeeService.GetEmployeeForEditAsync(id);
+        var employee = await _employeeService.GetEmployeeForEditAsync(id);
 
-            if (employee is null)
-            {
-                return RedirectToNotFoundError();
-            }
-
-            return View(employee);
-        }
-        catch
+        if (employee is null)
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToNotFoundError();
         }
+
+        return View(employee);
     }
 
     [HttpPost]
@@ -104,7 +91,7 @@ public sealed class EmployeesController(IEmployeeService employeeService) : Cont
     {
         try
         {
-            await employeeService.EditAsync(editedEmployeeDto);
+            await _employeeService.EditAsync(editedEmployeeDto);
             return RedirectToAction(nameof(Index));
         }
         catch (LoginAlreadyExistsException)
@@ -115,7 +102,9 @@ public sealed class EmployeesController(IEmployeeService employeeService) : Cont
         }
         catch
         {
-            return RedirectToAction(nameof(Index));
+            TempData[TextFailedEditedEmployeeKey] = "Проблема с сохранением данных сотрудника, обратитесь в администратору";
+
+            return View(editedEmployeeDto);
         }
     }
 

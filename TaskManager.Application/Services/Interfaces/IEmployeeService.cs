@@ -1,8 +1,7 @@
 ﻿using TaskManager.Application.Dtos.Employees;
-using TaskManager.Domain.Entities;
 using TaskManager.Domain.Enums;
-using TaskManager.Domain.Model.Employees;
 using TaskManager.Domain.Model.Employees.Edit;
+using TaskManager.Domain.Model.Employees.Query;
 
 namespace TaskManager.Application.Services.Interfaces;
 

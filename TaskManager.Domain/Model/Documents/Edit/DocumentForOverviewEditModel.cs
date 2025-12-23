@@ -1,9 +1,9 @@
-﻿namespace TaskManager.Domain.Model.Documents;
+﻿namespace TaskManager.Domain.Model.Documents.Edit;
 
 /// <summary>
 /// Модель документа для отображения информации об документе при редактировании
 /// </summary>
-public class DocumentForOverviewEditModel
+public sealed class DocumentForOverviewEditModel
 {
     /// <summary>
     /// Уникальный идентификатор документа в системе.

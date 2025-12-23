@@ -4,7 +4,7 @@
 /// Модель для аутентификации сотрудника в системе
 /// Содержит учетные данные для входа в систему
 /// </summary>
-public class EmployeeLoginModel
+public sealed class EmployeeLoginModel
 {
     /// <summary>
     /// Логин сотрудника для входа в систему

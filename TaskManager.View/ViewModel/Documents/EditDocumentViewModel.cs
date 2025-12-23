@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using TaskManager.Domain.Model.Documents;
+using TaskManager.Domain.Model.Documents.Edit;
 
 namespace TaskManager.View.ViewModel.Documents;
 
 /// <summary>
 /// Модель представления для редактирования документа.
 /// </summary>
-public class EditDocumentViewModel
+public sealed class EditDocumentViewModel
 {
     /// <summary>
     /// Документ для редактирования.

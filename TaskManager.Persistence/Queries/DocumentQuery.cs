@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TaskManager.Domain.Model.Documents;
+using TaskManager.Domain.Model.Documents.Delete;
+using TaskManager.Domain.Model.Documents.Edit;
+using TaskManager.Domain.Model.Documents.Query;
 using TaskManager.Domain.Queries;
 using TaskManager.Persistence.Data;
 using TaskManager.Persistence.Extensions;
@@ -10,7 +12,7 @@ namespace TaskManager.Persistence.Queries;
 /// Предоставляет запросы для работы с данными документов.
 /// Реализует сложные сценарии чтения данных с фильтрацией, пагинацией.
 /// </summary>
-public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
+public sealed class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
 {
     private readonly TaskManagerDbContext _context =
         context ?? throw new ArgumentNullException(nameof(context));
@@ -169,16 +171,16 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
     /// </summary>
     /// <param name="id">Идентификатор документа.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="DocumentForDeleteModel"/> 
+    /// Задача, результат которой содержит модель <see cref="DocumentForOverviewDeleteModel"/> 
     /// или <c>null</c>, если документ не найден.
     /// </returns>
     /// <remarks>
     /// Запрос возвращает основные поля документа, необходимые для отображения перед удалением.
     /// </remarks>
-    public async Task<DocumentForDeleteModel?> GetDocumentForDeleteAsync(int id)
+    public async Task<DocumentForOverviewDeleteModel?> GetDocumentForDeleteAsync(int id)
     {
         var document = await _context.Documents
-            .Select(document => new DocumentForDeleteModel
+            .Select(document => new DocumentForOverviewDeleteModel
             {
                 Id = document.Id,
                 OutgoingDocumentNumberInputDocument = document.OutgoingDocumentNumberInputDocument,
@@ -290,17 +292,17 @@ public class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
     /// </summary>
     /// <param name="id">Идентификатор документа.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="DocumentForCsvExportModel"/> 
+    /// Задача, результат которой содержит модель <see cref="DocumentForOverviewCsvExportModel"/> 
     /// или <c>null</c>, если документ не найден.
     /// </returns>
     /// <remarks>
     /// Возвращает все поля документа, необходимые для формирования CSV-файла.
     /// </remarks>
-    public async Task<DocumentForCsvExportModel?> GetDocumentForCsvExportAsync(int id)
+    public async Task<DocumentForOverviewCsvExportModel?> GetDocumentForCsvExportAsync(int id)
     {
         var documentForExportModel = await _context.Documents
             .Where(document => document.Id == id)
-            .Select(document => new DocumentForCsvExportModel
+            .Select(document => new DocumentForOverviewCsvExportModel
             {
                 OutgoingDocumentNumberInputDocument = document.OutgoingDocumentNumberInputDocument,
                 SourceDocumentDateInputDocument = document.SourceDocumentDateInputDocument,

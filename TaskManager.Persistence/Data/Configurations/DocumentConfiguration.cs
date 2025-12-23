@@ -7,7 +7,7 @@ namespace TaskManager.Persistence.Data.Configurations;
 /// <summary>
 /// Конфигурация таблицы документов.
 /// </summary>
-public class DocumentConfiguration : IEntityTypeConfiguration<Document>
+public sealed class DocumentConfiguration : IEntityTypeConfiguration<Document>
 {
     /// <summary>
     /// Настраивает таблицу документов.

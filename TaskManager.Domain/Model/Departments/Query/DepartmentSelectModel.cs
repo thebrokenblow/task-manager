@@ -1,4 +1,4 @@
-﻿namespace TaskManager.Domain.Model.Departments;
+﻿namespace TaskManager.Domain.Model.Departments.Query;
 
 /// <summary>
 /// Модель для выбора подразделения из списка.
@@ -8,7 +8,7 @@
 /// при выборе из выпадающего списка или других UI-элементов.
 /// Содержит только базовую информацию, необходимую для идентификации подразделения.
 /// </remarks>
-public class DepartmentSelectModel
+public sealed class DepartmentSelectModel
 {
     /// <summary>
     /// Название подразделения.

@@ -1,4 +1,4 @@
-﻿using TaskManager.Domain.Model.Documents;
+﻿using TaskManager.Domain.Model.Documents.Query;
 using TaskManager.UnitTests.Stubs;
 using TaskManager.View.Utilities;
 

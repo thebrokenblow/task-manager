@@ -4,11 +4,11 @@ using TaskManager.Application.Exceptions;
 using TaskManager.Application.Factories;
 using TaskManager.Application.Services.Interfaces;
 using TaskManager.Application.Validations;
-using TaskManager.Domain.Entities;
 using TaskManager.Domain.Exceptions;
-using TaskManager.Domain.Model.Departments;
-using TaskManager.Domain.Model.Documents;
+using TaskManager.Domain.Model.Departments.Query;
+using TaskManager.Domain.Model.Documents.Delete;
 using TaskManager.Domain.Model.Documents.Edit;
+using TaskManager.Domain.Model.Documents.Query;
 using TaskManager.Domain.Queries;
 using TaskManager.Domain.Repositories;
 using TaskManager.Domain.Services;
@@ -154,10 +154,10 @@ public sealed class DocumentService(
     /// </summary>
     /// <param name="id">Идентификатор документа.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="DocumentForDeleteModel"/>
+    /// Задача, результат которой содержит модель <see cref="DocumentForOverviewDeleteModel"/>
     /// или <c>null</c>, если документ не найден.
     /// </returns>
-    public async Task<DocumentForDeleteModel?> GetDocumentForDeleteAsync(int id)
+    public async Task<DocumentForOverviewDeleteModel?> GetDocumentForDeleteAsync(int id)
     {
         var document = await _documentQuery.GetDocumentForDeleteAsync(id);
 
@@ -340,7 +340,7 @@ public sealed class DocumentService(
     public async Task<byte[]> CreateDocumentCsvAsync(int id)
     {
         var documentForCsvExportModel = await _documentQuery.GetDocumentForCsvExportAsync(id) ??
-            throw new NotFoundException(nameof(DocumentForCsvExportModel), id);
+            throw new NotFoundException(nameof(DocumentForOverviewCsvExportModel), id);
 
         var bytesDocument = _exportService.ConvertDocumentToCsv(documentForCsvExportModel);
         return bytesDocument;

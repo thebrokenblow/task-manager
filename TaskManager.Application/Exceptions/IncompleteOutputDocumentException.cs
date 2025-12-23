@@ -7,6 +7,6 @@
 /// Это исключение наследуется от <see cref="InvalidOperationException"/> и используется для обозначения
 /// ситуаций, когда задача не может быть закрыта из-за отсутствия необходимых выходных данных документа.
 /// </remarks>
-public class IncompleteOutputDocumentException() : InvalidOperationException("Не заполнены выходные данные документа")
+public sealed class IncompleteOutputDocumentException() : InvalidOperationException("Не заполнены выходные данные документа")
 {
 }

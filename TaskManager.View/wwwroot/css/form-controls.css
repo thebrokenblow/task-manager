@@ -1,0 +1,16 @@
+﻿.readonly-disabled {
+    background-color: #f8f9fa;
+    opacity: 1;
+    pointer-events: none;
+    cursor: not-allowed;
+    border-color: #dee2e6;
+}
+
+.readonly-disabled::placeholder {
+    color: #6c757d;
+}
+
+.required-field::after {
+    content: " *";
+    color: #dc3545;
+}

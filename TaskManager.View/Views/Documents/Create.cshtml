@@ -9,25 +9,6 @@
     ViewData["Title"] = "Добавление Документа";
 }
 
-<style>
-    .readonly-disabled {
-        background-color: #f8f9fa;
-        opacity: 1;
-        pointer-events: none;
-        cursor: not-allowed;
-        border-color: #dee2e6;
-    }
-
-    .readonly-disabled::placeholder {
-        color: #6c757d;
-    }
-
-    .required-field::after {
-        content: " *";
-        color: #dc3545;
-    }
-</style>
-
 <div class="container-fluid py-3">
     <div class="row mb-3">
         <div class="col-12">
@@ -59,40 +40,40 @@
                             <div class="d-flex align-items-center gap-4">
                                 <div class="d-flex align-items-center gap-2 flex-fill">
                                     <label class="form-label text-nowrap mb-0 text-nowrap">Исх.:</label>
-                                    <input type="text" class="form-control" asp-for="Document.OutgoingDocumentNumberInputDocument" placeholder="Введите исходящий номер">
+                                    <input type="text" class="form-control" asp-for="Document.OutgoingDocumentNumberInputDocument" name="outgoingDocumentNumberInputDocument" placeholder="Введите исходящий номер">
                                 </div>
 
                                 <div class="d-flex align-items-center gap-2 flex-fill">
                                     <label class="form-label text-nowrap mb-0 text-nowrap">Дата:</label>
-                                    <input type="date" class="form-control" asp-for="Document.SourceDocumentDateInputDocument">
+                                    <input type="date" class="form-control" asp-for="Document.SourceDocumentDateInputDocument" name="sourceDocumentDateInputDocument">
                                 </div>
 
                                 <div class="d-flex align-items-center gap-2 flex-fill">
                                     <label class="form-label text-nowrap mb-0 text-nowrap">Заказчик:</label>
-                                    <input type="text" class="form-control" asp-for="Document.CustomerInputDocument" placeholder="Введите название заказчика">
+                                    <input type="text" class="form-control" asp-for="Document.CustomerInputDocument" name="customerInputDocument" placeholder="Введите название заказчика">
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-12">
-                            <textarea class="form-control" placeholder="Краткое содержание документа" asp-for="Document.DocumentSummaryInputDocument" rows="3"></textarea>
+                            <textarea class="form-control" placeholder="Краткое содержание документа" asp-for="Document.DocumentSummaryInputDocument" name="documentSummaryInputDocument" rows="3"></textarea>
                         </div>
 
                         <div class="col-12">
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check mb-0">
-                                    <input class="form-check-input" type="checkbox" id="IsExternalDocumentInputDocument" asp-for="Document.IsExternalDocumentInputDocument" />
+                                    <input class="form-check-input" type="checkbox" id="IsExternalDocumentInputDocument" asp-for="Document.IsExternalDocumentInputDocument" name="isExternalDocumentInputDocument" />
                                     <label class="form-check-label text-nowrap">Внешний документ</label>
                                 </div>
 
                                 <div class="d-flex align-items-center gap-2 flex-fill">
                                     <label class="form-label text-nowrap mb-0 required-field text-nowrap">Вх(46 ЦНИИ):</label>
-                                    <input type="text" class="form-control" id="IncomingDocumentNumberInputDocument" asp-for="Document.IncomingDocumentNumberInputDocument" placeholder="Введите входящий номер" required>
+                                    <input type="text" class="form-control" id="IncomingDocumentNumberInputDocument" asp-for="Document.IncomingDocumentNumberInputDocument" name="incomingDocumentNumberInputDocument" placeholder="Введите входящий номер" required>
                                 </div>
 
                                 <div class="d-flex align-items-center gap-2 flex-fill">
                                     <label class="form-label text-nowrap mb-0 required-field text-nowrap">Дата:</label>
-                                    <input type="date" class="form-control" asp-for="Document.IncomingDocumentDateInputDocument" required>
+                                    <input type="date" class="form-control" asp-for="Document.IncomingDocumentDateInputDocument" name="incomingDocumentDateInputDocument" required>
                                 </div>
                             </div>
                         </div>
@@ -103,6 +84,7 @@
                                     <label class="form-label text-nowrap mb-0">Ответственный отдел:</label>
 
                                     <select asp-for="Document.ResponsibleDepartmentInputDocument"
+                                            name="responsibleDepartmentInputDocument"
                                             class="form-control form-control-sm py-1"
                                             asp-items="@Model.ResponsibleDepartments">
                                         <option value="">Выберите отдел</option>
@@ -110,11 +92,11 @@
                                 </div>
                                 <div class="d-flex align-items-center gap-2 flex-fill">
                                     <label class="form-label text-nowrap mb-0">Привлеченные отделы:</label>
-                                    <input type="text" class="form-control" asp-for="Document.ResponsibleDepartmentsInputDocument" placeholder="Введите отделы через запятую">
+                                    <input type="text" class="form-control" asp-for="Document.ResponsibleDepartmentsInputDocument" name="responsibleDepartmentsInputDocument" placeholder="Введите отделы через запятую">
                                 </div>
                                 <div class="d-flex align-items-center gap-2 flex-fill">
                                     <label class="form-label required-field text-nowrap mb-0">Выполнить до:</label>
-                                    <input type="date" class="form-control" asp-for="Document.TaskDueDateInputDocument" required>
+                                    <input type="date" class="form-control" asp-for="Document.TaskDueDateInputDocument" name="taskDueDateInputDocument" required>
                                 </div>
                             </div>
                         </div>
@@ -123,6 +105,7 @@
                             <div class="d-flex align-items-end gap-4">
                                 <label class="form-label text-nowrap mb-1">Ответственный сотрудник:</label>
                                 <select asp-for="Document.IdResponsibleEmployeeInputDocument"
+                                        name="idResponsibleEmployeeInputDocument"
                                         class="form-control form-control-sm py-1"
                                         asp-items="@Model.ResponsibleEmployees">
                                     <option value="">Выберите сотрудника</option>
@@ -138,36 +121,36 @@
                         <div class="col-12">
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check mb-0">
-                                    <input class="form-check-input" type="checkbox" id="IsExternalDocumentOutputDocument" asp-for="Document.IsExternalDocumentOutputDocument" />
+                                    <input class="form-check-input" type="checkbox" id="IsExternalDocumentOutputDocument" asp-for="Document.IsExternalDocumentOutputDocument" name="isExternalDocumentOutputDocument" />
                                     <label class="form-check-label text-nowrap">Внешний документ</label>
                                 </div>
 
                                 <div class="d-flex align-items-center gap-2 flex-fill">
                                     <label class="form-label text-nowrap mb-0">Исх (46 ЦНИИ):</label>
-                                    <input type="text" class="form-control outgoing-number-output" id="OutgoingDocumentNumberOutputDocument" asp-for="Document.OutgoingDocumentNumberOutputDocument" placeholder="Номер исходящего">
+                                    <input type="text" class="form-control outgoing-number-output" id="OutgoingDocumentNumberOutputDocument" asp-for="Document.OutgoingDocumentNumberOutputDocument" name="outgoingDocumentNumberOutputDocument" placeholder="Номер исходящего">
                                 </div>
 
                                 <div class="d-flex align-items-center gap-2 flex-fill">
                                     <label class="form-label text-nowrap mb-0">Дата исходящего:</label>
-                                    <input type="date" class="form-control" asp-for="Document.OutgoingDocumentDateOutputDocument">
+                                    <input type="date" class="form-control" asp-for="Document.OutgoingDocumentDateOutputDocument" name="outgoingDocumentDateOutputDocument">
                                 </div>
 
                                 <div class="d-flex align-items-center gap-2 flex-fill">
                                     <label class="form-label text-nowrap mb-0">Получатель:</label>
-                                    <input type="text" class="form-control" asp-for="Document.RecipientOutputDocument" placeholder="Введите получателя">
+                                    <input type="text" class="form-control" asp-for="Document.RecipientOutputDocument" name="recipientOutputDocument" placeholder="Введите получателя">
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-12">
-                            <textarea placeholder="Краткое содержание документа" class="form-control" asp-for="Document.DocumentSummaryOutputDocument" rows="3"></textarea>
+                            <textarea placeholder="Краткое содержание документа" class="form-control" asp-for="Document.DocumentSummaryOutputDocument" name="documentSummaryOutputDocument" rows="3"></textarea>
                         </div>
 
                         <!-- Контроль и действия -->
                         <div class="col-12 mt-4">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" asp-for="Document.IsUnderControl" />
+                                    <input class="form-check-input" type="checkbox" asp-for="Document.IsUnderControl" name="isUnderControl" />
                                     <label class="form-check-label text-uppercase fw-bold text-nowrap">На контроле</label>
                                 </div>
                                 <div>

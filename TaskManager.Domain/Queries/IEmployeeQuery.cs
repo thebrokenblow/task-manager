@@ -1,6 +1,6 @@
 ﻿using TaskManager.Domain.Enums;
-using TaskManager.Domain.Model.Employees;
 using TaskManager.Domain.Model.Employees.Edit;
+using TaskManager.Domain.Model.Employees.Query;
 
 namespace TaskManager.Domain.Queries;
 

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TaskManager.Domain.Model.Departments;
+using TaskManager.Domain.Model.Departments.Query;
 using TaskManager.Domain.Queries;
 using TaskManager.Persistence.Data;
 
@@ -9,7 +9,7 @@ namespace TaskManager.Persistence.Queries;
 /// Предоставляет запросы для работы с данными подразделений.
 /// Реализует сценарии чтения данных.
 /// </summary>
-public class DepartmentQuery(TaskManagerDbContext context) : IDepartmentQuery
+public sealed class DepartmentQuery(TaskManagerDbContext context) : IDepartmentQuery
 {
     private readonly TaskManagerDbContext _context =
         context ?? throw new ArgumentNullException(nameof(context));

@@ -11,7 +11,7 @@ namespace TaskManager.View.Filters;
 /// Атрибут для ограничения доступа владельцу документа или администратору.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method)]
-public class OwnerDocumentOrAdminAttribute : Attribute, IAsyncAuthorizationFilter
+public sealed class OwnerDocumentOrAdminAttribute : Attribute, IAsyncAuthorizationFilter
 {
     /// <summary>
     /// Проверяет права доступа пользователя к документу.

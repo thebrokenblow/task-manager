@@ -1,10 +1,18 @@
-﻿namespace TaskManager.Domain.Model.Documents;
+﻿namespace TaskManager.Domain.Model.Documents.Delete;
 
 /// <summary>
-/// Модель для выгрузки в Csv формат
+/// Модель документа для операции удаления
+/// Содержит полные данные документа перед удалением для подтверждения операции
 /// </summary>
-public class DocumentForCsvExportModel
+public sealed class DocumentForOverviewDeleteModel
 {
+    /// <summary>
+    /// Уникальный идентификатор документа в системе.
+    /// </summary>
+    public int Id { get; init; }
+
+    // Исходные данные документа
+
     /// <summary>
     /// Исходный номер документа. Входные данные документа. Заполняет хозяин записи (делопроизводитель).
     /// Обязательное свойство.
@@ -39,7 +47,7 @@ public class DocumentForCsvExportModel
     /// Входящий номер документа ВХ(46 ЦНИИ). Входные данные документа. Заполняет хозяин записи (делопроизводитель).
     /// Обязательное свойство.
     /// </summary>
-    public required string IncomingDocumentNumberInputDocument { get; init; }
+    public required string? IncomingDocumentNumberInputDocument { get; init; }
 
     /// <summary>
     /// Дата входящего документа. Входные данные документа. Заполняет хозяин записи (делопроизводитель).
@@ -60,13 +68,16 @@ public class DocumentForCsvExportModel
     public required DateOnly TaskDueDateInputDocument { get; init; }
 
     /// <summary>
-    /// ФИО ответственного сотрудника. Входные данные документа. Заполняет исполнитель.
-    /// Навигационное свойство.
+    /// Идентификатор ответственного сотрудника. Входные данные документа. Заполняет исполнитель.
     /// Обязательное свойство.
     /// </summary>
-    public required string? FullNameResponsibleEmployeeInputDocument { get; init; }
+    public required int? IdResponsibleEmployeeInputDocument { get; init; }
 
-    //Выходные данные документа
+    /// <summary>
+    /// Полное имя ответственного сотрудника. Заполняется автоматически на основе IdResponsibleEmployeeInputDocument.
+    /// Обязательное свойство.
+    /// </summary>
+    public required string? ResponsibleEmployeeFullName { get; init; }
 
     /// <summary>
     /// Признак внешнего документа. Выходные данные документа. Заполняет исполнитель.
@@ -109,10 +120,4 @@ public class DocumentForCsvExportModel
     /// Обязательное свойство.
     /// </summary>
     public required bool IsCompleted { get; init; }
-
-    /// <summary>
-    /// ФИО сотрудника, который создал документ.
-    /// Обязательное свойство.
-    /// </summary>
-    public required string FullNameCreatedEmployee { get; init; }
 }

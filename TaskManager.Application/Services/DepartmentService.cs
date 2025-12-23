@@ -1,5 +1,5 @@
 ﻿using TaskManager.Application.Services.Interfaces;
-using TaskManager.Domain.Model.Departments;
+using TaskManager.Domain.Model.Departments.Query;
 using TaskManager.Domain.Queries;
 
 namespace TaskManager.Application.Services;
@@ -8,7 +8,7 @@ namespace TaskManager.Application.Services;
 /// Сервис для работы с подразделениями.
 /// Предоставляет бизнес-логику для операций с подразделениями.
 /// </summary>
-public class DepartmentService(IDepartmentQuery departmentQuery) : IDepartmentService
+public sealed class DepartmentService(IDepartmentQuery departmentQuery) : IDepartmentService
 {
     private readonly IDepartmentQuery _departmentQuery =
         departmentQuery ?? throw new ArgumentNullException(nameof(departmentQuery));

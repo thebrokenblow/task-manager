@@ -3,7 +3,7 @@
 /// <summary>
 /// Модель представления для изменения пароля сотрудника.
 /// </summary>
-public class EmployeePasswordViewModel
+public sealed class EmployeePasswordViewModel
 {
     /// <summary>
     /// Идентификатор сотрудника.

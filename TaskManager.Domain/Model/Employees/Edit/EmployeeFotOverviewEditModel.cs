@@ -3,7 +3,7 @@
 /// <summary>
 /// Модель сотрудника для отображения информации об сотруднике при редактировании
 /// </summary>
-public class EmployeeFotOverviewEditModel
+public sealed class EmployeeFotOverviewEditModel
 {
     /// <summary>
     /// Уникальный идентификатор сотрудника

@@ -11,7 +11,7 @@ namespace TaskManager.Persistence.Repositories;
 /// Репозиторий для работы с сущностью <see cref="Document"/>.
 /// Предоставляет методы для доступа и управления данными документов.
 /// </summary>
-public class DocumentRepository(TaskManagerDbContext context) : IDocumentRepository
+public sealed class DocumentRepository(TaskManagerDbContext context) : IDocumentRepository
 {
     private readonly TaskManagerDbContext _context =
         context ?? throw new ArgumentNullException(nameof(context));
@@ -23,9 +23,6 @@ public class DocumentRepository(TaskManagerDbContext context) : IDocumentReposit
     /// <returns>Задача, представляющая асинхронную операцию добавления.</returns>
     /// <exception cref="ArgumentNullException">
     /// Выбрасывается, если <paramref name="document"/> равен <c>null</c>.
-    /// </exception>
-    /// <exception cref="DbUpdateException">
-    /// Выбрасывается при возникновении ошибок при сохранении в базу данных.
     /// </exception>
     public async Task AddAsync(Document document)
     {
@@ -89,10 +86,6 @@ public class DocumentRepository(TaskManagerDbContext context) : IDocumentReposit
                     documentForEditModel.IsUnderControl)
                 .SetProperty(document => document.IsCompleted,
                     documentForEditModel.IsCompleted)
-                .SetProperty(document => document.CreatedByEmployeeId,
-                    documentForEditModel.CreatedByEmployeeId)
-                .SetProperty(document => document.RemoveDateTime,
-                    documentForEditModel.RemoveDateTime)
                 .SetProperty(document => document.LastEditedDateTime,
                     documentForEditModel.LastEditedDateTime)
                 .SetProperty(document => document.LastEditedByEmployeeId,
@@ -112,9 +105,6 @@ public class DocumentRepository(TaskManagerDbContext context) : IDocumentReposit
     /// <returns>Задача, представляющая асинхронную операцию удаления.</returns>
     /// <exception cref="NotFoundException">
     /// Выбрасывается, если документ с указанным <paramref name="id"/> не найден.
-    /// </exception>
-    /// <exception cref="DbUpdateException">
-    /// Выбрасывается при возникновении ошибок при удалении из базы данных.
     /// </exception>
     public async Task RemoveHardAsync(int id)
     {
@@ -139,9 +129,6 @@ public class DocumentRepository(TaskManagerDbContext context) : IDocumentReposit
     /// <returns>Задача, представляющая асинхронную операцию.</returns>
     /// <exception cref="NotFoundException">
     /// Выбрасывается, если документ с указанным <paramref name="id"/> не найден.
-    /// </exception>
-    /// <exception cref="DbUpdateException">
-    /// Выбрасывается при возникновении ошибок при обновлении в базе данных.
     /// </exception>
     public async Task RemoveSoftAsync(int id, int idEmployeeRemove, int idAdmin, DateTime removeDateTime)
     {
@@ -168,9 +155,6 @@ public class DocumentRepository(TaskManagerDbContext context) : IDocumentReposit
     /// <exception cref="NotFoundException">
     /// Выбрасывается, если документ с указанным <paramref name="id"/> не найден.
     /// </exception>
-    /// <exception cref="DbUpdateException">
-    /// Выбрасывается при возникновении ошибок при обновлении в базе данных.
-    /// </exception>
     public async Task RecoverDeletedAsync(int id, int idEmployeeRemove)
     {
         var affectedRows = await _context.Documents
@@ -195,9 +179,6 @@ public class DocumentRepository(TaskManagerDbContext context) : IDocumentReposit
     /// <returns>Задача, представляющая асинхронную операцию.</returns>
     /// <exception cref="NotFoundException">
     /// Выбрасывается, если документ с указанным <paramref name="id"/> не найден.
-    /// </exception>
-    /// <exception cref="DbUpdateException">
-    /// Выбрасывается при возникновении ошибок при обновлении в базе данных.
     /// </exception>
     public async Task UpdateStatusAsync(int id, bool isCompleted)
     {

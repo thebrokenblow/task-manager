@@ -1,9 +1,9 @@
-﻿namespace TaskManager.Domain.Model.Departments;
+﻿namespace TaskManager.Domain.Model.Departments.Query;
 
 /// <summary>
 /// Модель подразделения
 /// </summary>
-public class DepartmentModel
+public sealed class DepartmentModel
 {
     /// <summary>
     /// Название подразделения.

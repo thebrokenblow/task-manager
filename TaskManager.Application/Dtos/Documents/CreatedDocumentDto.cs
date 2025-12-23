@@ -103,10 +103,4 @@ public sealed class CreatedDocumentDto
     /// Обязательное свойство.
     /// </summary>
     public required bool IsUnderControl { get; set; }
-
-    /// <summary>
-    /// Идентификатор сотрудника, который создал документ.
-    /// Обязательное свойство (устанавливается автоматически в контроллере).
-    /// </summary>
-    public required int CreatedByEmployeeId { get; set; }
 }

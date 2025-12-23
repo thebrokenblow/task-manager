@@ -1,34 +1,16 @@
 ﻿@using TaskManager.Domain.Model.Documents
+@using TaskManager.Domain.Model.Documents.Delete
 @using TaskManager.Domain.Services
 @using TaskManager.Domain.Utilities
 @using TaskManager.View.ViewModel;
 @using TaskManager.View.ViewModel.Documents
 
-@model DocumentForDeleteModel
+@model DocumentForOverviewDeleteModel
 @inject IAuthService authService
 
 @{
     ViewData["Title"] = "Удаление Документа";
 }
-
-<style>
-    .readonly-disabled {
-        background-color: #f8f9fa;
-        opacity: 1;
-        pointer-events: none;
-        cursor: not-allowed;
-        border-color: #dee2e6;
-    }
-
-    .readonly-disabled::placeholder {
-        color: #6c757d;
-    }
-
-    .required-field::after {
-        content: " *";
-        color: #dc3545;
-    }
-</style>
 
 <div class="container-fluid py-3">
     <div class="row mb-3">

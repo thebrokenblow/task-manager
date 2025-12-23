@@ -1,6 +1,6 @@
-﻿namespace TaskManager.Domain.Model.Employees;
+﻿namespace TaskManager.Domain.Model.Employees.Edit;
 
-public class EmployeeFotEditModel
+public sealed class EmployeeFotEditModel
 {
     /// <summary>
     /// Уникальный идентификатор сотрудника

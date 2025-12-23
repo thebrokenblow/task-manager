@@ -7,7 +7,7 @@ namespace TaskManager.Persistence.Data;
 /// <summary>
 /// Контекст базы данных приложения TaskManager.
 /// </summary>
-public class TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options) : DbContext(options)
+public sealed class TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options) : DbContext(options)
 {
     /// <summary>
     /// Набор данных документов. Используется для операций с таблицей документов.

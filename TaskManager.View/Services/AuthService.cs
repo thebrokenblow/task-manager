@@ -11,7 +11,7 @@ namespace TaskManager.View.Services;
 /// <summary>
 /// Сервис для управления аутентификацией.
 /// </summary>
-public class AuthService(
+public sealed class AuthService(
     IEmployeeRepository employeeRepository,
     IHttpContextAccessor httpContextAccessor) : IAuthService
 {

@@ -3,7 +3,7 @@
 /// <summary>
 /// DTO для фильтрации документов. Содержит критерии поиска.
 /// </summary>
-public class DocumentFilterDto
+public sealed class DocumentFilterDto
 {
     /// <summary>
     /// Поисковый термин для фильтрации по тексту документов.

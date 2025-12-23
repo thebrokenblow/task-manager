@@ -4,7 +4,7 @@
 /// Словарь CSS классов для стилизации таблиц.
 /// Содержит константы для классов таблиц Bootstrap.
 /// </summary>
-public class TableCssClassDictionary
+public sealed class TableCssClassDictionary
 {
     /// <summary>
     /// CSS класс Bootstrap для строки таблицы с индикацией опасного/критического состояния.

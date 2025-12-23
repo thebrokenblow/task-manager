@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Enums;
-using TaskManager.Domain.Model.Documents;
+using TaskManager.Domain.Model.Documents.Query;
 
 namespace TaskManager.Persistence.Extensions;
 

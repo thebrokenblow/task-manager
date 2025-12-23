@@ -8,7 +8,7 @@
 /// <param name="TotalCount">Общее количество элементов во всех страницах.</param>
 /// <param name="PageNumber">Номер текущей страницы (начинается с 1).</param>
 /// <param name="PageSize">Количество элементов на одной странице.</param>
-public record PagedResult<T>(
+public sealed record PagedResult<T>(
     IEnumerable<T> Items,
     int TotalCount,
     int PageNumber,

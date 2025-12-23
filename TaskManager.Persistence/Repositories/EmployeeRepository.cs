@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Entities;
 using TaskManager.Domain.Exceptions;
-using TaskManager.Domain.Model.Employees;
+using TaskManager.Domain.Model.Employees.Edit;
 using TaskManager.Domain.Repositories;
 using TaskManager.Persistence.Data;
 
@@ -11,7 +11,7 @@ namespace TaskManager.Persistence.Repositories;
 /// Репозиторий для работы с сущностью <see cref="Employee"/>.
 /// Предоставляет методы для доступа и управления данными сотрудников.
 /// </summary>
-public class EmployeeRepository(TaskManagerDbContext context) : IEmployeeRepository
+public sealed class EmployeeRepository(TaskManagerDbContext context) : IEmployeeRepository
 {
     private readonly TaskManagerDbContext _context =
         context ?? throw new ArgumentNullException(nameof(context));

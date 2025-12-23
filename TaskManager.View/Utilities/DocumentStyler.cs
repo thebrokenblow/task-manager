@@ -1,9 +1,9 @@
-﻿using TaskManager.Domain.Model.Documents;
+﻿using TaskManager.Domain.Model.Documents.Query;
 using TaskManager.Domain.Services;
 
 namespace TaskManager.View.Utilities;
 
-public class DocumentStyler(IAuthService authService)
+public sealed class DocumentStyler(IAuthService authService)
 {
     /// <summary>
     /// Максимальное количество дней, при котором документ считается просроченным.

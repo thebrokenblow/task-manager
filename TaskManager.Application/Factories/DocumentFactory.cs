@@ -37,8 +37,6 @@ public static class DocumentFactory
             IsUnderControl = createdDocumentDto.IsUnderControl,
             IsCompleted = false,
             CreatedByEmployeeId = currentUserId,
-            LastEditedByEmployeeId = currentUserId,
-            LastEditedDateTime = DateTime.Now,
         };
 
         return document;

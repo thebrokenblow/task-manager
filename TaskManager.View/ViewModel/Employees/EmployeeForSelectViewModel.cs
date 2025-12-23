@@ -3,8 +3,8 @@
 /// <summary>
 /// Модель представления для выбора сотрудника.
 /// </summary>
-public class EmployeeForSelectViewModel
-{
+public sealed class EmployeeForSelectViewModel
+{ 
     /// <summary>
     /// Идентификатор сотрудника.
     /// </summary>

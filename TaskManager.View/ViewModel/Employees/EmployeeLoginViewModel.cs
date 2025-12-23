@@ -3,7 +3,7 @@
 /// <summary>
 /// Модель представления для входа сотрудника.
 /// </summary>
-public class EmployeeLoginViewModel
+public sealed class EmployeeLoginViewModel
 {
     /// <summary>
     /// Логин сотрудника.

@@ -1,11 +1,11 @@
 ﻿using TaskManager.Domain.Enums;
 
-namespace TaskManager.Domain.Model.Documents;
+namespace TaskManager.Domain.Model.Documents.Query;
 
 /// <summary>
 /// Параметры фильтрации документов на уровне домена.
 /// </summary>
-public class DocumentFilterModel
+public sealed class DocumentFilterModel
 {
     /// <summary>
     /// Поисковый запрос по документам

@@ -6,7 +6,7 @@ namespace TaskManager.Domain.Entities;
 /// Представляет сотрудника в системе управления задачами
 /// Содержит основные данные о сотруднике для назначения и учета задач
 /// </summary>
-public class Employee
+public sealed class Employee
 {
     /// <summary>
     /// Уникальный идентификатор сотрудника

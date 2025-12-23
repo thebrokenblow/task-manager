@@ -4,7 +4,7 @@
 /// Словарь CSS классов для состояния кнопок и интерактивных элементов.
 /// Содержит константы для классов состояния элементов управления.
 /// </summary>
-public class ButtonStatesCssClassDictionary
+public sealed class ButtonStatesCssClassDictionary
 {
     /// <summary>
     /// CSS класс для отключенного состояния кнопки.

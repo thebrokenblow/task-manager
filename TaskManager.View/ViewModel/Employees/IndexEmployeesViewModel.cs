@@ -1,12 +1,12 @@
-﻿using TaskManager.Domain.Entities;
-using TaskManager.Domain.Model.Employees;
+﻿using TaskManager.Application.Dtos.Employees;
+using TaskManager.Domain.Model.Employees.Query;
 
 namespace TaskManager.View.ViewModel.Employees;
 
 /// <summary>
 /// Модель представления для отображения списка сотрудников.
 /// </summary>
-public class IndexEmployeesViewModel
+public sealed class IndexEmployeesViewModel
 {
     /// <summary>
     /// Список сотрудников.
@@ -16,7 +16,7 @@ public class IndexEmployeesViewModel
     /// <summary>
     /// Сотрудник, которого не удалось создать.
     /// </summary>
-    public Employee? FailedCreatedEmployee { get; set; }
+    public CreatedEmployeeDto? FailedCreatedEmployee { get; set; }
 
     /// <summary>
     /// Текст сообщения о неудачном создании сотрудника.

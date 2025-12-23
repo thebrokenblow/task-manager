@@ -1,10 +1,10 @@
-﻿namespace TaskManager.Domain.Model.Documents;
+﻿namespace TaskManager.Domain.Model.Documents.Edit;
 
 /// <summary>
 /// Модель для изменения статуса документа
 /// Содержит выходные данные документа для обновления статуса
 /// </summary>
-public class DocumentForChangeStatusModel
+public sealed class DocumentForChangeStatusModel
 {
     /// <summary>
     /// Исходящий номер документа Исх(46 ЦНИИ). Выходные данные документа. Заполняет исполнитель.

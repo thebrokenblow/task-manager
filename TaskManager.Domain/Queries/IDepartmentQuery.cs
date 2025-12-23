@@ -1,4 +1,4 @@
-﻿using TaskManager.Domain.Model.Departments;
+﻿using TaskManager.Domain.Model.Departments.Query;
 
 namespace TaskManager.Domain.Queries;
 

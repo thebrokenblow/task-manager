@@ -4,7 +4,7 @@
 /// Словарь CSS классов, используемых в приложении для стилизации элементов интерфейса.
 /// Предоставляет константы для Bootstrap классов и других CSS классов.
 /// </summary>
-public class CssClassDictionary
+public sealed class CssClassDictionary
 {
     /// <summary>
     /// CSS класс Bootstrap для установки жирного начертания текста.

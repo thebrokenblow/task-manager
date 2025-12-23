@@ -10,13 +10,13 @@
 
     var isNotReadonly = !Model.Document.IsCompleted && (authService.IsAdmin || authService.IdCurrentUser == Model.Document.CreatedByEmployeeId);
 
-    var isDeletedDocuemnt = Model.Document.CreatedByEmployeeId == authService.IdAdmin && 
-                            Model.Document.RemovedByEmployeeId != null && 
+    var isDeletedDocuemnt = Model.Document.CreatedByEmployeeId == authService.IdAdmin &&
+                            Model.Document.RemovedByEmployeeId != null &&
                             Model.Document.RemoveDateTime != null;
 }
 
 @functions {
-    string? FormatDateForHtml(DateOnly? date)
+    string FormatDateForHtml(DateOnly? date)
     {
         if (date == null)
         {
@@ -26,25 +26,6 @@
         return date.Value.ToString(DateFormatDictionary.DateFormatYyyyMmDd);
     }
 }
-
-<style>
-    .readonly-disabled {
-        background-color: #f8f9fa;
-        opacity: 1;
-        pointer-events: none;
-        cursor: not-allowed;
-        border-color: #dee2e6;
-    }
-
-    .readonly-disabled::placeholder {
-        color: #6c757d;
-    }
-
-    .required-field::after {
-        content: " *";
-        color: #dc3545;
-    }
-</style>
 
 <div class="container-fluid py-3">
     <div class="row mb-3">
@@ -531,7 +512,7 @@
                                                    readonly
                                                    disabled>
 
-                                            <input type="hidden" 
+                                            <input type="hidden"
                                                    name="IsUnderControl"
                                                    value="@(Model.Document.IsUnderControl ? "true" : "false")" />
                                         }
@@ -597,12 +578,12 @@
         document.addEventListener('DOMContentLoaded', function () {
             const isCompleted = @Json.Serialize(Model.Document.IsCompleted);
             const isDeletedDocuemnt = @Json.Serialize(Model.Document.CreatedByEmployeeId == authService.IdAdmin &&
-                                                Model.Document.RemovedByEmployeeId != null &&
-                                                Model.Document.RemoveDateTime != null);
+                                                                                            Model.Document.RemovedByEmployeeId != null &&
+                                                                                            Model.Document.RemoveDateTime != null);
 
-            if (isCompleted || isDeletedDocuemnt) {
-                return;
-            }
+        if (isCompleted || isDeletedDocuemnt) {
+            return;
+        }
 
             const externalInputCheckbox = document.querySelector('input[name="IsExternalDocumentInputDocument"]');
             const incomingNumberInput = document.querySelector('input[name="IncomingDocumentNumberInputDocument"]');

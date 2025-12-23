@@ -1,6 +1,6 @@
 ﻿namespace TaskManager.Application.Utilities;
 
-public class EmployeeStringProcessor
+public sealed class EmployeeStringProcessor
 {
     private const string SpaceSeparator = " ";
     private const string UnderscoreSeparator = "_";

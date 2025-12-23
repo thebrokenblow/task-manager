@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManager.Domain.Enums;
-using TaskManager.Domain.Model.Employees;
 using TaskManager.Domain.Model.Employees.Edit;
+using TaskManager.Domain.Model.Employees.Query;
 using TaskManager.Domain.Queries;
 using TaskManager.Persistence.Data;
 
@@ -11,7 +11,7 @@ namespace TaskManager.Persistence.Queries;
 /// Предоставляет запросы для работы с данными сотрудников.
 /// Реализует сценарии чтения данных.
 /// </summary>
-public class EmployeeQuery(TaskManagerDbContext context) : IEmployeeQuery
+public sealed class EmployeeQuery(TaskManagerDbContext context) : IEmployeeQuery
 {
     private readonly TaskManagerDbContext _context =
         context ?? throw new ArgumentNullException(nameof(context));

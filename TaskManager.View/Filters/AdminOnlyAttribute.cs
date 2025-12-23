@@ -10,7 +10,7 @@ namespace TaskManager.View.Filters;
 /// Атрибут для ограничения доступа только для администраторов.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method)]
-public class AdminOnlyAttribute : Attribute, IAuthorizationFilter
+public sealed class AdminOnlyAttribute : Attribute, IAuthorizationFilter
 {
     /// <summary>
     /// Проверяет права доступа пользователя.

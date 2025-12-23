@@ -1,10 +1,10 @@
-﻿namespace TaskManager.Domain.Model.Employees;
+﻿namespace TaskManager.Domain.Model.Employees.Query;
 
 /// <summary>
 /// Модель для отображения данных сотрудника в выпадающих списках и элементах выбора
 /// Содержит минимальный набор свойств, необходимых для идентификации и выбора сотрудника
 /// </summary>
-public class EmployeeSelectModel
+public sealed class EmployeeSelectModel
 {
     /// <summary>
     /// Уникальный идентификатор сотрудника

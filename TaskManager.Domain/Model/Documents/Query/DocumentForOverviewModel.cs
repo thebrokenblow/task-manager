@@ -1,9 +1,9 @@
-﻿namespace TaskManager.Domain.Model.Documents;
+﻿namespace TaskManager.Domain.Model.Documents.Query;
 
 /// <summary>
 /// Модель для отображения информации о документах в системе
 /// </summary>
-public class DocumentForOverviewModel
+public sealed class DocumentForOverviewModel
 {
     /// <summary>
     /// Уникальный идентификатор документа в системе.

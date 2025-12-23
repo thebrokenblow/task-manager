@@ -7,7 +7,7 @@ namespace TaskManager.Persistence.Data.Configurations;
 /// <summary>
 /// Конфигурация таблицы сотрудников.
 /// </summary>
-public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
+public sealed class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
 {
     /// <summary>
     /// Настраивает таблицу сотрудников.

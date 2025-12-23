@@ -1,6 +1,6 @@
 ﻿using FluentValidation.TestHelper;
 using TaskManager.Application.Validations;
-using TaskManager.Domain.Model.Documents;
+using TaskManager.Domain.Model.Documents.Edit;
 
 namespace TaskManager.UnitTests.Validations;
 

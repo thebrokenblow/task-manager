@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using TaskManager.Application.Common;
-using TaskManager.Domain.Model.Documents;
+using TaskManager.Domain.Model.Documents.Query;
 
 namespace TaskManager.View.ViewModel.Employees;
 
 /// <summary>
 /// Модель представления для отображения списка документов.
 /// </summary>
-public class IndexDocumentViewModel
+public sealed class IndexDocumentViewModel
 {
     /// <summary>
     /// Строка поиска.

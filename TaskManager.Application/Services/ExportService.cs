@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using TaskManager.Application.Services.Interfaces;
-using TaskManager.Domain.Model.Documents;
+using TaskManager.Domain.Model.Documents.Query;
 using TaskManager.Domain.Utilities;
 
 namespace TaskManager.Application.Services;
@@ -12,7 +12,7 @@ namespace TaskManager.Application.Services;
 /// Обеспечивает преобразование данных в различные форматы для экспорта,
 /// включая CSV с поддержкой кириллицы и правильным экранированием полей.
 /// </remarks>
-public class ExportService : IExportService
+public sealed class ExportService : IExportService
 {
     /// <summary>
     /// Преобразует данные документа в CSV формат.
@@ -20,7 +20,7 @@ public class ExportService : IExportService
     /// <param name="document">Модель документа для экспорта.</param>
     /// <returns>Массив байтов, представляющий CSV-файл в кодировке UTF-8 с BOM.</returns>
     /// <exception cref="ArgumentNullException">Выбрасывается, если переданная модель документа равна null.</exception>
-    public byte[] ConvertDocumentToCsv(DocumentForCsvExportModel document)
+    public byte[] ConvertDocumentToCsv(DocumentForOverviewCsvExportModel document)
     {
         ArgumentNullException.ThrowIfNull(document, nameof(document));
 
@@ -53,7 +53,7 @@ public class ExportService : IExportService
     /// </summary>
     /// <param name="csvBuilder">StringBuilder для построения CSV.</param>
     /// <param name="document">Модель документа для экспорта.</param>
-    private static void AddInputDataSection(StringBuilder csvBuilder, DocumentForCsvExportModel document)
+    private static void AddInputDataSection(StringBuilder csvBuilder, DocumentForOverviewCsvExportModel document)
     {
         csvBuilder.AppendLine("=== ВХОДНЫЕ ДАННЫЕ ===");
         csvBuilder.AppendLine($"Исходящий номер (входной);{EscapeCsvField(document.OutgoingDocumentNumberInputDocument)}");
@@ -74,7 +74,7 @@ public class ExportService : IExportService
     /// </summary>
     /// <param name="csvBuilder">StringBuilder для построения CSV.</param>
     /// <param name="document">Модель документа для экспорта.</param>
-    private static void AddOutputDataSection(StringBuilder csvBuilder, DocumentForCsvExportModel document)
+    private static void AddOutputDataSection(StringBuilder csvBuilder, DocumentForOverviewCsvExportModel document)
     {
         csvBuilder.AppendLine("=== ВЫХОДНЫЕ ДАННЫЕ ===");
         csvBuilder.AppendLine($"Внешний документ (выходной);{FormatBool(document.IsExternalDocumentOutputDocument)}");
@@ -90,7 +90,7 @@ public class ExportService : IExportService
     /// </summary>
     /// <param name="csvBuilder">StringBuilder для построения CSV.</param>
     /// <param name="document">Модель документа для экспорта.</param>
-    private static void AddStatusSection(StringBuilder csvBuilder, DocumentForCsvExportModel document)
+    private static void AddStatusSection(StringBuilder csvBuilder, DocumentForOverviewCsvExportModel document)
     {
         csvBuilder.AppendLine("=== СТАТУС ===");
         csvBuilder.AppendLine($"На контроле;{FormatBool(document.IsUnderControl)}");

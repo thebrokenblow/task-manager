@@ -1,4 +1,4 @@
-﻿using TaskManager.Domain.Model.Documents;
+﻿using TaskManager.Domain.Model.Documents.Query;
 
 namespace TaskManager.Application.Services.Interfaces;
 
@@ -12,5 +12,5 @@ public interface IExportService
     /// </summary>
     /// <param name="documentForExportModel">Модель документа для экспорта.</param>
     /// <returns>Массив байтов, представляющий CSV-файл в кодировке UTF-8 с BOM.</returns>
-    byte[] ConvertDocumentToCsv(DocumentForCsvExportModel documentForExportModel);
+    byte[] ConvertDocumentToCsv(DocumentForOverviewCsvExportModel documentForExportModel);
 }

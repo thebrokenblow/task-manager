@@ -1,4 +1,6 @@
-﻿using TaskManager.Domain.Model.Documents;
+﻿using TaskManager.Domain.Model.Documents.Delete;
+using TaskManager.Domain.Model.Documents.Edit;
+using TaskManager.Domain.Model.Documents.Query;
 
 namespace TaskManager.Domain.Queries;
 
@@ -42,13 +44,13 @@ public interface IDocumentQuery
     /// </summary>
     /// <param name="id">Идентификатор документа.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="DocumentForDeleteModel"/> 
+    /// Задача, результат которой содержит модель <see cref="DocumentForOverviewDeleteModel"/> 
     /// или <c>null</c>, если документ не найден.
     /// </returns>
     /// <remarks>
     /// Запрос возвращает основные поля документа, необходимые для отображения перед удалением.
     /// </remarks>
-    Task<DocumentForDeleteModel?> GetDocumentForDeleteAsync(int id);
+    Task<DocumentForOverviewDeleteModel?> GetDocumentForDeleteAsync(int id);
 
     /// <summary>
     /// Получает идентификатор сотрудника, который удалил документ.
@@ -88,11 +90,11 @@ public interface IDocumentQuery
     /// </summary>
     /// <param name="id">Идентификатор документа.</param>
     /// <returns>
-    /// Задача, результат которой содержит модель <see cref="DocumentForCsvExportModel"/> 
+    /// Задача, результат которой содержит модель <see cref="DocumentForOverviewCsvExportModel"/> 
     /// или <c>null</c>, если документ не найден.
     /// </returns>
     /// <remarks>
     /// Возвращает все поля документа, необходимые для формирования CSV-файла.
     /// </remarks>
-    Task<DocumentForCsvExportModel?> GetDocumentForCsvExportAsync(int id);
+    Task<DocumentForOverviewCsvExportModel?> GetDocumentForCsvExportAsync(int id);
 }

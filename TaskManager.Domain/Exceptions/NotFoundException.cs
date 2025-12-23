@@ -5,6 +5,6 @@
 /// </summary>
 /// <param name="name">Название типа сущности.</param>
 /// <param name="key">Идентификатор сущности, которая не была найдена.</param>
-public class NotFoundException(string name, object key) : Exception($"Сущность \"{name}\" с ключом ({key}) не найден.")
+public sealed class NotFoundException(string name, object key) : Exception($"Сущность \"{name}\" с ключом ({key}) не найден.")
 {
 }

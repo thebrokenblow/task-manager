@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using TaskManager.Domain.Entities;
+using TaskManager.Application.Dtos.Documents;
 
 namespace TaskManager.View.ViewModel.Documents;
 
 /// <summary>
 /// Модель представления для создания документа.
 /// </summary>
-public class CreateDocumentViewModel
+public sealed class CreateDocumentViewModel
 {
     /// <summary>
     /// Документ для создания.
     /// </summary>
-    public required Document Document { get; init; }
+    public required CreatedDocumentDto Document { get; init; }
 
     /// <summary>
     /// Список ответственных сотрудников для выбора.
