@@ -21,6 +21,5 @@ public sealed class EditedDocumentDto
     public string? DocumentSummaryOutputDocument { get; set; }
     public required bool IsUnderControl { get; set; }
     public required bool IsCompleted { get; set; }
-    public required int CreatedByEmployeeId { get; set; }
-    public DateTime? RemoveDateTime { get; set; }
+    public required string? SubjectOutputDocument { get; set; }
 }

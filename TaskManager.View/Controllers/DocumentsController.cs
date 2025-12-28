@@ -265,7 +265,8 @@ public sealed class DocumentsController(
             RecipientOutputDocument = null,
             ResponsibleDepartmentInputDocument = null,
             ResponsibleDepartmentsInputDocument = null,
-            SourceDocumentDateInputDocument= null,         
+            SourceDocumentDateInputDocument= null,     
+            SubjectOutputDocument = null,
         };
 
         return document;

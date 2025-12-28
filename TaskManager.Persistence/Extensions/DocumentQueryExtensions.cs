@@ -27,6 +27,7 @@ public static class DocumentQueryExtensions
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             queryDocuments = queryDocuments.Where(document =>
+
                 (document.OutgoingDocumentNumberInputDocument != null &&
                     EF.Functions.ILike(document.OutgoingDocumentNumberInputDocument, $"%{searchTerm}%")) ||
 
@@ -37,7 +38,13 @@ public static class DocumentQueryExtensions
                     EF.Functions.ILike(document.IncomingDocumentNumberInputDocument, $"%{searchTerm}%")) ||
 
                 (document.OutgoingDocumentNumberOutputDocument != null &&
-                    EF.Functions.ILike(document.OutgoingDocumentNumberOutputDocument, $"%{searchTerm}%")));
+                    EF.Functions.ILike(document.OutgoingDocumentNumberOutputDocument, $"%{searchTerm}%")) ||
+
+                (document.CustomerInputDocument != null &&
+                    EF.Functions.ILike(document.CustomerInputDocument, $"%{searchTerm}%")) ||
+
+                (document.SubjectOutputDocument != null &&
+                    EF.Functions.ILike(document.SubjectOutputDocument, $"%{searchTerm}%")));
         }
 
         return queryDocuments;
@@ -67,14 +74,14 @@ public static class DocumentQueryExtensions
                 document.RemovedByEmployeeId != null &&
                 document.RemoveDateTime != null);
         }
-        else if (documentFilterModel.UserRole == UserRole.Boss)
+        else if (documentFilterModel.UserRole == UserRole.SeniorBoss)
         {
             queryDocuments = queryDocuments.Where(document =>
                 !document.IsCompleted &&
                 document.RemovedByEmployeeId == null &&
                 document.RemoveDateTime == null);
         }
-        else if (documentFilterModel.UserRole == UserRole.Employee)
+        else if (documentFilterModel.UserRole == UserRole.Employee || documentFilterModel.UserRole == UserRole.Boss)
         {
             queryDocuments = queryDocuments.Where(document =>
                 !document.IsCompleted &&

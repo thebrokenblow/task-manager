@@ -3,6 +3,7 @@ using TaskManager.Application.Dtos.Documents;
 using TaskManager.Application.Exceptions;
 using TaskManager.Application.Factories;
 using TaskManager.Application.Services.Interfaces;
+using TaskManager.Application.Utilities;
 using TaskManager.Application.Validations;
 using TaskManager.Domain.Exceptions;
 using TaskManager.Domain.Model.Departments.Query;
@@ -228,7 +229,9 @@ public sealed class DocumentService(
         // Очистка строковых полей
         TrimDocumentStrings(createdDocumentDto);
 
+        createdDocumentDto.SubjectOutputDocument = DocumentStringProcessor.ProcessDocumentSubject(createdDocumentDto.SubjectOutputDocument);
         var document = DocumentFactory.CreateDocument(createdDocumentDto, _authService.IdCurrentUser.Value);
+
         await _documentRepository.AddAsync(document);
     }
 
@@ -258,7 +261,9 @@ public sealed class DocumentService(
         // Очистка строковых полей
         TrimDocumentStrings(editedDocumentDto);
 
+        editedDocumentDto.SubjectOutputDocument = DocumentStringProcessor.ProcessDocumentSubject(editedDocumentDto.SubjectOutputDocument);
         var documentForEditModel = DocumentFactory.CreateDocumentForEdit(editedDocumentDto, _authService.IdCurrentUser.Value);
+
         await _documentRepository.UpdateAsync(documentForEditModel);
     }
 
@@ -396,6 +401,11 @@ public sealed class DocumentService(
         {
             сreatedDocumentDto.DocumentSummaryOutputDocument = сreatedDocumentDto.DocumentSummaryOutputDocument.Trim();
         }
+
+        if (сreatedDocumentDto.SubjectOutputDocument is not null)
+        {
+            сreatedDocumentDto.SubjectOutputDocument = сreatedDocumentDto.SubjectOutputDocument.Trim();
+        }
     }
 
     /// <summary>
@@ -447,6 +457,11 @@ public sealed class DocumentService(
         if (editedDocumentDto.DocumentSummaryOutputDocument is not null)
         {
             editedDocumentDto.DocumentSummaryOutputDocument = editedDocumentDto.DocumentSummaryOutputDocument.Trim();
+        }
+
+        if (editedDocumentDto.SubjectOutputDocument is not null)
+        {
+            editedDocumentDto.SubjectOutputDocument = editedDocumentDto.SubjectOutputDocument.Trim();
         }
     }
 }

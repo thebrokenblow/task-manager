@@ -23,4 +23,10 @@ public sealed class DocumentForEditModel
     public required bool IsCompleted { get; init; }
     public required DateTime LastEditedDateTime { get; init; }
     public required int LastEditedByEmployeeId { get; init; }
+
+    /// <summary>
+    /// Тематика документа.
+    /// Необязательное свойство.
+    /// </summary>
+    public string? SubjectOutputDocument { get; init; }
 }

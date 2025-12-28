@@ -176,5 +176,10 @@ public sealed class DocumentConfiguration : IEntityTypeConfiguration<Document>
             .HasColumnType("timestamp without time zone")
             .HasComment("Дата удаления документа.")
             .IsRequired(false);
+
+        builder.Property(document => document.SubjectOutputDocument)
+            .HasColumnName("subject_document")
+            .HasComment("Тематика документа.")
+            .IsRequired(false);
     }
 }

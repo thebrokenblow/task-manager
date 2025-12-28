@@ -151,4 +151,10 @@ public sealed class DocumentForOverviewEditModel
     /// Обязательное свойство.
     /// </summary>
     public required DateTime? RemoveDateTime { get; init; }
+
+    /// <summary>
+    /// Тематика документа.
+    /// Необязательное свойство.
+    /// </summary>
+    public required string? SubjectOutputDocument { get; set; }
 }

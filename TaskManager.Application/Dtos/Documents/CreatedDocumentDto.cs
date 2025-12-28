@@ -103,4 +103,10 @@ public sealed class CreatedDocumentDto
     /// Обязательное свойство.
     /// </summary>
     public required bool IsUnderControl { get; set; }
+
+    /// <summary>
+    /// Тематика документа. Выходные данные документа. Заполняет исполнитель.
+    /// Необязательное свойство.
+    /// </summary>
+    public required string? SubjectOutputDocument { get; set; }
 }

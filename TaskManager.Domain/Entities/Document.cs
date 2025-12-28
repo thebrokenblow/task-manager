@@ -179,4 +179,10 @@ public sealed class Document
     /// Необязательное свойство.
     /// </summary>
     public DateTime? RemoveDateTime { get; set; }
+
+    /// <summary>
+    /// Тематика документа.
+    /// Необязательное свойство.
+    /// </summary>
+    public string? SubjectOutputDocument { get; set; }
 }

@@ -159,6 +159,7 @@ public sealed class DocumentQuery(TaskManagerDbContext context) : IDocumentQuery
                 RemoveDateTime = document.RemoveDateTime,
                 LastEditedDateTime = document.LastEditedDateTime,
                 CreatedByEmployeeId = document.CreatedByEmployeeId,
+                SubjectOutputDocument = document.SubjectOutputDocument
             })
             .AsNoTracking()
             .FirstOrDefaultAsync(document => document.Id == id);

@@ -37,6 +37,7 @@ public static class DocumentFactory
             IsUnderControl = createdDocumentDto.IsUnderControl,
             IsCompleted = false,
             CreatedByEmployeeId = currentUserId,
+            SubjectOutputDocument = createdDocumentDto.SubjectOutputDocument
         };
 
         return document;
@@ -52,7 +53,7 @@ public static class DocumentFactory
     {
         ArgumentNullException.ThrowIfNull(editedDocumentDto);
 
-        return new DocumentForEditModel
+        var documentForEditModel = new DocumentForEditModel
         {
             Id = editedDocumentDto.Id,
             OutgoingDocumentNumberInputDocument = editedDocumentDto.OutgoingDocumentNumberInputDocument,
@@ -74,7 +75,10 @@ public static class DocumentFactory
             IsUnderControl = editedDocumentDto.IsUnderControl,
             IsCompleted = editedDocumentDto.IsCompleted,
             LastEditedDateTime = DateTime.Now,
-            LastEditedByEmployeeId = currentUserId
+            LastEditedByEmployeeId = currentUserId,
+            SubjectOutputDocument = editedDocumentDto.SubjectOutputDocument,
         };
+
+        return documentForEditModel;
     }
 }

@@ -90,6 +90,8 @@ public sealed class DocumentRepository(TaskManagerDbContext context) : IDocument
                     documentForEditModel.LastEditedDateTime)
                 .SetProperty(document => document.LastEditedByEmployeeId,
                     documentForEditModel.LastEditedByEmployeeId)
+                .SetProperty(document => document.SubjectOutputDocument,
+                    documentForEditModel.SubjectOutputDocument)
             );
 
         if (affectedRows == 0)
