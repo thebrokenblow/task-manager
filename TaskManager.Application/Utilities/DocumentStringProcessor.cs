@@ -7,8 +7,22 @@ public sealed class DocumentStringProcessor
 {
     private const string SpaceSeparator = " ";
     private const string UnderscoreSeparator = "_";
+    private const string TabSeparator = "\t";
+    private const string NewLineSeparator = "\n";
+    private const string CarriageReturnSeparator = "\r";
+    private const string WindowsNewLineSeparator = "\r\n";
     private const string IdMarker = "id";
     private const string IdPrefix = "id_";
+
+    private static readonly string[] Separators =
+    [
+        WindowsNewLineSeparator,
+        SpaceSeparator,
+        UnderscoreSeparator,
+        TabSeparator,
+        NewLineSeparator,
+        CarriageReturnSeparator
+    ];
 
     /// <summary>
     /// Обрабатывает строку документа: удаляет "id" (без учета регистра), 
@@ -16,7 +30,7 @@ public sealed class DocumentStringProcessor
     /// добавляя префикс "id_" в начале. Если после удаления "id" не остается элементов,
     /// возвращает пустую строку.
     /// </summary>
-    /// <param name="input">Входная строка для обработки. Может быть null или пустой.</param>
+    /// <param name="input">Входная строки для обработки. Может быть null или пустой.</param>
     /// <returns>
     /// Обработанная строка с префиксом "id_", 
     /// null если входное значение null,
@@ -35,8 +49,11 @@ public sealed class DocumentStringProcessor
             return string.Empty;
         }
 
-        var withoutId = input.ToLowerInvariant().Replace(IdMarker, string.Empty);
-        var elements = withoutId.Split(SpaceSeparator, StringSplitOptions.RemoveEmptyEntries);
+        var lowerInput = input.ToLowerInvariant();
+        var elements = lowerInput
+            .Split(Separators, StringSplitOptions.RemoveEmptyEntries)
+            .Where(element => element != IdMarker)
+            .ToArray();
 
         if (elements.Length == 0)
         {
