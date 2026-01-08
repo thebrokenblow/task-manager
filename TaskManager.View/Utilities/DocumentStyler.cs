@@ -3,8 +3,16 @@ using TaskManager.Domain.Services;
 
 namespace TaskManager.View.Utilities;
 
+/// <summary>
+/// Класс для стилизации документов в пользовательском интерфейсе.
+/// Предоставляет методы для определения CSS-классов и стилей оформления документов
+/// на основе их состояния, сроков выполнения и других характеристик.
+/// </summary>
 public sealed class DocumentStyler(IAuthService authService)
 {
+    private readonly IAuthService _authService =
+        authService ?? throw new ArgumentNullException(nameof(authService));
+
     /// <summary>
     /// Максимальное количество дней, при котором документ считается просроченным.
     /// Значение 0 означает, что документ просрочен, если срок выполнения наступил или уже прошел.
@@ -85,7 +93,7 @@ public sealed class DocumentStyler(IAuthService authService)
     /// </remarks>
     public bool IsDeletedDocument(DocumentForOverviewModel document)
     {
-        return document.CreatedByEmployeeId == authService.IdAdmin &&
+        return document.CreatedByEmployeeId == _authService.IdAdmin &&
                document.RemovedByEmployeeId is not null &&
                document.RemoveDateTime is not null;
     }

@@ -15,6 +15,12 @@ public sealed class AuthService(
     IEmployeeRepository employeeRepository,
     IHttpContextAccessor httpContextAccessor) : IAuthService
 {
+    private readonly IEmployeeRepository _employeeRepository =
+        employeeRepository ?? throw new ArgumentNullException(nameof(employeeRepository));
+
+    private readonly IHttpContextAccessor _httpContextAccessor =
+        httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+
     /// <summary>
     /// Количество дней действия cookie аутентификации.
     /// </summary>
@@ -24,19 +30,19 @@ public sealed class AuthService(
     /// Проверяет, аутентифицирован ли пользователь.
     /// </summary>
     public bool IsAuthenticated =>
-        httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
+        _httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
 
     /// <summary>
     /// Проверяет, является ли пользователь администратором.
     /// </summary>
     public bool IsAdmin =>
-        httpContextAccessor.HttpContext?.User.IsInRole(UserRole.Admin.ToString()) ?? false;
+        _httpContextAccessor.HttpContext?.User.IsInRole(UserRole.Admin.ToString()) ?? false;
 
     /// <summary>
     /// Получает полное имя текущего пользователя.
     /// </summary>
     public string? FullName =>
-       httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value.ToString();
+       _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value.ToString();
 
     /// <summary>
     /// Идентификатор администратора.
@@ -50,7 +56,7 @@ public sealed class AuthService(
     {
         get
         {
-            var userIdClaim = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
+            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
 
             if (userIdClaim is not null)
             {
@@ -68,7 +74,7 @@ public sealed class AuthService(
     {
         get
         {
-            var roleValue = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
+            var roleValue = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
 
             if (string.IsNullOrEmpty(roleValue))
             {
@@ -90,9 +96,11 @@ public sealed class AuthService(
     /// <param name="loginViewModel">Модель данных для входа.</param>
     public async Task<bool> LoginAsync(EmployeeLoginModel loginViewModel)
     {
-        var user = await employeeRepository.GetByLoginAsync(loginViewModel.Login);
+        var user = await _employeeRepository.GetByLoginAsync(loginViewModel.Login);
 
-        if (user == null || user.Login != loginViewModel.Login || user.Password != loginViewModel.Password)
+        if (user == null || 
+            user.Login != loginViewModel.Login || 
+            user.Password != loginViewModel.Password)
         {
             return false;
         }
@@ -112,7 +120,7 @@ public sealed class AuthService(
             ExpiresUtc = DateTimeOffset.UtcNow.AddDays(CookieExpireDays)
         };
 
-        await httpContextAccessor.HttpContext!.SignInAsync(
+        await _httpContextAccessor.HttpContext!.SignInAsync(
                CookieAuthenticationDefaults.AuthenticationScheme,
                new ClaimsPrincipal(claimsIdentity),
                authProperties);
@@ -125,6 +133,6 @@ public sealed class AuthService(
     /// </summary>
     public async Task LogoutAsync()
     {
-        await httpContextAccessor.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await _httpContextAccessor.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 }

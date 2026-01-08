@@ -1,7 +1,7 @@
 ﻿namespace TaskManager.Domain.Model.Departments.Query;
 
 /// <summary>
-/// Модель подразделения
+/// Модель подразделения.
 /// </summary>
 public sealed class DepartmentModel
 {

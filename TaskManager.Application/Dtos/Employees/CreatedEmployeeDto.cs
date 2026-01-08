@@ -1,5 +1,9 @@
 ﻿namespace TaskManager.Application.Dtos.Employees;
 
+/// <summary>
+/// DTO для создания нового сотрудника в системе.
+/// Содержит данные, необходимые для регистрации сотрудника.
+/// </summary>
 public sealed class CreatedEmployeeDto
 {
     /// <summary>

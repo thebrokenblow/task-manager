@@ -1,12 +1,12 @@
 ﻿namespace TaskManager.Domain.Model.Employees.Edit;
 
 /// <summary>
-/// Модель сотрудника для отображения информации об сотруднике при редактировании
+/// Модель сотрудника для отображения информации об сотруднике при редактировании.
 /// </summary>
 public sealed class EmployeeFotOverviewEditModel
 {
     /// <summary>
-    /// Уникальный идентификатор сотрудника
+    /// Уникальный идентификатор сотрудника.
     /// </summary>
     public int Id { get; set; }
 

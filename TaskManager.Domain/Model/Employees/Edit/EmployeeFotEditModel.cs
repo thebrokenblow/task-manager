@@ -1,9 +1,14 @@
 ﻿namespace TaskManager.Domain.Model.Employees.Edit;
 
+/// <summary>
+/// Модель для редактирования данных сотрудника в системе.
+/// Содержит все поля сотрудника, которые могут быть отредактированы.
+/// </summary>
 public sealed class EmployeeFotEditModel
 {
     /// <summary>
-    /// Уникальный идентификатор сотрудника
+    /// Уникальный идентификатор сотрудника.
+    /// Обязательное свойство.
     /// </summary>
     public required int Id { get; set; }
 

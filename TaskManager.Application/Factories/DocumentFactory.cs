@@ -4,6 +4,10 @@ using TaskManager.Domain.Model.Documents.Edit;
 
 namespace TaskManager.Application.Factories;
 
+/// <summary>
+/// Фабрика для создания документов и связанных моделей.
+/// Предоставляет методы для преобразования DTO в сущности и модели с установкой значений по умолчанию.
+/// </summary>
 public static class DocumentFactory
 {
     /// <summary>

@@ -1,5 +1,9 @@
 ﻿namespace TaskManager.Application.Dtos.Documents;
 
+/// <summary>
+/// DTO для создания документа в системе документооборота.
+/// Содержит данные документа для создания записи.
+/// </summary>
 public sealed class CreatedDocumentDto
 {
     /// <summary>

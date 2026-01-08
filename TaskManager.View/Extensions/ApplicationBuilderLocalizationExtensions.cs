@@ -5,12 +5,12 @@ using TaskManager.Domain.Utilities;
 namespace TaskManager.View.Extensions;
 
 /// <summary>
-/// Методы расширения для настройки локализации в приложении
+/// Методы расширения для настройки локализации в приложении.
 /// </summary>
 public static class ApplicationBuilderLocalizationExtensions
 {
     /// <summary>
-    /// Использует русскую локаль в приложении
+    /// Использует русскую локаль в приложении.
     /// </summary>
     public static IApplicationBuilder UseRussianLocalization(this IApplicationBuilder app)
     {
@@ -28,7 +28,7 @@ public static class ApplicationBuilderLocalizationExtensions
     }
 
     /// <summary>
-    /// Получает русскую культуру с настройками по умолчанию
+    /// Получает русскую культуру с настройками по умолчанию.
     /// </summary>
     private static CultureInfo[] GetRussianCultures()
     {
@@ -54,7 +54,7 @@ public static class ApplicationBuilderLocalizationExtensions
     }
 
     /// <summary>
-    /// Возвращает список провайдеров культуры по умолчанию
+    /// Возвращает список провайдеров культуры по умолчанию.
     /// </summary>
     private static IRequestCultureProvider[] GetDefaultRequestCultureProviders()
     {

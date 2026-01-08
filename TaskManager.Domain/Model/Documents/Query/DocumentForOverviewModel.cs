@@ -1,7 +1,7 @@
 ﻿namespace TaskManager.Domain.Model.Documents.Query;
 
 /// <summary>
-/// Модель для отображения информации о документах в системе
+/// Модель для отображения информации о документах в системе.
 /// </summary>
 public sealed class DocumentForOverviewModel
 {

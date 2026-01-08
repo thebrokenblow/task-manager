@@ -1,8 +1,8 @@
 ﻿namespace TaskManager.Domain.Model.Documents.Edit;
 
 /// <summary>
-/// Модель для изменения статуса документа
-/// Содержит выходные данные документа для обновления статуса
+/// Модель для изменения статуса документа.
+/// Содержит выходные данные документа для обновления статуса.
 /// </summary>
 public sealed class DocumentForChangeStatusModel
 {

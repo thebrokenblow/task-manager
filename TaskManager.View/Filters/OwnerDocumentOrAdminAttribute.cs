@@ -27,15 +27,7 @@ public sealed class OwnerDocumentOrAdminAttribute : Attribute, IAsyncAuthorizati
 
         if (!authService.IsAuthenticated)
         {
-            var returnUrl = context.HttpContext.Request.Path;
-            var nameController = NameController.GetControllerName(nameof(AccountsController));
-            var actionController = nameof(AccountsController.Login);
-
-            context.Result = new RedirectToActionResult(
-                actionController,
-                nameController,
-                new { returnUrl });
-
+            RedirectToLogin(context);
             return;
         }
 
@@ -72,19 +64,57 @@ public sealed class OwnerDocumentOrAdminAttribute : Attribute, IAsyncAuthorizati
 
         if (createdByEmployeeId == null)
         {
-            var nameController = NameController.GetControllerName(nameof(ErrorsController));
-            var actionController = nameof(ErrorsController.DocumentNotFoundError);
-
-            context.Result = new RedirectToActionResult(actionController, nameController, null);
+            RedirectToDocumentNotFoundError(context);
             return;
         }
 
         if (createdByEmployeeId.Value != authService.IdCurrentUser)
         {
-            var nameController = NameController.GetControllerName(nameof(AccountsController));
-            var actionController = nameof(ErrorsController.AccessDeniedError);
-
-            context.Result = new RedirectToActionResult(actionController, nameController, null);
+            RedirectToAccessDeniedError(context);
         }
+    }
+
+    /// <summary>
+    /// Перенаправляет пользователя на страницу входа (авторизации) в систему.
+    /// Сохраняет текущий URL в параметре returnUrl для последующего возврата после успешной аутентификации.
+    /// </summary>
+    /// <param name="context">Контекст фильтра авторизации, содержащий информацию о текущем запросе.</param>
+    /// <remarks>
+    /// Используется для перенаправления неавторизованных пользователей на страницу входа
+    /// с сохранением исходного запрашиваемого URL для возврата после успешной авторизации.
+    /// </remarks>
+    private void RedirectToLogin(AuthorizationFilterContext context)
+    {
+        var returnUrl = context.HttpContext.Request.Path;
+        var nameController = NameController.GetControllerName(nameof(AccountsController));
+        var actionController = nameof(AccountsController.Login);
+
+        context.Result = new RedirectToActionResult(actionController, nameController, new { returnUrl });
+    }
+
+    /// <summary>
+    /// Перенаправляет пользователя на страницу ошибки "Документ не найден".
+    /// Используется при попытке доступа к несуществующему или удаленному документу.
+    /// </summary>
+    /// <param name="context">Контекст фильтра авторизации, содержащий информацию о текущем запросе.</param>
+    private void RedirectToDocumentNotFoundError(AuthorizationFilterContext context)
+    {
+        var nameController = NameController.GetControllerName(nameof(ErrorsController));
+        var actionController = nameof(ErrorsController.DocumentNotFoundError);
+
+        context.Result = new RedirectToActionResult(actionController, nameController, null);
+    }
+
+    /// <summary>
+    /// Перенаправляет пользователя на страницу ошибки "Доступ запрещен".
+    /// Используется при попытке доступа к ресурсу без необходимых прав доступа.
+    /// </summary>
+    /// <param name="context">Контекст фильтра авторизации, содержащий информацию о текущем запросе.</param>
+    private void RedirectToAccessDeniedError(AuthorizationFilterContext context)
+    {
+        var nameController = NameController.GetControllerName(nameof(ErrorsController));
+        var actionController = nameof(ErrorsController.AccessDeniedError);
+
+        context.Result = new RedirectToActionResult(actionController, nameController, null);
     }
 }

@@ -18,10 +18,17 @@ public sealed class DocumentsController(
     IEmployeeService employeeService,
     IDepartmentService departmentService) : Controller
 {
+    private readonly IDocumentService _documentService =
+            documentService ?? throw new ArgumentNullException(nameof(documentService));
+
+    private readonly IEmployeeService _employeeService =
+            employeeService ?? throw new ArgumentNullException(nameof(employeeService));
+
+    private readonly IDepartmentService _departmentService =
+            departmentService ?? throw new ArgumentNullException(nameof(departmentService));
+
     private const int DefaultNumberPage = 1;
     private const int DefaultCountDocumentsOnPage = 50;
-
-    private const int DefaultDueDateDaysOffset = 5;
 
     private readonly int[] CountsDocumentsOnPage = [DefaultCountDocumentsOnPage, 75, 150, 200];
 
@@ -37,15 +44,7 @@ public sealed class DocumentsController(
     {
         try
         {
-            if (!CountsDocumentsOnPage.Contains(pageSize))
-            {
-                pageSize = DefaultCountDocumentsOnPage;
-            }
-
-            if (page < 0 || page > totalPages)
-            {
-                page = DefaultNumberPage;
-            }
+            ValidatePaginationParameters(totalPages, ref page, ref pageSize);
 
             var documentFilterModel = new DocumentFilterDto
             {
@@ -55,7 +54,7 @@ public sealed class DocumentsController(
                 EndOutgoingDocumentDateOutputDocument = endOutgoingDocumentDateOutputDocument,
             };
 
-            var pagedDocuments = await documentService.GetPagedAsync(
+            var pagedDocuments = await _documentService.GetPagedAsync(
                 documentFilterModel,
                 page,
                 pageSize);
@@ -78,18 +77,31 @@ public sealed class DocumentsController(
         }
     }
 
+    private void ValidatePaginationParameters(int totalPages, ref int page, ref int pageSize)
+    {
+        if (!CountsDocumentsOnPage.Contains(pageSize))
+        {
+            pageSize = DefaultCountDocumentsOnPage;
+        }
+
+        if (page < 0 || page > totalPages)
+        {
+            page = DefaultNumberPage;
+        }
+    }
+
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        var document = CreateDefaultDocument();
+        var document = Factory.CreateDefaultDocument();
 
-        var responsibleEmployees = await employeeService.GetResponsibleEmployeesAsync();
+        var responsibleEmployees = await _employeeService.GetResponsibleEmployeesAsync();
         var responsibleEmployeesSelectList = new SelectList(
                                                     responsibleEmployees,
                                                     nameof(EmployeeForSelectViewModel.Id),
                                                     nameof(EmployeeForSelectViewModel.FullNameAndDepartment));
 
-        var departments = await departmentService.GetDepartmentsAsync();
+        var departments = await _departmentService.GetDepartmentsAsync();
         var departmentsSelectList = new SelectList(
                                             departments, 
                                             nameof(DepartmentSelectModel.Name), 
@@ -110,7 +122,7 @@ public sealed class DocumentsController(
     {
         try
         {
-            await documentService.CreateAsync(createdDocumentDto);
+            await _documentService.CreateAsync(createdDocumentDto);
             return RedirectToAction(nameof(Index));
         }
         catch (UnauthorizedAccessException)
@@ -122,21 +134,21 @@ public sealed class DocumentsController(
     [HttpGet]
     public async Task<IActionResult> Edit(int id, string? errorMessage = null)
     {
-        var document = await documentService.GetDocumentForEditAsync(id);
+        var document = await _documentService.GetDocumentForEditAsync(id);
 
         if (document is null)
         {
             return RedirectToNotFoundError();
         }
 
-        var responsibleEmployees = await employeeService.GetResponsibleEmployeesAsync();
+        var responsibleEmployees = await _employeeService.GetResponsibleEmployeesAsync();
         var responsibleEmployeesSelectList = new SelectList(
                                                     responsibleEmployees,
                                                     nameof(EmployeeForSelectViewModel.Id),
                                                     nameof(EmployeeForSelectViewModel.FullNameAndDepartment));
 
 
-        var departments = await departmentService.GetDepartmentsAsync();
+        var departments = await _departmentService.GetDepartmentsAsync();
         var departmentsSelectList = new SelectList(
                                             departments,
                                             nameof(DepartmentSelectModel.Name),
@@ -158,7 +170,7 @@ public sealed class DocumentsController(
     {
         try
         {
-            await documentService.EditAsync(editedDocumentDto);
+            await _documentService.EditAsync(editedDocumentDto);
             return RedirectToAction(nameof(Index));
         }
         catch (UnauthorizedAccessException)
@@ -171,7 +183,7 @@ public sealed class DocumentsController(
     [OwnerDocumentOrAdmin]
     public async Task<IActionResult> Delete(int id)
     {
-        var document = await documentService.GetDocumentForDeleteAsync(id);
+        var document = await _documentService.GetDocumentForDeleteAsync(id);
 
         if (document == null)
         {
@@ -186,7 +198,7 @@ public sealed class DocumentsController(
     {
         try
         {
-            await documentService.DeleteAsync(id);
+            await _documentService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
         catch (NotFoundException)
@@ -200,7 +212,7 @@ public sealed class DocumentsController(
     {
         try
         {
-            await documentService.RecoverDeletedAsync(id);
+            await _documentService.RecoverDeletedAsync(id);
             return RedirectToAction(nameof(Index));
         }
         catch (NotFoundException)
@@ -214,7 +226,7 @@ public sealed class DocumentsController(
     {
         try
         {
-            await documentService.ChangeStatusAsync(id);
+            await _documentService.ChangeStatusAsync(id);
             return RedirectToAction(nameof(Index));
         }
         catch (NotFoundException)
@@ -236,40 +248,13 @@ public sealed class DocumentsController(
     {
         try
         {
-            var bytesDocument = await documentService.CreateDocumentCsvAsync(id);
+            var bytesDocument = await _documentService.CreateDocumentCsvAsync(id);
             return File(bytesDocument, MediaTypeNames.Text.Csv, "document.csv");
         }
         catch (NotFoundException)
         {
             return RedirectToNotFoundError();
         }
-    }
-
-    private static CreatedDocumentDto CreateDefaultDocument()
-    {
-        var document = new CreatedDocumentDto
-        {
-            IsExternalDocumentInputDocument = true,
-            IncomingDocumentNumberInputDocument = string.Empty,
-            IncomingDocumentDateInputDocument = DateOnly.FromDateTime(DateTime.Today),
-            TaskDueDateInputDocument = DateOnly.FromDateTime(DateTime.Today.AddDays(DefaultDueDateDaysOffset)),
-            IsExternalDocumentOutputDocument = true,
-            IsUnderControl = false,
-            OutgoingDocumentDateOutputDocument = null,
-            OutgoingDocumentNumberInputDocument = null,
-            CustomerInputDocument = null,
-            DocumentSummaryInputDocument = null,
-            DocumentSummaryOutputDocument = null,
-            IdResponsibleEmployeeInputDocument = null,
-            OutgoingDocumentNumberOutputDocument = null,
-            RecipientOutputDocument = null,
-            ResponsibleDepartmentInputDocument = null,
-            ResponsibleDepartmentsInputDocument = null,
-            SourceDocumentDateInputDocument= null,     
-            SubjectOutputDocument = null,
-        };
-
-        return document;
     }
 
     private RedirectToActionResult RedirectToUnauthorizedError()

@@ -5,6 +5,7 @@ using TaskManager.Domain.Model.Employees;
 using TaskManager.Domain.Queries;
 using TaskManager.Domain.Repositories;
 using TaskManager.Domain.Services;
+using TaskManager.View.Filters;
 using TaskManager.View.Utilities;
 using TaskManager.View.ViewModel.Employees;
 
@@ -16,10 +17,19 @@ public sealed class AccountsController(
     IEmployeeRepository employeeRepository, 
     IAuthService authService) : Controller
 {
+    private readonly IEmployeeQuery _employeeQuery =
+            employeeQuery ?? throw new ArgumentNullException(nameof(employeeQuery));
+
+    private readonly IEmployeeRepository _employeeRepository =
+            employeeRepository ?? throw new ArgumentNullException(nameof(employeeRepository));
+
+    private readonly IAuthService _authService =
+            authService ?? throw new ArgumentNullException(nameof(authService));
+
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
-        if (authService.IsAuthenticated)
+        if (_authService.IsAuthenticated)
         {
             return RedirectToDocuments();
         }
@@ -45,7 +55,7 @@ public sealed class AccountsController(
             Password = employeeLoginViewModel.Password,
         };
 
-        var success = await authService.LoginAsync(employeeLoginModel);
+        var success = await _authService.LoginAsync(employeeLoginModel);
 
         if (success)
         {
@@ -64,20 +74,31 @@ public sealed class AccountsController(
     [HttpPost]
     public async Task<IActionResult> Logout()
     {
-        await authService.LogoutAsync();
+        await _authService.LogoutAsync();
         return RedirectToDocuments();
     }
 
     [HttpGet]
+    [CheckUserAccess]
     public async Task<IActionResult> ChangePassword(int id)
     {
-        var isExist = await employeeRepository.IsExistAsync(id);
+        if (id != authService.IdCurrentUser)
+        {
+            var nameAction = nameof(ErrorsController.AccessDeniedError);
+            var fullNameController = nameof(ErrorsController);
+
+            var nameController = NameController.GetControllerName(fullNameController);
+
+            return RedirectToAction(nameAction, nameController);
+        }
+
+        var isExist = await _employeeRepository.IsExistAsync(id);
         if (!isExist)
         {
             return RedirectToNotFoundError();
         }
 
-        var password = await employeeQuery.GetPasswordAsync(id);
+        var password = await _employeeQuery.GetPasswordAsync(id);
         if (string.IsNullOrEmpty(password))
         {
             return RedirectToNotFoundError();
@@ -97,7 +118,7 @@ public sealed class AccountsController(
     {
         try
         {
-            await employeeRepository.UpdatePasswordAsync(passwordViewModel.Id, passwordViewModel.Password);
+            await _employeeRepository.UpdatePasswordAsync(passwordViewModel.Id, passwordViewModel.Password);
         }
         catch (NotFoundException)
         {
